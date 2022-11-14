@@ -52,7 +52,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
 
-		if (salaParaAtualizar.get().getStatus().equals(StatusEnum.FINALIZADO)) {
+		if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
 			salaParaAtualizar.get().setDado(0);
 			return salaParaAtualizar;
 		}
@@ -67,7 +67,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
 
 					// verifica qual o jogador da vez
-					if (this.jogador.getStatus().equals(StatusEnumJogador.JOGANDO)) {
+					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
 
 						// Verifica se jogador comprou uma carta
 						if (this.jogador.getCartasDoJogo().size() >= jogadorStatusJogandoFront.getCartasDoJogo()
@@ -144,7 +144,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 									.remove(cartaParaAtualizarNoJogador.get());
 							
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-							if (salaParaAtualizar.get().getStatus().equals(StatusEnum.ULTIMA_RODADA)) {
+							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 								
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIshost()) {
@@ -187,7 +187,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	public Jogador procuraJogadorJogandoNoFront(Sala sala) {
 		for (Jogador jogadorFront : sala.getJogadores()) {
-			if (jogadorFront.getStatus().equals(StatusEnumJogador.JOGANDO)) {
+			if (StatusEnumJogador.JOGANDO.equals(jogadorFront.getStatus())) {
 				return jogadorFront;
 			}
 		}
@@ -295,8 +295,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 				for (int index = 0; index < salaParaAtualizar.get().getJogadores().size(); index++) {
 
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
-					
-					if (this.jogador.getStatus().equals(StatusEnumJogador.JOGANDO)) {
+
+					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
 						Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
 
 						if (!jogadorStatusJogandoFront.getNome().equals(this.jogador.getNome())) {
@@ -326,7 +326,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					}
 
 
-					if (salaParaAtualizar.get().getStatus().equals(StatusEnum.ULTIMA_RODADA)) {
+					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIshost()) {
@@ -373,8 +373,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 				for (int index = 0; index < salaParaAtualizar.get().getJogadores().size(); index++) {
 
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
-					
-					if (this.jogador.getStatus().equals(StatusEnumJogador.JOGANDO)) {
+
+					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
 						Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
 
 						if (!jogadorStatusJogandoFront.getNome().equals(this.jogador.getNome())) {
@@ -402,7 +402,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					}
 
 
-					if (salaParaAtualizar.get().getStatus().equals(StatusEnum.ULTIMA_RODADA)) {
+					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIshost()) {
