@@ -6,9 +6,9 @@ import com.db.jogo.model.Sala;
 import com.db.jogo.model.Sala.StatusEnum;
 import com.db.jogo.helper.Dado;
 
-public abstract class RegrasDoJogo {
+public class RegrasDoJogo {
 	
-	public static void verificaJogadorSeTemOitoPontos(Jogador jogador, Sala sala) {
+	public static void setaStatusFinalPartida(Jogador jogador, Sala sala) {
         if(jogador.getPontos() >= 8) {
             sala.setStatus(StatusEnum.ULTIMA_RODADA);
         }
