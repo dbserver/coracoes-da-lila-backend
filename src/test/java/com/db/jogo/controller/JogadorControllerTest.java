@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.db.jogo.model.Jogador;
-import com.db.jogo.service.JogadorServiceImpl;
+import com.db.jogo.service.impl.JogadorServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest

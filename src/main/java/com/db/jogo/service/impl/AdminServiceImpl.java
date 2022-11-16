@@ -1,4 +1,4 @@
-package com.db.jogo.service;
+package com.db.jogo.service.impl;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -6,12 +6,13 @@ import java.util.UUID;
 import com.db.jogo.model.Admin;
 import com.db.jogo.repository.AdminRepository;
 
+import com.db.jogo.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AdminServiceImpl  implements AdminService{
+public class AdminServiceImpl  implements AdminService {
 
     private AdminRepository adminRepository;
 

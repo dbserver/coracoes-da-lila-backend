@@ -21,7 +21,7 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
-import com.db.jogo.service.WebSocketServiceImpl;
+import com.db.jogo.service.impl.WebSocketServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
