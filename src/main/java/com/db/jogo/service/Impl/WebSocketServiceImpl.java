@@ -1,10 +1,12 @@
-package com.db.jogo.service;
+package com.db.jogo.service.Impl;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 import java.util.Collections;
+
+import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,8 @@ import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.model.Sala.StatusEnum;
-import com.db.jogo.util.Dado;
-import com.db.jogo.util.RegrasDoJogo;
+import com.db.jogo.helper.Dado;
+import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

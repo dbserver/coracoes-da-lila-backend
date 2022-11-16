@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import com.db.jogo.model.Baralho;
 
+import com.db.jogo.service.Impl.BaralhoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

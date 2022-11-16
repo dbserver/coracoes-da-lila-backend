@@ -1,7 +1,8 @@
-package com.db.jogo.service;
+package com.db.jogo.service.Impl;
 
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.repository.CartaDoJogoRepository;
+import com.db.jogo.service.CartaDoJogoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;

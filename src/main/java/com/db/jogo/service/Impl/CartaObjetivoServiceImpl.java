@@ -1,8 +1,9 @@
-package com.db.jogo.service;
+package com.db.jogo.service.Impl;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.service.CartaObjetivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
