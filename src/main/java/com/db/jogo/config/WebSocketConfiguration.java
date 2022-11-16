@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

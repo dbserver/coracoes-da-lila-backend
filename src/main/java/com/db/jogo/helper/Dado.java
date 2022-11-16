@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.helper;
 
 import java.util.Random;
 

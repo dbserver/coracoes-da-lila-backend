@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.db.jogo.model.Baralho;
-import com.db.jogo.service.BaralhoServiceImpl;
+import com.db.jogo.service.impl.BaralhoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.DisplayName;
