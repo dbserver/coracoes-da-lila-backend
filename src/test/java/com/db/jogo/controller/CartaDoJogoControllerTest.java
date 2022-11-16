@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.service.Impl.CartaDoJogoServiceImpl;
+import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest

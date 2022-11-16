@@ -28,7 +28,7 @@ import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
-import com.db.jogo.service.Impl.WebSocketServiceImpl;
+import com.db.jogo.service.impl.WebSocketServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 

@@ -1,4 +1,4 @@
-package com.db.jogo.service.Impl;
+package com.db.jogo.service.impl;
 
 import java.util.Optional;
 import java.util.UUID;

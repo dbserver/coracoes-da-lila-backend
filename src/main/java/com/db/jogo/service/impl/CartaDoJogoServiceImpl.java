@@ -1,4 +1,4 @@
-package com.db.jogo.service.Impl;
+package com.db.jogo.service.impl;
 
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.repository.CartaDoJogoRepository;

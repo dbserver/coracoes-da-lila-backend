@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.db.jogo.model.CartaObjetivo;
-import com.db.jogo.service.Impl.CartaObjetivoServiceImpl;
+import com.db.jogo.service.impl.CartaObjetivoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
