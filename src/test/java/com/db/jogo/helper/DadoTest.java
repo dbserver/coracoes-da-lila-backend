@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

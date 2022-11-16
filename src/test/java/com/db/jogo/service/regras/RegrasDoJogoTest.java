@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.service.regras;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
