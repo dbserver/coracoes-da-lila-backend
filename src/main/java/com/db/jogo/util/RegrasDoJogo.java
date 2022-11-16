@@ -5,7 +5,7 @@ import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.model.Sala.StatusEnum;
 
-public abstract class RegrasDoJogo {
+public class RegrasDoJogo {
 	
 	public static void verificaJogadorSeTemOitoPontos(Jogador jogador, Sala sala) {
         if(jogador.getPontos() >= 8) {
