@@ -25,7 +25,7 @@ class RegrasDoJogoTest {
 	@BeforeEach 
 	void criaCarta () {
 		carta = CartaDoJogo.builder()
-				.valorCorGrande(1)
+				.valorCoracaoGrande(1)
 				.valorCoracaoPequeno(2)
 				.build();
 		

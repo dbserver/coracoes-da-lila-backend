@@ -54,7 +54,7 @@ public class WebSocketServiceTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(0);
+        carta.setValorCoracaoGrande(0);
         carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 

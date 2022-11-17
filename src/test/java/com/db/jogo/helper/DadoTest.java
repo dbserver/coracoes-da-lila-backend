@@ -32,7 +32,7 @@ public class DadoTest {
     			.categoria("Ação")
     			.fonte("")
     			.pontos(0)
-    			.valorCorGrande(0)
+    			.valorCoracaoGrande(0)
     			.valorCoracaoPequeno(0)
     			.tipo("Ação")
     			.build();

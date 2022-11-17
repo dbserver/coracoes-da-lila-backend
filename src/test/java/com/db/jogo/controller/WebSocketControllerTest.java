@@ -70,7 +70,7 @@ public class WebSocketControllerTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(2);
+        carta.setValorCoracaoGrande(2);
         carta.setValorCoracaoPequeno(2);
         carta.setTipo("Ação");
 
