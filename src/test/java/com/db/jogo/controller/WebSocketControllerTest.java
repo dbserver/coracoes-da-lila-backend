@@ -71,7 +71,7 @@ public class WebSocketControllerTest {
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCorGrande(2);
-        carta.setValorCorPequeno(2);
+        carta.setValorCoracaoPequeno(2);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());

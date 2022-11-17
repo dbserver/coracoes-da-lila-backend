@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import com.db.jogo.model.Jogador;
 
-import com.db.jogo.service.impl.JogadorServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

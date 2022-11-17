@@ -35,7 +35,7 @@ public class CartaDoJogo {
 	private String texto;
 
 	@Column(name = "valor_cor_pequeno", length = 10 ,nullable = true)
-	private Integer valorCorPequeno;
+	private Integer valorCoracaoPequeno;
 
 	@Column(name = "valorCorGrande", nullable = true)
 	private Integer valorCorGrande;

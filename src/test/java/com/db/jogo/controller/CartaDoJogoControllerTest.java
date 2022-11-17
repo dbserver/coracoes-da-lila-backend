@@ -37,7 +37,7 @@ public class CartaDoJogoControllerTest {
 
 	String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
 	CartaDoJogo newCartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCorGrande(1)
-			.valorCorPequeno(0).categoria("Fisica").fonte("Google").tipo("Informação").pontos(3).texto("Teste").build();
+			.valorCoracaoPequeno(0).categoria("Fisica").fonte("Google").tipo("Informação").pontos(3).texto("Teste").build();
 
 	@Test
 	@DisplayName("Teste do POST/Sucesso do Controller Carta do Jogo")

@@ -65,7 +65,7 @@ class SalaControllerTest {
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCorGrande(0);
-        carta.setValorCorPequeno(0);
+        carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());

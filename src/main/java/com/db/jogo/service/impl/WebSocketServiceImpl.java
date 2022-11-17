@@ -282,7 +282,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	public CartaDoJogo criarCartaDoJogo() {
 		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria("").fonte("").pontos(0).valorCorGrande(0)
-				.valorCorPequeno(0).tipo("").build();
+				.valorCoracaoPequeno(0).tipo("").build();
 		return carta;
 	}
 

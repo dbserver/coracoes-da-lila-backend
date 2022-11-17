@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.UUID;
 import com.db.jogo.model.*;
-import com.db.jogo.service.regras.RegrasDoJogo;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class RegrasDoJogoTest {
 	void criaCarta () {
 		carta = CartaDoJogo.builder()
 				.valorCorGrande(1)
-				.valorCorPequeno(2)
+				.valorCoracaoPequeno(2)
 				.build();
 		
 		 jogador = Jogador.builder()

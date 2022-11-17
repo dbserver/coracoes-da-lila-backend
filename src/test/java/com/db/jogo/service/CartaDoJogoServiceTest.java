@@ -37,7 +37,7 @@ class CartaDoJogoServiceTest {
 		MockitoAnnotations.initMocks(this);
 		cartaDoJogoService = new CartaDoJogoServiceImpl(cartaDoJogoRepository);
 
-		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCorGrande(1).valorCorPequeno(0)
+		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCorGrande(1).valorCoracaoPequeno(0)
 				.categoria("Fisica").fonte("Google").tipo("Informação").pontos(3).texto("Teste").build();
 	}
 
