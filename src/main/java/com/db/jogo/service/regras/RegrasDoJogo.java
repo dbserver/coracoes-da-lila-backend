@@ -21,17 +21,17 @@ public class RegrasDoJogo {
     	int numCoracoesGraDaCarta = carta.getValorCoracaoGrande();
 		int numCoracoesPeqDaCarta = carta.getValorCoracaoPequeno();
 		
-		if(jogador.getBonusCoracaoPeq() > 0) {
-			numCoracoesPeqDaCarta -= jogador.getBonusCoracaoPeq();
+		if(jogador.getBonusCoracaoPequeno() > 0) {
+			numCoracoesPeqDaCarta -= jogador.getBonusCoracaoPequeno();
 		}
-		if(jogador.getBonusCoracaoGra() > 0) {
-			numCoracoesGraDaCarta -= jogador.getBonusCoracaoGra();
+		if(jogador.getBonusCoracaoGrande() > 0) {
+			numCoracoesGraDaCarta -= jogador.getBonusCoracaoGrande();
 		}
 		if(numCoracoesGraDaCarta > 0) {
-			jogador.setCoracaoGra(jogador.getCoracaoGra() - numCoracoesGraDaCarta);
+			jogador.setCoracaoGrande(jogador.getCoracaoGrande() - numCoracoesGraDaCarta);
 		}
 		if(numCoracoesPeqDaCarta > 0) {
-			jogador.setCoracaoPeq(jogador.getCoracaoPeq() - numCoracoesPeqDaCarta);
+			jogador.setCoracaoPequeno(jogador.getCoracaoPequeno() - numCoracoesPeqDaCarta);
 		}
     	return jogador ;
     }
@@ -39,14 +39,14 @@ public class RegrasDoJogo {
 	public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
 
 		if (carta.getValorCoracaoPequeno() >= 0) {
-			if (jogador.getBonusCoracaoPeq() + jogador.getCoracaoPeq() < carta.getValorCoracaoPequeno()) {
+			if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() < carta.getValorCoracaoPequeno()) {
 				return false;
 			}
 
 		}
 
 		if (carta.getValorCoracaoGrande() >= 0) {
-			if (jogador.getBonusCoracaoGra() + jogador.getCoracaoGra() < carta.getValorCoracaoGrande()) {
+			if (jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() < carta.getValorCoracaoGrande()) {
 				return false;
 			}
 
@@ -58,11 +58,11 @@ public class RegrasDoJogo {
 
 	public static Jogador adicionaCoracoesPequenos (Jogador jogador) {
 	
-		 int coracaoPequenos = 2;
+		 int coracaoPequenouenos = 2;
 		 
 		 if(Dado.quantidaDeCoracoes(jogador) < 4) {
 			
-			jogador.setCoracaoPeq(coracaoPequenos+= jogador.getCoracaoPeq());
+			jogador.setCoracaoPequeno(coracaoPequenouenos+= jogador.getCoracaoPequeno());
 
 			 						 
 		 }
@@ -78,11 +78,11 @@ public class RegrasDoJogo {
 	
 	public static Jogador adicionaCoracoesGrandes (Jogador jogador) {
 		
-		 int coracaoGrandes = 1;
+		 int coracaoGrandendes = 1;
 		 
 		 if(Dado.quantidaDeCoracoes(jogador) < 5) {
 			 
-			 jogador.setCoracaoGra(coracaoGrandes += jogador.getCoracaoGra());
+			 jogador.setCoracaoGrande(coracaoGrandendes += jogador.getCoracaoGrande());
 		 }
 			
 		
@@ -93,7 +93,7 @@ public class RegrasDoJogo {
 	
 	public static boolean validaCompraCartaObjetivo(Jogador jogador) {
 
-		if (jogador.getBonusCoracaoPeq() + jogador.getCoracaoPeq() + jogador.getBonusCoracaoGra() + jogador.getCoracaoGra() < 1) {
+		if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() + jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() < 1) {
 				return false;
 			}
 

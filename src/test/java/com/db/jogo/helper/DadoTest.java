@@ -21,10 +21,10 @@ public class DadoTest {
     public void verificaResultadoDoDado() throws Exception {
 
         Jogador jogador = new Jogador();
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setCoracaoPeq(2);
-        jogador.setCoracaoGra(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setCoracaoPequeno(2);
+        jogador.setCoracaoGrande(0);
         
         
         CartaDoJogo	carta = CartaDoJogo.builder()

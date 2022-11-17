@@ -94,11 +94,11 @@ public class WebSocketControllerTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(2);
-        jogador.setBonusCoracaoGra(3);
-        jogador.setBonusCoracaoPeq(2);
-        jogador.setCoracaoGra(1);
-        jogador.setCoracaoPeq(3);
-        jogador.setIshost(true);
+        jogador.setBonusCoracaoGrande(3);
+        jogador.setBonusCoracaoPequeno(2);
+        jogador.setCoracaoGrande(1);
+        jogador.setCoracaoPequeno(3);
+        jogador.setIsHost(true);
         jogador.setCartasDoJogo(new ArrayList<>());
         jogador.adicionaCarta(carta);
         jogador.setStatus(StatusEnumJogador.JOGANDO);
@@ -106,13 +106,13 @@ public class WebSocketControllerTest {
 
         jogador2.setId(UUID.randomUUID());
         jogador2.setNome("Guilherme");
-        jogador2.setIshost(false);
+        jogador2.setIsHost(false);
         jogador2.setPontos(2);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        jogador2.setBonusCoracaoGra(1);
-        jogador2.setBonusCoracaoPeq(2);
-        jogador2.setCoracaoGra(5);
-        jogador2.setCoracaoPeq(3);
+        jogador2.setBonusCoracaoGrande(1);
+        jogador2.setBonusCoracaoPequeno(2);
+        jogador2.setCoracaoGrande(5);
+        jogador2.setCoracaoPequeno(3);
         jogador2.setCartasDoJogo(new ArrayList<>());
         jogador2.adicionaCarta(carta);
         jogador2.adicionaObjetivo(cartaObjetivo);

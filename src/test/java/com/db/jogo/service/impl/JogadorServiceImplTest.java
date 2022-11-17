@@ -30,22 +30,22 @@ class JogadorServiceImplTest {
 	Jogador jogador= Jogador.builder()
 			.id(UUID.randomUUID())
 			.nome("joão")
-			.bonusCoracaoGra(1)
-			.bonusCoracaoPeq(1)
-			.coracaoGra(1)
+			.bonusCoracaoGrande(1)
+			.bonusCoracaoPequeno(1)
+			.coracaoGrande(1)
 			.pontos(1)
-			.coracaoPeq(2)
+			.coracaoPequeno(2)
 			.build();
 
     Optional<Jogador> jogadorOpt= 
     		Optional.ofNullable(Jogador.builder()
 	.id(UUID.randomUUID())
 	.nome("joão")
-	.bonusCoracaoGra(1)
-	.bonusCoracaoPeq(1)
-	.coracaoGra(1)
+	.bonusCoracaoGrande(1)
+	.bonusCoracaoPequeno(1)
+	.coracaoGrande(1)
 	.pontos(1)
-	.coracaoPeq(2)
+	.coracaoPequeno(2)
 	.build());
 
 	@Test

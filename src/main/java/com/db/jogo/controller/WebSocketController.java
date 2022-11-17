@@ -38,8 +38,8 @@ public class WebSocketController {
 		this.webSocketServiceImpl = webSocketServiceImpl;
 	}
 	
-		@PutMapping("/jogada/comprarcoracaopequeno")
-		public ResponseEntity<?> comprarCoracaoPequeno(@RequestBody Sala sala, BindingResult bindingResult) throws JogoInvalidoException {
+		@PutMapping("/jogada/comprarcoracaoPequenoueno")
+		public ResponseEntity<?> comprarCoracaoPequenoueno(@RequestBody Sala sala, BindingResult bindingResult) throws JogoInvalidoException {
 
 			if (bindingResult.hasErrors() || sala == null || sala.getHash() == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -61,8 +61,8 @@ public class WebSocketController {
 		}
 			
 			
-			@PutMapping("/jogada/comprarcoracaogrande")
-			public ResponseEntity<?> comprarCoracaoGrande(@RequestBody Sala sala, BindingResult bindingResult) throws JogoInvalidoException {
+			@PutMapping("/jogada/comprarcoracaoGrandende")
+			public ResponseEntity<?> comprarCoracaoGrandende(@RequestBody Sala sala, BindingResult bindingResult) throws JogoInvalidoException {
 
 				if (bindingResult.hasErrors() || sala == null || sala.getHash() == null) {
 					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

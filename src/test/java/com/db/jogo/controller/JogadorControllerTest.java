@@ -41,11 +41,11 @@ class JogadorControllerTest {
 	Jogador jogador = Jogador.builder()
 			.id(UUID.fromString(id))
 			.nome("joão")
-			.bonusCoracaoGra(1)
-			.bonusCoracaoPeq(1)
-			.coracaoGra(1)
+			.bonusCoracaoGrande(1)
+			.bonusCoracaoPequeno(1)
+			.coracaoGrande(1)
 			.pontos(1)
-			.coracaoPeq(2)
+			.coracaoPequeno(2)
 			.build();
 
 	@Test
@@ -96,11 +96,11 @@ class JogadorControllerTest {
 		Jogador jogadore = Jogador.builder()
 				.id(null)
 				.nome("joão")
-				.bonusCoracaoGra(1)
-				.bonusCoracaoPeq(1)
-				.coracaoGra(1)
+				.bonusCoracaoGrande(1)
+				.bonusCoracaoPequeno(1)
+				.coracaoGrande(1)
 				.pontos(1)
-				.coracaoPeq(2)
+				.coracaoPequeno(2)
 				.build();
 		given(jogadorService.atualizarJogador(jogadore)).willReturn(Optional.of(jogadore));
 
@@ -121,11 +121,11 @@ class JogadorControllerTest {
 		Jogador jogadorAtualizar = Jogador.builder()
 				.id(UUID.randomUUID())
 				.nome("joão")
-				.bonusCoracaoGra(1)
-				.bonusCoracaoPeq(1)
-				.coracaoGra(1)
+				.bonusCoracaoGrande(1)
+				.bonusCoracaoPequeno(1)
+				.coracaoGrande(1)
 				.pontos(1)
-				.coracaoPeq(2)
+				.coracaoPequeno(2)
 				.build();
 		given(jogadorService.atualizarJogador(jogadorAtualizar)).willReturn(Optional.of(jogador));
 
