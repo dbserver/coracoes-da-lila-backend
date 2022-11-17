@@ -1,5 +1,7 @@
 package com.db.jogo.model;
 
+import com.db.jogo.enums.StatusEnum;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
@@ -73,11 +75,6 @@ public class Sala {
 
 	public boolean removerJogador(Jogador jogador) {
 		return this.jogadores.remove(jogador);
-	}
-
-	public enum StatusEnum {
-		NOVO, JOGANDO, FINALIZADO, AGUARDANDO, ULTIMA_RODADA
-
 	}
 
 	@NonNull

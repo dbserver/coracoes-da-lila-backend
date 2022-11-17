@@ -12,15 +12,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
-import com.db.jogo.model.Sala.StatusEnum;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;

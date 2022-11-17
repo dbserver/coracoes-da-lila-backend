@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
+import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +67,7 @@ class RegrasDoJogoTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
     }

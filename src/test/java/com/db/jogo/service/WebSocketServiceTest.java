@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
@@ -99,7 +100,7 @@ public class WebSocketServiceTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
 
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);

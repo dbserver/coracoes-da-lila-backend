@@ -21,12 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.impl.WebSocketServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,7 +121,7 @@ public class WebSocketControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setDado(0);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);

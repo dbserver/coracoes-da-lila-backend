@@ -1,5 +1,7 @@
 package com.db.jogo.model;
 
+import com.db.jogo.enums.StatusEnumJogador;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -75,10 +77,6 @@ public class Jogador {
 	@Column(name = "status")
 	@Builder.Default
 	private StatusEnumJogador status = StatusEnumJogador.ESPERANDO ;
-
-	public enum StatusEnumJogador {
-		JOGANDO, ESPERANDO 
-	}
 
 	public void adicionaCarta(CartaDoJogo carta) {
 		this.cartasDoJogo.add(carta);
