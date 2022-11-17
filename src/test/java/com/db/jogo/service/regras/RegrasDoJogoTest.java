@@ -132,17 +132,17 @@ class RegrasDoJogoTest {
 
 	@Test
 	@DisplayName("Teste jogador com oito pontos, status do jogo ULTIMA_JOGADA")
-	void testValidaFinalPartida() {
+	void testeValidaFinalPartida() {
 		jogador.setPontos(8);
-		RegrasDoJogo.setaStatusFinalPartida(jogador, sala);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
 		assertEquals("ULTIMA_RODADA", sala.getStatus().name());
 	}
 	
 	@Test
 	@DisplayName("Teste jogador com menos de oito pontos, status do jogo NOVO")
-	void testValidaAntesFinalPartida() {
+	void testeValidaAntesFinalPartida() {
 		jogador.setPontos(6);
-		RegrasDoJogo.setaStatusFinalPartida(jogador, sala);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
 		assertEquals("NOVO", sala.getStatus().name());
 	}
 }
