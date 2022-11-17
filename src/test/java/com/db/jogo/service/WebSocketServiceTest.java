@@ -55,8 +55,8 @@ public class WebSocketServiceTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(0);
-        carta.setValorCorPequeno(0);
+        carta.setValorCoracaoGrande(0);
+        carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
@@ -79,10 +79,10 @@ public class WebSocketServiceTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setCoracaoGra(0);
-        jogador.setCoracaoPeq(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setCoracaoGrande(0);
+        jogador.setCoracaoPequeno(0);
         jogador.setPosicao(2);
         jogador.adicionaCarta(carta);
         jogador.adicionaObjetivo(cartaObjetivo);
@@ -90,10 +90,10 @@ public class WebSocketServiceTest {
         jogador2.setId(UUID.randomUUID());
         jogador2.setNome("Guilherme");
         jogador2.setPontos(2);
-        jogador2.setBonusCoracaoGra(3);
-        jogador2.setBonusCoracaoPeq(2);
-        jogador2.setCoracaoGra(5);
-        jogador2.setCoracaoPeq(3);
+        jogador2.setBonusCoracaoGrande(3);
+        jogador2.setBonusCoracaoPequeno(2);
+        jogador2.setCoracaoGrande(5);
+        jogador2.setCoracaoPequeno(3);
         jogador2.adicionaCarta(carta);
         jogador2.adicionaObjetivo(cartaObjetivo);
 

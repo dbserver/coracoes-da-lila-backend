@@ -45,10 +45,10 @@ public class JogadorServiceImpl implements JogadorService {
 
 			if (jogadorParaAtualizar.isPresent()) {
 
-				jogadorParaAtualizar.get().setBonusCoracaoGra(jogador.getBonusCoracaoGra());
-				jogadorParaAtualizar.get().setBonusCoracaoPeq(jogador.getBonusCoracaoPeq());
-				jogadorParaAtualizar.get().setCoracaoGra(jogador.getCoracaoGra());
-				jogadorParaAtualizar.get().setCoracaoPeq(jogador.getCoracaoPeq());
+				jogadorParaAtualizar.get().setBonusCoracaoGrande(jogador.getBonusCoracaoGrande());
+				jogadorParaAtualizar.get().setBonusCoracaoPequeno(jogador.getBonusCoracaoPequeno());
+				jogadorParaAtualizar.get().setCoracaoGrande(jogador.getCoracaoGrande());
+				jogadorParaAtualizar.get().setCoracaoPequeno(jogador.getCoracaoPequeno());
 				jogadorParaAtualizar.get().setCartasDoJogo(jogador.getCartasDoJogo());
 				jogadorParaAtualizar.get().setCartasObjetivo(jogador.getCartasObjetivo());
 				jogadorParaAtualizar.get().setNome(jogador.getNome());

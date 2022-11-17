@@ -59,20 +59,20 @@ public class Jogador {
 	private Integer pontos;
 
 	@Column(name = "coracaoPeq", length = 20, nullable = false)
-	private Integer coracaoPeq;
+	private Integer coracaoPequeno;
 
 	@Column(name = "coracaoGra", length = 20, nullable = false)
-	private Integer coracaoGra;
+	private Integer coracaoGrande;
 
 	@Column(name = "bonusCoracaoPeq", length = 10, nullable = false)
-	private Integer bonusCoracaoPeq;
+	private Integer bonusCoracaoPequeno;
 
 	@Column(name = "bonusCoracaoGra", length = 10, nullable = false)
-	private Integer bonusCoracaoGra;
+	private Integer bonusCoracaoGrande;
 
 
 	@Column(name="is_host", nullable = false)
-     private Boolean ishost;
+     private Boolean isHost;
 	
 	@Column(name = "status")
 	@Builder.Default

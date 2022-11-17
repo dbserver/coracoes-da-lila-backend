@@ -65,8 +65,8 @@ class SalaControllerTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(0);
-        carta.setValorCorPequeno(0);
+        carta.setValorCoracaoGrande(0);
+        carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
@@ -89,13 +89,13 @@ class SalaControllerTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setCoracaoGra(0);
-        jogador.setCoracaoPeq(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setCoracaoGrande(0);
+        jogador.setCoracaoPequeno(0);
         jogador.setCartasDoJogo(new ArrayList<>());
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        jogador.setIshost(true);
+        jogador.setIsHost(true);
         jogador.adicionaCarta(carta);
         jogador.adicionaObjetivo(cartaObjetivo);
 
