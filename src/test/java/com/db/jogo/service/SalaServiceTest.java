@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
@@ -105,7 +106,7 @@ public class SalaServiceTest {
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
 
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
         sala.adicionarJogador(jogador2);

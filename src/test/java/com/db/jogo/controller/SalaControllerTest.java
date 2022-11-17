@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.SalaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,7 +102,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.setDado(0);
 
@@ -161,7 +162,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 
@@ -186,7 +187,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 
@@ -206,7 +207,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 
