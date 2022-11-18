@@ -250,6 +250,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralhoCopy.setDescricao(baralho.getDescricao());
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());
+		System.out.println(baralhoCopy);
 		return baralhoService.saveBaralho(baralhoCopy);
 	}
 
