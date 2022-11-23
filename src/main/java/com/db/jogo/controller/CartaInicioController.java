@@ -3,6 +3,7 @@ package com.db.jogo.controller;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,22 @@ private CartaInicioService cartaService;
     		return new ResponseEntity<CartaInicio>(cartaInicio, HttpStatus.BAD_REQUEST);
     	}
     	return new ResponseEntity<CartaInicio>(cartaService.saveCartaInicio(cartaInicio),HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/cartasorteada")
+    public ResponseEntity<CartaInicio> sorteiaCartaInicial(){
+        Random random = new Random();
+        int seletor = random.nextInt(procuraListaCarta().getBody().size());
+        UUID id = procuraListaCarta().getBody().get(seletor).getId();
+        Optional<CartaInicio> cartaInicio;
+        cartaInicio=cartaService.findById(id);
+
+        if (cartaInicio.isEmpty()) {
+            return new ResponseEntity<> (HttpStatus.NOT_FOUND);
+
+        }
+        return new ResponseEntity<>(cartaInicio.get(),HttpStatus.OK);
+
     }
     
  
