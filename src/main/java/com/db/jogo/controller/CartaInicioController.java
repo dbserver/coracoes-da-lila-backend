@@ -27,6 +27,8 @@ import com.db.jogo.service.CartaInicioService;
 @RequestMapping("/cartainicio")
 public class CartaInicioController {
 private CartaInicioService cartaService;
+private boolean cartaEscolhida;
+private int posicaoCartaEscolhida;
 	
 	@Autowired
 	public CartaInicioController (CartaInicioService cartaService) {
@@ -43,16 +45,23 @@ private CartaInicioService cartaService;
     
     @GetMapping("/cartasorteada")
     public ResponseEntity<CartaInicio> sorteiaCartaInicial(){
+        //Se nenhuma ideia surgir, fazer a gambiarra de criar uma variavel global bool iniciada em false, criar um if e meter o random dentro, no fim igualar a true pra nunca mais passar por ali
         Random random = new Random();
-        int seletor = random.nextInt(procuraListaCarta().getBody().size());
-        UUID id = procuraListaCarta().getBody().get(seletor).getId();
+        UUID id;
+        if(!cartaEscolhida){
+            int seletor = random.nextInt(procuraListaCarta().getBody().size());
+            id = procuraListaCarta().getBody().get(seletor).getId();
+            this.posicaoCartaEscolhida = seletor;
+            this.cartaEscolhida = true;
+        }
+        else
+            id = procuraListaCarta().getBody().get(posicaoCartaEscolhida).getId();
+        
         Optional<CartaInicio> cartaInicio;
         cartaInicio=cartaService.findById(id);
 
-        if (cartaInicio.isEmpty()) {
+        if (cartaInicio.isEmpty()) 
             return new ResponseEntity<> (HttpStatus.NOT_FOUND);
-
-        }
         return new ResponseEntity<>(cartaInicio.get(),HttpStatus.OK);
 
     }
