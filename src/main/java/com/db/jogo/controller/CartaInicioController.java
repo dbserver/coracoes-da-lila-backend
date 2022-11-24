@@ -41,31 +41,7 @@ private int posicaoCartaEscolhida;
     		return new ResponseEntity<CartaInicio>(cartaInicio, HttpStatus.BAD_REQUEST);
     	}
     	return new ResponseEntity<CartaInicio>(cartaService.saveCartaInicio(cartaInicio),HttpStatus.CREATED);
-    }
-    
-    @GetMapping("/cartasorteada")
-    public ResponseEntity<CartaInicio> sorteiaCartaInicial(){
-        //Se nenhuma ideia surgir, fazer a gambiarra de criar uma variavel global bool iniciada em false, criar um if e meter o random dentro, no fim igualar a true pra nunca mais passar por ali
-        Random random = new Random();
-        UUID id;
-        if(!cartaEscolhida){
-            int seletor = random.nextInt(procuraListaCarta().getBody().size());
-            id = procuraListaCarta().getBody().get(seletor).getId();
-            this.posicaoCartaEscolhida = seletor;
-            this.cartaEscolhida = true;
-        }
-        else
-            id = procuraListaCarta().getBody().get(posicaoCartaEscolhida).getId();
-        
-        Optional<CartaInicio> cartaInicio;
-        cartaInicio=cartaService.findById(id);
-
-        if (cartaInicio.isEmpty()) 
-            return new ResponseEntity<> (HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(cartaInicio.get(),HttpStatus.OK);
-
-    }
-    
+    }    
  
     @GetMapping("/{id}")
     public ResponseEntity<CartaInicio> procuraCarta(@PathVariable UUID id){
