@@ -27,8 +27,6 @@ import com.db.jogo.service.CartaInicioService;
 @RequestMapping("/cartainicio")
 public class CartaInicioController {
 private CartaInicioService cartaService;
-private boolean cartaEscolhida;
-private int posicaoCartaEscolhida;
 	
 	@Autowired
 	public CartaInicioController (CartaInicioService cartaService) {

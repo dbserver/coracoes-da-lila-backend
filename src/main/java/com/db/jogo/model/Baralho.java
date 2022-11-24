@@ -99,11 +99,8 @@ public class Baralho {
 	}
         
     public void sorteiaCartaInicial(){
-        //Se nenhuma ideia surgir, fazer a gambiarra de criar uma variavel global bool iniciada em false, criar um if e meter o random dentro, no fim igualar a true pra nunca mais passar por ali
         Random random = new Random();
-        //int seletor = random.nextInt(procuraListaCarta().getBody().size());
         int seletor = random.nextInt(cartasInicio.size());
-        //id = procuraListaCarta().getBody().get(seletor).getId();
         this.idCartaInicio = cartasInicio.get(seletor).getId();
     }
 
