@@ -29,7 +29,7 @@ RUN /render/build-scripts/apply-buildpacks.py ${HEROKU_STACK}
 # if you don't, we'll try to guess one for you. If this is incorrect, please
 # add a Procfile that tells us what you need us to run.
 RUN if [[ -f /app/Procfile ]]; then \
-  /render/build-scripts/create-process-types "/app/Procfile"; \
+  /render/build-scripts/create-process-types "Procfile"; \
 fi;
 
 # For running the app, we use a clean base image and also one without Ubuntu development packages
