@@ -50,11 +50,11 @@ WORKDIR /app
 # This sources all /app/.profile.d/*.sh files before process start.
 # These are created by buildpacks, and you probably don't have to worry about this.
 # https://devcenter.heroku.com/articles/buildpack-api#profile-d-scripts
-#ENTRYPOINT [ "/render/setup-env" ]
+ENTRYPOINT [ "/render/setup-env" ]
 
 # 3. By default, we run the 'web' process type defined in the app's Procfile
 # You may override the process type that is run by replacing 'web' with another
 # process type name in the CMD line below. That process type must have been
 # defined in the app's Procfile during build.
-#CMD [ "/render/process/web" ]
-CMD [ "java", "-Dserver.port=$PORT", "$JAVA_OPTS", "-jar", "target/ProjetoLilaBack-0.0.1-SNAPSHOT.jar" ]
+CMD [ "/render/process/web" ]
+#CMD [ "java", "-Dserver.port=$PORT", "$JAVA_OPTS", "-jar", "target/ProjetoLilaBack-0.0.1-SNAPSHOT.jar" ]
