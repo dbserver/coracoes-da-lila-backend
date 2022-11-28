@@ -3,6 +3,7 @@ package com.db.jogo.controller;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,7 @@ private CartaInicioService cartaService;
     		return new ResponseEntity<CartaInicio>(cartaInicio, HttpStatus.BAD_REQUEST);
     	}
     	return new ResponseEntity<CartaInicio>(cartaService.saveCartaInicio(cartaInicio),HttpStatus.CREATED);
-    }
-    
+    }    
  
     @GetMapping("/{id}")
     public ResponseEntity<CartaInicio> procuraCarta(@PathVariable UUID id){
