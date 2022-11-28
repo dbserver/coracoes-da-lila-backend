@@ -16,4 +16,4 @@ services:
 
 databases: # Render PostgreSQL database
   - name: postgresql-animated-69992
-    ipAllowList: [] # only allow internal connections
+    #ipAllowList: [] # only allow internal connections
