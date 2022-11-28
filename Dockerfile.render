@@ -28,8 +28,8 @@ RUN /render/build-scripts/apply-buildpacks.py ${HEROKU_STACK}
 # We strongly recommend that you package a Procfile with your application, but
 # if you don't, we'll try to guess one for you. If this is incorrect, please
 # add a Procfile that tells us what you need us to run.
-RUN if [[ -f /app/Procfile ]]; then \
-  /render/build-scripts/create-process-types "Procfile"; \
+RUN if [[ -f Procfile ]]; then \
+  /render/build-scripts/create-process-types "/app/Procfile"; \
 fi;
 
 # For running the app, we use a clean base image and also one without Ubuntu development packages
@@ -56,4 +56,4 @@ ENTRYPOINT [ "/render/setup-env" ]
 # You may override the process type that is run by replacing 'web' with another
 # process type name in the CMD line below. That process type must have been
 # defined in the app's Procfile during build.
-CMD [ "/render/process/web" ]
+#CMD [ "/render/process/web" ]
