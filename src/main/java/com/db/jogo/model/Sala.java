@@ -5,6 +5,7 @@ import com.db.jogo.enums.StatusEnum;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -42,6 +45,19 @@ public class Sala {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores ;
+
+
+
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
+			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
+					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
+	@Builder.Default
+	public List<CartaObjetivo> cartasObjetivoEmbaralhadas = new ArrayList<>();
+
+
+	
 
 
 	@OneToOne
