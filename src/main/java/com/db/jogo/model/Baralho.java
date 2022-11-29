@@ -2,6 +2,8 @@ package com.db.jogo.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -21,6 +23,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +39,7 @@ public class Baralho {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
+        private UUID idCartaInicio;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "baralho_cartadojogo", joinColumns = @JoinColumn(name = "baralho_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "cartadojogo_id", referencedColumnName = "id"))
@@ -90,5 +97,11 @@ public class Baralho {
 	public boolean removerCartaDoInicio(CartaInicio cartaInicio) {
 		return this.cartasInicio.remove(cartaInicio);
 	}
+        
+    public void sorteiaCartaInicial(){
+        Random random = new Random();
+        int seletor = random.nextInt(cartasInicio.size());
+        this.idCartaInicio = cartasInicio.get(seletor).getId();
+    }
 
 }

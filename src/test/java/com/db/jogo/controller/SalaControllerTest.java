@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.SalaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,8 +65,8 @@ class SalaControllerTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(0);
-        carta.setValorCorPequeno(0);
+        carta.setValorCoracaoGrande(0);
+        carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
@@ -88,20 +89,20 @@ class SalaControllerTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setCoracaoGra(0);
-        jogador.setCoracaoPeq(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setCoracaoGrande(0);
+        jogador.setCoracaoPequeno(0);
         jogador.setCartasDoJogo(new ArrayList<>());
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        jogador.setIshost(true);
+        jogador.setIsHost(true);
         jogador.adicionaCarta(carta);
         jogador.adicionaObjetivo(cartaObjetivo);
 
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.setDado(0);
 
@@ -161,7 +162,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 
@@ -186,7 +187,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 
@@ -206,7 +207,7 @@ class SalaControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
 

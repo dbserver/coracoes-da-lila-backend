@@ -21,14 +21,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Jogador.StatusEnumJogador;
 import com.db.jogo.model.Sala;
-import com.db.jogo.service.WebSocketServiceImpl;
+import com.db.jogo.service.impl.WebSocketServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -70,8 +71,8 @@ public class WebSocketControllerTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(2);
-        carta.setValorCorPequeno(2);
+        carta.setValorCoracaoGrande(2);
+        carta.setValorCoracaoPequeno(2);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
@@ -94,11 +95,11 @@ public class WebSocketControllerTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(2);
-        jogador.setBonusCoracaoGra(3);
-        jogador.setBonusCoracaoPeq(2);
-        jogador.setCoracaoGra(1);
-        jogador.setCoracaoPeq(3);
-        jogador.setIshost(true);
+        jogador.setBonusCoracaoGrande(3);
+        jogador.setBonusCoracaoPequeno(2);
+        jogador.setCoracaoGrande(1);
+        jogador.setCoracaoPequeno(3);
+        jogador.setIsHost(true);
         jogador.setCartasDoJogo(new ArrayList<>());
         jogador.adicionaCarta(carta);
         jogador.setStatus(StatusEnumJogador.JOGANDO);
@@ -106,13 +107,13 @@ public class WebSocketControllerTest {
 
         jogador2.setId(UUID.randomUUID());
         jogador2.setNome("Guilherme");
-        jogador2.setIshost(false);
+        jogador2.setIsHost(false);
         jogador2.setPontos(2);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        jogador2.setBonusCoracaoGra(1);
-        jogador2.setBonusCoracaoPeq(2);
-        jogador2.setCoracaoGra(5);
-        jogador2.setCoracaoPeq(3);
+        jogador2.setBonusCoracaoGrande(1);
+        jogador2.setBonusCoracaoPequeno(2);
+        jogador2.setCoracaoGrande(5);
+        jogador2.setCoracaoPequeno(3);
         jogador2.setCartasDoJogo(new ArrayList<>());
         jogador2.adicionaCarta(carta);
         jogador2.adicionaObjetivo(cartaObjetivo);
@@ -120,7 +121,7 @@ public class WebSocketControllerTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setDado(0);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);

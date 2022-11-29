@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
@@ -55,8 +56,8 @@ public class SalaServiceTest {
         carta.setCategoria("Visual");
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
-        carta.setValorCorGrande(0);
-        carta.setValorCorPequeno(0);
+        carta.setValorCoracaoGrande(0);
+        carta.setValorCoracaoPequeno(0);
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
@@ -80,10 +81,10 @@ public class SalaServiceTest {
         jogador.setId(UUID.randomUUID());
         jogador.setNome("Felipe");
         jogador.setPontos(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setCoracaoGra(0);
-        jogador.setCoracaoPeq(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setCoracaoGrande(0);
+        jogador.setCoracaoPequeno(0);
         jogador.setCartasDoJogo(new ArrayList<>());
         jogador.adicionaCarta(carta);
         jogador.adicionaObjetivo(cartaObjetivo);
@@ -92,10 +93,10 @@ public class SalaServiceTest {
         jogador2.setId(UUID.randomUUID());
         jogador2.setNome("Igor");
         jogador2.setPontos(1);
-        jogador2.setBonusCoracaoGra(2);
-        jogador2.setBonusCoracaoPeq(1);
-        jogador2.setCoracaoGra(1);
-        jogador2.setCoracaoPeq(1);
+        jogador2.setBonusCoracaoGrande(2);
+        jogador2.setBonusCoracaoPequeno(1);
+        jogador2.setCoracaoGrande(1);
+        jogador2.setCoracaoPequeno(1);
         jogador2.setCartasDoJogo(new ArrayList<>());
         jogador2.adicionaCarta(carta);
         jogador2.adicionaObjetivo(cartaObjetivo);
@@ -105,7 +106,7 @@ public class SalaServiceTest {
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
 
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
         sala.adicionarJogador(jogador2);

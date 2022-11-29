@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,10 +21,10 @@ public class DadoTest {
     public void verificaResultadoDoDado() throws Exception {
 
         Jogador jogador = new Jogador();
-        jogador.setBonusCoracaoPeq(0);
-        jogador.setBonusCoracaoGra(0);
-        jogador.setCoracaoPeq(2);
-        jogador.setCoracaoGra(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setCoracaoPequeno(2);
+        jogador.setCoracaoGrande(0);
         
         
         CartaDoJogo	carta = CartaDoJogo.builder()
@@ -32,8 +32,8 @@ public class DadoTest {
     			.categoria("Ação")
     			.fonte("")
     			.pontos(0)
-    			.valorCorGrande(0)
-    			.valorCorPequeno(0)
+    			.valorCoracaoGrande(0)
+    			.valorCoracaoPequeno(0)
     			.tipo("Ação")
     			.build();
         

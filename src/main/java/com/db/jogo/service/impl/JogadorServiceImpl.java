@@ -1,9 +1,10 @@
-package com.db.jogo.service;
+package com.db.jogo.service.impl;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.service.JogadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -44,10 +45,10 @@ public class JogadorServiceImpl implements JogadorService {
 
 			if (jogadorParaAtualizar.isPresent()) {
 
-				jogadorParaAtualizar.get().setBonusCoracaoGra(jogador.getBonusCoracaoGra());
-				jogadorParaAtualizar.get().setBonusCoracaoPeq(jogador.getBonusCoracaoPeq());
-				jogadorParaAtualizar.get().setCoracaoGra(jogador.getCoracaoGra());
-				jogadorParaAtualizar.get().setCoracaoPeq(jogador.getCoracaoPeq());
+				jogadorParaAtualizar.get().setBonusCoracaoGrande(jogador.getBonusCoracaoGrande());
+				jogadorParaAtualizar.get().setBonusCoracaoPequeno(jogador.getBonusCoracaoPequeno());
+				jogadorParaAtualizar.get().setCoracaoGrande(jogador.getCoracaoGrande());
+				jogadorParaAtualizar.get().setCoracaoPequeno(jogador.getCoracaoPequeno());
 				jogadorParaAtualizar.get().setCartasDoJogo(jogador.getCartasDoJogo());
 				jogadorParaAtualizar.get().setCartasObjetivo(jogador.getCartasObjetivo());
 				jogadorParaAtualizar.get().setNome(jogador.getNome());

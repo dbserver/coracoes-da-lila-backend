@@ -1,10 +1,13 @@
-package com.db.jogo.util;
+package com.db.jogo.service.regras;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
+import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,18 +27,18 @@ class RegrasDoJogoTest {
 	@BeforeEach 
 	void criaCarta () {
 		carta = CartaDoJogo.builder()
-				.valorCorGrande(1)
-				.valorCorPequeno(2)
+				.valorCoracaoGrande(1)
+				.valorCoracaoPequeno(2)
 				.build();
 		
 		 jogador = Jogador.builder()
 				.id(UUID.randomUUID())
 				.nome("joão")
-				.bonusCoracaoGra(1)
-				.bonusCoracaoPeq(1)
-				.coracaoGra(1)
+				.bonusCoracaoGrande(1)
+				.bonusCoracaoPequeno(1)
+				.coracaoGrande(1)
 				.pontos(1)
-				.coracaoPeq(2)
+				.coracaoPequeno(2)
 				.build();
 	}
 
@@ -64,7 +67,7 @@ class RegrasDoJogoTest {
         sala.setId(UUID.randomUUID());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
-        sala.setStatus(Sala.StatusEnum.NOVO);
+        sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
     }
@@ -81,9 +84,9 @@ class RegrasDoJogoTest {
 	@Test
 	@DisplayName("Teste valida compra CartaDoJogo FALSO")
 	void testValidaCoracoesFalso() {
-		jogador.setBonusCoracaoGra(0);
-		jogador.setBonusCoracaoPeq(0);
-		jogador.setCoracaoPeq(1);	
+		jogador.setBonusCoracaoGrande(0);
+		jogador.setBonusCoracaoPequeno(0);
+		jogador.setCoracaoPequeno(1);	
 			
 			boolean valida =  
 				RegrasDoJogo.validaCompraCarta(jogador, carta);
@@ -94,10 +97,10 @@ class RegrasDoJogoTest {
 	@DisplayName("Teste valida compra CartaDoJogo FALSO")
 	void testValidaCoracoes() {
 		
-		jogador.setBonusCoracaoGra(0);
-		jogador.setBonusCoracaoPeq(2);
-		jogador.setCoracaoPeq(0);	
-		jogador.setCoracaoGra(0);
+		jogador.setBonusCoracaoGrande(0);
+		jogador.setBonusCoracaoPequeno(2);
+		jogador.setCoracaoPequeno(0);	
+		jogador.setCoracaoGrande(0);
 					
 			boolean valida =  
 				RegrasDoJogo.validaCompraCarta(jogador, carta);
@@ -117,10 +120,10 @@ class RegrasDoJogoTest {
 	@Test
 	@DisplayName("Teste Compra CartaObjetivo coracoes FALSO")
 	void testValidaCompraCartaObjetivoFalso() {
-		jogador.setBonusCoracaoGra(0);
-		jogador.setBonusCoracaoPeq(0);
-		jogador.setCoracaoPeq(0);	
-		jogador.setCoracaoGra(0);
+		jogador.setBonusCoracaoGrande(0);
+		jogador.setBonusCoracaoPequeno(0);
+		jogador.setCoracaoPequeno(0);	
+		jogador.setCoracaoGrande(0);
 		boolean valida =  
 				RegrasDoJogo.validaCompraCartaObjetivo(jogador);
 		assertEquals(valida, false);
@@ -129,17 +132,17 @@ class RegrasDoJogoTest {
 
 	@Test
 	@DisplayName("Teste jogador com oito pontos, status do jogo ULTIMA_JOGADA")
-	void testValidaJogadorComOitoPontos() {
+	void testeValidaFinalPartida() {
 		jogador.setPontos(8);
-		RegrasDoJogo.verificaJogadorSeTemOitoPontos(jogador, sala);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
 		assertEquals("ULTIMA_RODADA", sala.getStatus().name());
 	}
 	
 	@Test
 	@DisplayName("Teste jogador com menos de oito pontos, status do jogo NOVO")
-	void testValidaJogadorComMenosDeOitoPontos() {
+	void testeValidaAntesFinalPartida() {
 		jogador.setPontos(6);
-		RegrasDoJogo.verificaJogadorSeTemOitoPontos(jogador, sala);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
 		assertEquals("NOVO", sala.getStatus().name());
 	}
 }

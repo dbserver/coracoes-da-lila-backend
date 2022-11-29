@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +37,7 @@ class CartaDoJogoServiceTest {
 		MockitoAnnotations.initMocks(this);
 		cartaDoJogoService = new CartaDoJogoServiceImpl(cartaDoJogoRepository);
 
-		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCorGrande(1).valorCorPequeno(0)
+		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCoracaoGrande(1).valorCoracaoPequeno(0)
 				.categoria("Fisica").fonte("Google").tipo("Informação").pontos(3).texto("Teste").build();
 	}
 

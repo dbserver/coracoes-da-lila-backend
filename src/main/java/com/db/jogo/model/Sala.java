@@ -1,5 +1,7 @@
 package com.db.jogo.model;
 
+import com.db.jogo.enums.StatusEnum;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
@@ -17,7 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,11 +75,6 @@ public class Sala {
 
 	public boolean removerJogador(Jogador jogador) {
 		return this.jogadores.remove(jogador);
-	}
-
-	public enum StatusEnum {
-		NOVO, JOGANDO, FINALIZADO, AGUARDANDO, ULTIMA_RODADA
-
 	}
 
 	@NonNull

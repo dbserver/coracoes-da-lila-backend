@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.helper;
 
 import java.util.Random;
 
@@ -33,25 +33,25 @@ public class Dado {
 
 		switch (bonusCoracao) {
 			case -1: {
-				if (jogador.getBonusCoracaoPeq() > 0) {
-					jogador.setBonusCoracaoPeq(jogador.getBonusCoracaoPeq() - 1);
+				if (jogador.getBonusCoracaoPequeno() > 0) {
+					jogador.setBonusCoracaoPequeno(jogador.getBonusCoracaoPequeno() - 1);
 
-				} else if (jogador.getBonusCoracaoGra() > 0) {
-					jogador.setBonusCoracaoGra(jogador.getBonusCoracaoGra() - 1);
+				} else if (jogador.getBonusCoracaoGrande() > 0) {
+					jogador.setBonusCoracaoGrande(jogador.getBonusCoracaoGrande() - 1);
 				}
 				break;
 			}
 
 			case 1: {
 				if (totalCoracoes < 5) {
-					jogador.setBonusCoracaoPeq(jogador.getBonusCoracaoPeq() + 1);
+					jogador.setBonusCoracaoPequeno(jogador.getBonusCoracaoPequeno() + 1);
 				}
 				break;
 			}
 
 			case 2: {
 				if (totalCoracoes < 5) {
-					jogador.setBonusCoracaoGra(jogador.getBonusCoracaoGra() + 1);
+					jogador.setBonusCoracaoGrande(jogador.getBonusCoracaoGrande() + 1);
 				}
 				break;
 			}
@@ -92,7 +92,7 @@ public class Dado {
 	}
 
 	 public static Integer quantidaDeCoracoes( Jogador jogador){
-				return (jogador.getBonusCoracaoGra() + jogador.getCoracaoGra() + jogador.getBonusCoracaoPeq() + jogador.getCoracaoPeq() );
+				return (jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() + jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() );
 
 	}
 }

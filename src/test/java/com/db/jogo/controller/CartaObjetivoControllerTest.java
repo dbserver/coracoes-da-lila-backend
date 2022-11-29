@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.db.jogo.model.CartaObjetivo;
-import com.db.jogo.service.CartaObjetivoServiceImpl;
+import com.db.jogo.service.impl.CartaObjetivoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebAppConfiguration

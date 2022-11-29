@@ -1,4 +1,4 @@
-package com.db.jogo.util;
+package com.db.jogo.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -13,7 +13,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/gameplay")
-                .setAllowedOrigins("https://dev-coracoes-da-lila.herokuapp.com/")
+                .setAllowedOrigins("http://localhost:4200/")
                 .withSockJS();
     }
 
