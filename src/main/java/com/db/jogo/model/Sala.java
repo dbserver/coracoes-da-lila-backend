@@ -5,7 +5,6 @@ import com.db.jogo.enums.StatusEnum;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
@@ -22,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NonNull;
 
 import lombok.AllArgsConstructor;
@@ -57,6 +57,7 @@ public class Sala {
 	@NonNull
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
+	@JsonIgnore
 	private Timestamp dth_inicio = Timestamp.from(Instant.now());
     
 	@NonNull
