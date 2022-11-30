@@ -3,6 +3,8 @@ package com.db.jogo.model;
 import com.db.jogo.enums.StatusEnum;
 
 import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
@@ -56,6 +58,10 @@ public class Sala {
 	private Integer dado;
 	
 	@NotNull
+	@Column(name="dth_fim", nullable = false)
+	private Timestamp dataHoraFimDoJogo;
+	
+	@NotNull
 	@Column(name="status")
 	@Builder.Default
 	private StatusEnum status = StatusEnum.NOVO;
@@ -84,6 +90,10 @@ public class Sala {
 
 	public void setStatus(@NonNull StatusEnum status) {
 		this.status= status;
+	}
+
+	public void setDataHoraFimDeJogo() {
+		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
 	}
 
 
