@@ -88,10 +88,9 @@ public class Sala {
 	public void setStatus(@NonNull StatusEnum status) {
 		this.status= status;
 	}
-
-	public void setDataHoraFimDeJogo() {
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
-	}
+        public void setDataHoraFimDeJogo(){
+            dataHoraFimDoJogo = Timestamp.from(Instant.now());
+        }
 }
 
 
