@@ -151,6 +151,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+                                                                                salaParaAtualizar.get().setaHoraFinal();
 										break;
 									}
 								}
@@ -333,7 +334,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+                                                                salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);                                                     
 								break;
 							}
 						}

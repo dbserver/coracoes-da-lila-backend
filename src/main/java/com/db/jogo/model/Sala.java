@@ -53,11 +53,12 @@ public class Sala {
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
 	private Integer dado;
-	
-	@NotNull
+        
+        @NonNull
 	@Column(name="dth_fim", nullable = false)
-	private Timestamp dataHoraFimDoJogo;
-	
+        @Builder.Default
+	private Timestamp dth_fim = Timestamp.from(Instant.now());
+
 	@NotNull
 	@Column(name="status")
 	@Builder.Default
@@ -88,10 +89,9 @@ public class Sala {
 	public void setStatus(@NonNull StatusEnum status) {
 		this.status= status;
 	}
-
-	public void setDataHoraFimDeJogo() {
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
-	}
+        public void setaHoraFinal(){
+            dth_fim = Timestamp.from(Instant.now());
+        }
 }
 
 
