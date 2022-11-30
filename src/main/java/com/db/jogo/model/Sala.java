@@ -36,15 +36,12 @@ import lombok.NoArgsConstructor;
 @Table(name="sala")
 public class Sala {
 
-    
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores ;
-
 
 	@OneToOne
 	private Baralho baralho;
@@ -95,8 +92,6 @@ public class Sala {
 	public void setDataHoraFimDeJogo() {
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
 	}
-
-
 }
 
 
