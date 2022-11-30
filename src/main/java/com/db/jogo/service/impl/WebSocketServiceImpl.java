@@ -50,6 +50,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		this.cartaComprada = new CartaDoJogo();
 	}
 
+	Sala sala = new Sala();
 	public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
@@ -67,7 +68,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
 					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
-
 					// verifica qual o jogador da vez
 					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
 
@@ -147,9 +147,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 							
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-								
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+										salaParaAtualizar.get().setDataHoraFimDeJogo();
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 										break;
 									}
@@ -200,7 +200,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");
 		}
-		Sala sala = new Sala();
+		
 		SalaResponse salaResp = new SalaResponse();
 		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
 		Baralho baralho = criarBaralho();
@@ -333,6 +333,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+								salaParaAtualizar.get().setDataHoraFimDeJogo();
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -361,7 +362,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Coração não pode ser comprado!! ", e);
 		}
-
 		return salaParaAtualizar;
 	}
 
@@ -409,6 +409,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+								salaParaAtualizar.get().setDataHoraFimDeJogo();
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -447,7 +448,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 			throw new JogoInvalidoException("Parametros nulos");
 		}
 		Optional<Sala> sala = salaService.findSalaByHash(hash);
-
 		SalaResponse salaResp = new SalaResponse();
 
 		if (sala.isPresent()) {
@@ -491,7 +491,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
 		try {
 			if (salaParaAtualizar.isPresent()) {
-
+				salaParaAtualizar.get().setDataHoraFimDeJogo();
 				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
 				this.salaService.saveSala(salaParaAtualizar.get());
 

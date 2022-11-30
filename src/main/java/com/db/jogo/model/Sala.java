@@ -54,8 +54,8 @@ public class Sala {
 	@Column(name="dado" , length =1 , nullable = false)
 	private Integer dado;
 	
-	@NotNull
-	@Column(name="dth_fim", nullable = false)
+	
+	@Column(name="dth_fim")
 	private Timestamp dataHoraFimDoJogo;
 	
 	@NotNull
