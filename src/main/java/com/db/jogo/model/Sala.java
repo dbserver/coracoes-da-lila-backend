@@ -1,6 +1,7 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -56,6 +57,7 @@ public class Sala {
 	
 	
 	@Column(name="dth_fim")
+        @JsonIgnore
 	private Timestamp dataHoraFimDoJogo;
 	
 	@NotNull
