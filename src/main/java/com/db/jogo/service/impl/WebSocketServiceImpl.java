@@ -149,7 +149,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-										salaParaAtualizar.get().setDataHoraFimDeJogo();
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 										break;
 									}
@@ -333,7 +332,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setDataHoraFimDeJogo();
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -409,7 +407,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setDataHoraFimDeJogo();
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -491,7 +488,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
 		try {
 			if (salaParaAtualizar.isPresent()) {
-				salaParaAtualizar.get().setDataHoraFimDeJogo();
 				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
 				this.salaService.saveSala(salaParaAtualizar.get());
 
