@@ -46,19 +46,20 @@ public class Sala {
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores ;
 
-
-
-
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
 			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
 	@Builder.Default
-	public List<CartaObjetivo> cartasObjetivoEmbaralhadas = new ArrayList<>();
+	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
 
+	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+		this.cartasObjetivo.add(cartaObjetivo);
+	}
 
-	
-
+	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+		return this.cartasObjetivo.remove(cartaDoObjetivo);
+	}
 
 	@OneToOne
 	private Baralho baralho;

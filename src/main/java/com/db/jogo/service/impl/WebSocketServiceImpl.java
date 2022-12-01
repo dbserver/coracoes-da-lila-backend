@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
+import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
@@ -26,12 +28,15 @@ import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
 
 	private SimpMessagingTemplate template;
 	private SalaService salaService;
 	private BaralhoService baralhoService;
+	private CartaObjetivoService cartaObjetivoService;	
 	private JogadorService jogadorService;
 	private CartaDoJogoService cartaService;
 	private Integer indexDoProximoJogador;
@@ -39,10 +44,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private CartaDoJogo cartaComprada;
 
 	@Autowired
-	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
+	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, CartaObjetivoService cartaObjetivoService, JogadorService jogadorService,
 			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
+		this.cartaObjetivoService = cartaObjetivoService;
 		this.jogadorService = jogadorService;
 		this.template = template;
 		this.cartaService = cartaService;
@@ -207,8 +213,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         baralho.sorteiaCartaInicial();
 		Collections.shuffle(baralho.getCartasDoJogo());
 		Collections.shuffle(baralho.getCartasInicio());
-		Collections.shuffle(baralho.getCartasObjetivo());
-		sala.cartasObjetivoEmbaralhadas = baralho.getCartasObjetivo();
+		
+		sala.cartasObjetivo = criarCartasObjetivo();
 	
 		sala.setId(UUID.randomUUID());
 		sala.setJogadores(new ArrayList<>());
@@ -242,6 +248,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 		}
 		return carta;
 	}
+
+	private List<CartaObjetivo> criarCartasObjetivo(){
+		List<CartaObjetivo> cartasObjetivo = cartaObjetivoService.findAll();
+		return (List<CartaObjetivo>) cartasObjetivo;
+	}	
 
 	private Baralho criarBaralho() {
 		Baralho baralho = baralhoService.findByCodigo("Clila").get();

@@ -1,5 +1,6 @@
 package com.db.jogo.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,12 +28,13 @@ public class CartaObjetivoServiceImpl implements CartaObjetivoService {
 	}
 
 	@Override
-	public Iterable<CartaObjetivo> findAll() throws DataAccessException {
-		return cartaObjetivoRepository.findAll();
+	public List<CartaObjetivo> findAll() throws DataAccessException {
+		return (List<CartaObjetivo>) cartaObjetivoRepository.findAll();
 	}
 
 	@Override
 	public CartaObjetivo saveCartaObjetivo(CartaObjetivo cartaObjetivo) throws DataAccessException {
 		return cartaObjetivoRepository.save(cartaObjetivo);
 	}
+
 }
