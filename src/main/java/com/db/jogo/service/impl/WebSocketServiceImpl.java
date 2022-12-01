@@ -250,8 +250,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	private List<CartaObjetivo> criarCartasObjetivo(){
-		List<CartaObjetivo> cartasObjetivo = cartaObjetivoService.findAll();
-		return (List<CartaObjetivo>) cartasObjetivo;
+		Baralho baralho = baralhoService.findByCodigo("Clila").get();
+		List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
+		return cartasObjetivo;
 	}	
 
 	private Baralho criarBaralho() {
@@ -259,8 +260,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		Baralho baralhoCopy = new Baralho();
 		baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
 		baralhoCopy.setCartasInicio(baralho.getCartasInicio());
-		baralhoCopy.setCartasObjetivo(baralho.getCartasObjetivo());
-		baralhoCopy.setCodigo("Clila");
+		baralhoCopy.setCodigo("Copy");
 		baralhoCopy.setDescricao(baralho.getDescricao());
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());

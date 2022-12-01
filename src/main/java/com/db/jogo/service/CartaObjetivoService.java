@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface CartaObjetivoService {
 	CartaObjetivo saveCartaObjetivo(CartaObjetivo cartaObjetivo) throws DataAccessException;
 
-	List<CartaObjetivo> findAll() throws DataAccessException;
+	Iterable<CartaObjetivo> findAll() throws DataAccessException;
 
 	Optional<CartaObjetivo> findById(UUID id) throws DataAccessException;
 }
