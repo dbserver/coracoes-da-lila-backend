@@ -115,9 +115,9 @@ public class WebSocketController {
     @PutMapping("/iniciarpartida")
     public ResponseEntity<Sala> updateSala(@RequestBody Sala sala) throws JogoInvalidoException {
         try {
-        	Optional<Sala> salaComStatusTrocado = webSocketServiceImpl.iniciarPartida(sala);
+            Optional<Sala> salaComStatusTrocado = webSocketServiceImpl.iniciarPartida(sala);
             webSocketServiceImpl.sendSala(salaComStatusTrocado.get()); // envia a sala para o websocket
-            
+            sala.mudaPrimeiroJogador(0); //Coloquei como zero apenas para não dar erro, aqui precisa receber do front a posição do jogador escolhido
             return new ResponseEntity<>(salaComStatusTrocado.get(), HttpStatus.OK);
             
         } catch (JsonInvalidoException e) {

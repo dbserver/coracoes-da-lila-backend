@@ -1,6 +1,7 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -85,8 +86,19 @@ public class Sala {
 	public void setStatus(@NonNull StatusEnum status) {
 		this.status= status;
 	}
-
-
+        
+        public void mudaPrimeiroJogador(int pos){
+            if(pos == 1)
+                return;
+            else{
+                for(int i = 1; i <= jogadores.size(); i++){
+                    if(jogadores.get(i).getPosicao() == pos){
+                        jogadores.get(i).setPosicao(1);
+                        jogadores.get(i).setStatus(StatusEnumJogador.JOGANDO);
+                        jogadores.get(1).setPosicao(pos);
+                        jogadores.get(1).setStatus(StatusEnumJogador.ESPERANDO);
+                    }
+                }
+            }
+        }
 }
-
-
