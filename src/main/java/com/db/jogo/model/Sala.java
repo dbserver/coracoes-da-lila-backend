@@ -3,6 +3,8 @@ package com.db.jogo.model;
 import com.db.jogo.enums.StatusEnum;
 
 import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
@@ -19,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NonNull;
 
 import lombok.AllArgsConstructor;
@@ -48,8 +51,14 @@ public class Sala {
 	private Baralho baralho;
 	
 	@NonNull
-	@Column(name = "hash" , nullable =false )
+	@Column(name = "hash" , nullable =false)
 	String hash;
+	
+	@NonNull
+	@Column(name = "dth_inicio", nullable = false)
+	@Builder.Default
+	@JsonIgnore
+	private Timestamp dth_inicio = Timestamp.from(Instant.now());
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
