@@ -28,8 +28,8 @@ public class CartaObjetivoServiceImpl implements CartaObjetivoService {
 	}
 
 	@Override
-	public List<CartaObjetivo> findAll() throws DataAccessException {
-		return (List<CartaObjetivo>) cartaObjetivoRepository.findAll();
+	public Iterable<CartaObjetivo> findAll() throws DataAccessException {
+		return cartaObjetivoRepository.findAll();
 	}
 
 	@Override

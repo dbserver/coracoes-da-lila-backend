@@ -248,7 +248,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private List<CartaObjetivo> criarCartasObjetivo(){
 		Baralho baralho = baralhoService.findByCodigo("Clila").get();
 		List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
-		System.out.println("-----------------------------------------");
 		System.out.println(cartasObjetivo);
 		return cartasObjetivo;
 	}	
