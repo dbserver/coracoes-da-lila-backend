@@ -3,7 +3,6 @@ package com.db.jogo.controller;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

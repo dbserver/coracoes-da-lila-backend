@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
+import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
@@ -204,10 +206,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 		SalaResponse salaResp = new SalaResponse();
 		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
 		Baralho baralho = criarBaralho();
-                baralho.sorteiaCartaInicial();
+        baralho.sorteiaCartaInicial();
 		Collections.shuffle(baralho.getCartasDoJogo());
 		Collections.shuffle(baralho.getCartasInicio());
-		Collections.shuffle(baralho.getCartasObjetivo());
+		
+		sala.cartasObjetivo = criarCartasObjetivo();
+	
 		sala.setId(UUID.randomUUID());
 		sala.setJogadores(new ArrayList<>());
 		sala.adicionarJogador(savedJogador);
@@ -241,13 +245,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 		return carta;
 	}
 
+	private List<CartaObjetivo> criarCartasObjetivo(){
+		Baralho baralho = baralhoService.findByCodigo("Clila").get();
+		List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
+		System.out.println(cartasObjetivo);
+		return cartasObjetivo;
+	}	
+
 	private Baralho criarBaralho() {
 		Baralho baralho = baralhoService.findByCodigo("Clila").get();
 		Baralho baralhoCopy = new Baralho();
 		baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
 		baralhoCopy.setCartasInicio(baralho.getCartasInicio());
-		baralhoCopy.setCartasObjetivo(baralho.getCartasObjetivo());
-		baralhoCopy.setCodigo("Clila");
+		baralhoCopy.setCodigo("Copy");
 		baralhoCopy.setDescricao(baralho.getDescricao());
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());
