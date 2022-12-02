@@ -28,15 +28,12 @@ import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
 
 	private SimpMessagingTemplate template;
 	private SalaService salaService;
 	private BaralhoService baralhoService;
-	private CartaObjetivoService cartaObjetivoService;	
 	private JogadorService jogadorService;
 	private CartaDoJogoService cartaService;
 	private Integer indexDoProximoJogador;
@@ -44,11 +41,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private CartaDoJogo cartaComprada;
 
 	@Autowired
-	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, CartaObjetivoService cartaObjetivoService, JogadorService jogadorService,
+	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
 			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
-		this.cartaObjetivoService = cartaObjetivoService;
 		this.jogadorService = jogadorService;
 		this.template = template;
 		this.cartaService = cartaService;
