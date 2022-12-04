@@ -2,6 +2,7 @@ package com.db.jogo.service.impl;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import java.util.Collections;
@@ -36,9 +37,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private BaralhoService baralhoService;
 	private JogadorService jogadorService;
 	private CartaDoJogoService cartaService;
+	private CartaObjetivoService cartaObjetivoService;
 	private Integer indexDoProximoJogador;
 	private Jogador jogador;
 	private CartaDoJogo cartaComprada;
+	private CartaObjetivo cartaCompradaObjetivo;
 
 	@Autowired
 	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
@@ -50,7 +53,17 @@ public class WebSocketServiceImpl implements WebSocketService {
 		this.cartaService = cartaService;
 		this.jogador = new Jogador();
 		this.cartaComprada = new CartaDoJogo();
+		this.cartaCompradaObjetivo = new CartaObjetivo();
 	}
+
+	// public Optional<Sala> comprarCarta(Sala salaFront) throws IllegalArgumentException {
+	// 	Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+	// 	if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
+	// 		salaParaAtualizar.get().setDado(0);
+	// 		return salaParaAtualizar;
+	// 	}
+	// 	return salaParaAtualizar;
+	// }
 
 	public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
@@ -224,6 +237,133 @@ public class WebSocketServiceImpl implements WebSocketService {
 		salaResp.setSala(salaService.saveSala(sala));
 		return salaResp;
 	}
+
+	//----US072
+	//Sortear carta objetivo para ser comprada 
+	public CartaObjetivo sorteiaCartaObjetivo(Sala sala) {
+		CartaObjetivo cartaSorteada;
+		Random random = new Random();
+        int seletor = random.nextInt(sala.cartasObjetivo.size());
+		cartaSorteada = sala.cartasObjetivo.get(seletor);
+        return cartaSorteada;
+	}
+
+	//Validar ações para comprar carta de objetivo
+	public Optional<Sala> comprarCartaObjetivo(Sala salaFront){
+
+		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+
+		// if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
+		// 	salaParaAtualizar.get().setDado(0);
+		// 	return salaParaAtualizar;
+		// }
+
+		try {
+			if (salaParaAtualizar.isPresent()){
+				for (int index = 0; index < salaParaAtualizar.get().getJogadores().size(); index++) {
+					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
+					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
+
+
+					//IMPEDIMENTO DA CONTINUAÇÃO DA TASK NESSE MÉTODO
+					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
+						if (this.jogador.getCartasObjetivo().size() >= jogadorStatusJogandoFront.getCartasObjetivo().size()){
+							this.sendSala(salaParaAtualizar.get());
+							System.out.println("------------------Carta Sorteada");
+							return salaParaAtualizar;
+						}
+
+						//Sorteia uma carta da sala atual
+						this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
+
+						System.out.println("------------------Carta Sorteada");
+						System.out.println(this.cartaCompradaObjetivo);
+
+
+						if (this.cartaCompradaObjetivo.getId() == null) {
+							this.sendSala(salaParaAtualizar.get());
+							return salaParaAtualizar;
+						}
+
+						if (this.jogador.getCartasObjetivo().contains(cartaCompradaObjetivo)){
+							this.sendSala(salaParaAtualizar.get());
+							return salaParaAtualizar;
+						}
+
+						System.out.println("------------------Carta Sorteada");
+						System.out.println(this.cartaCompradaObjetivo);
+
+						//Atualizar o jogador que comprou a carta
+						Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
+
+
+						if(RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
+							//TODO: Incluir os bônus que a carta objetivo dá ao jogador
+
+							//
+							if (jogadorParaAtualizar.get().getPontos() >= 8) {
+								salaParaAtualizar.get().setStatus(StatusEnum.ULTIMA_RODADA);
+							}
+
+							//TODO: Criar logica de descontar corações para carta objetivo
+							//this.jogador = RegrasDoJogo.descontaCoracoes(this.jogador, cartaCompradaObjetivo)
+
+							//Salvar a carta no jogador
+							Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService.findById(this.cartaCompradaObjetivo.getId());
+
+							jogadorParaAtualizar.get().adicionaObjetivo(cartaParaAtualizarNoJogador.get());
+							jogadorParaAtualizar.get().setStatus(StatusEnumJogador.ESPERANDO);
+
+							this.jogadorService.saveJogador(jogadorParaAtualizar.get());
+
+							if (jogadorParaAtualizar.get().getPosicao() >= salaParaAtualizar.get().getJogadores().size()) {
+								this.indexDoProximoJogador = 1;
+							} else {
+								this.indexDoProximoJogador = jogadorParaAtualizar.get().getPosicao() + 1;
+							}
+
+							salaParaAtualizar.get().getCartasObjetivo().remove(cartaParaAtualizarNoJogador.get());
+						
+							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+								
+								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
+									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+										break;
+									}
+								}
+							}
+						
+						}
+					}
+				}
+
+			for (Jogador jogador : salaParaAtualizar.get().getJogadores()){
+				if (jogador.getPosicao() == this.indexDoProximoJogador){
+					jogador.setStatus (StatusEnumJogador.JOGANDO);
+				}
+			}
+
+			Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
+				this.salaService.saveSala(salaParaAtualizar.get()));
+			
+			if (salaRetornoDoSaveNoBanco.isPresent()) {
+				this.template.convertAndSend("/gameplay/game-update/" + salaRetornoDoSaveNoBanco.get().getHash(),
+				salaRetornoDoSaveNoBanco.get());
+
+				return salaRetornoDoSaveNoBanco;
+			}
+		
+		}
+
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
+		}
+
+		return salaParaAtualizar;
+	}
+
+	//----------------US072------
 
 	private CartaDoJogo procuraCartaComprada(Sala sala) throws CartaCompradaInvalidaException {
 

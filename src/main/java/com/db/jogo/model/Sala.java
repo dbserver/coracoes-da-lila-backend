@@ -45,7 +45,6 @@ public class Sala {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores ;
 
