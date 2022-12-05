@@ -14,7 +14,6 @@ public class RegrasDoJogo {
             sala.setStatus(StatusEnum.ULTIMA_RODADA);
         }
     }
-	
 
 
     public static Jogador descontaCoracoes(Jogador jogador, CartaDoJogo carta) {
@@ -36,6 +35,18 @@ public class RegrasDoJogo {
 		}
     	return jogador ;
     }
+
+	public static Jogador descontaCoracaoPequeno(Jogador jogador) {
+    	
+		if (jogador.getBonusCoracaoPequeno() > 0){
+			return jogador;
+		}
+		if (jogador.getCoracaoPequeno() > 0){
+			jogador.setCoracaoPequeno(jogador.getCoracaoPequeno() - 1);
+		}
+		return jogador;
+	}
+
     
 	public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
 

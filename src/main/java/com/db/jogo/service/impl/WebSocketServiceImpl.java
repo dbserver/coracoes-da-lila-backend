@@ -304,7 +304,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 							//	salaParaAtualizar.get().setStatus(StatusEnum.ULTIMA_RODADA);
 							//}
 
-							//TODO: Criar logica de descontar corações para carta objetivo
+							//Desconta um coração do jogador ao comprar uma carta objetivo
 							this.jogador = RegrasDoJogo.descontaCoracaoPequeno(this.jogador);
 
 							//Salvar a carta no jogador
@@ -336,6 +336,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 						}
 					}
 				}
+
+			System.out.println("---------- CHEGOU AQUI -------------------");
 
 			for (Jogador jogador : salaParaAtualizar.get().getJogadores()){
 				if (jogador.getPosicao() == this.indexDoProximoJogador){
