@@ -1,6 +1,7 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -40,11 +41,9 @@ import lombok.NoArgsConstructor;
 @Table(name="sala")
 public class Sala {
 
-    
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-	
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores ;
@@ -81,6 +80,11 @@ public class Sala {
 	@Column(name="dado" , length =1 , nullable = false)
 	private Integer dado;
 	
+	
+	@Column(name="dth_fim")
+        @JsonIgnore
+	private Timestamp dataHoraFimDoJogo;
+	
 	@NotNull
 	@Column(name="status")
 	@Builder.Default
@@ -110,9 +114,13 @@ public class Sala {
 
 	public void setStatus(@NonNull StatusEnum status) {
 		this.status= status;
+		this.setDataHoraFimDeJogo();
 	}
 
-
+	public void setDataHoraFimDeJogo(){
+            
+		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+	}
 }
 
 

@@ -120,15 +120,17 @@ create table jogador_cartaobjetivo (
      REFERENCES carta_objetivo (id),
      CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)
      REFERENCES jogador (id));
-    
+
 create table sala (
-    id uuid not null, 
-    hash varchar(255) not null,
+     id uuid not null, 
+     hash varchar(255) not null,
      status int4 not null,
      baralho_id uuid, 
      dado int4 not null,
+     dth_fim timestamp,
      dth_inicio timestamp not null,
-     primary key (id));
+     primary key (id)
+);
 
 create table sala_jogadores (
     sala_id uuid not null,
