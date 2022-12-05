@@ -222,7 +222,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         baralho.sorteiaCartaInicial();
 		Collections.shuffle(baralho.getCartasDoJogo());
 		Collections.shuffle(baralho.getCartasInicio());
-		
 		sala.cartasObjetivo = criarCartasObjetivo();
 	
 		sala.setId(UUID.randomUUID());
@@ -253,13 +252,14 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
 
-		// if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
-		// 	salaParaAtualizar.get().setDado(0);
-		// 	return salaParaAtualizar;
-		// }
+		 if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
+		 	salaParaAtualizar.get().setDado(0);
+		 	return salaParaAtualizar;
+		}
 
 		try {
 			if (salaParaAtualizar.isPresent()){
+				
 				for (int index = 0; index < salaParaAtualizar.get().getJogadores().size(); index++) {
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
 					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
@@ -267,16 +267,16 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					//IMPEDIMENTO DA CONTINUAÇÃO DA TASK NESSE MÉTODO
 					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
-						if (this.jogador.getCartasObjetivo().size() >= jogadorStatusJogandoFront.getCartasObjetivo().size()){
-							this.sendSala(salaParaAtualizar.get());
-							System.out.println("------------------Carta Sorteada");
-							return salaParaAtualizar;
-						}
+						// if (this.jogador.getCartasObjetivo().size() >= jogadorStatusJogandoFront.getCartasObjetivo().size()){
+						// 	this.sendSala(salaParaAtualizar.get());
+						// 	System.out.println("------------------Carta Sorteada");
+						// 	return salaParaAtualizar;
+						// }
 
 						//Sorteia uma carta da sala atual
 						this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
 
-						System.out.println("------------------Carta Sorteada");
+						System.out.println("------------------SALA DO FRONT");
 						System.out.println(this.cartaCompradaObjetivo);
 
 
@@ -290,8 +290,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 							return salaParaAtualizar;
 						}
 
-						System.out.println("------------------Carta Sorteada");
-						System.out.println(this.cartaCompradaObjetivo);
+						//System.out.println("------------------Carta Sorteada");
+						//System.out.println(this.cartaCompradaObjetivo);
 
 						//Atualizar o jogador que comprou a carta
 						Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
@@ -300,13 +300,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 						if(RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
 							//TODO: Incluir os bônus que a carta objetivo dá ao jogador
 
-							//
-							if (jogadorParaAtualizar.get().getPontos() >= 8) {
-								salaParaAtualizar.get().setStatus(StatusEnum.ULTIMA_RODADA);
-							}
+							//if (jogadorParaAtualizar.get().getPontos() >= 8) {
+							//	salaParaAtualizar.get().setStatus(StatusEnum.ULTIMA_RODADA);
+							//}
 
 							//TODO: Criar logica de descontar corações para carta objetivo
-							//this.jogador = RegrasDoJogo.descontaCoracoes(this.jogador, cartaCompradaObjetivo)
+							this.jogador = RegrasDoJogo.descontaCoracaoPequeno(this.jogador);
 
 							//Salvar a carta no jogador
 							Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService.findById(this.cartaCompradaObjetivo.getId());
