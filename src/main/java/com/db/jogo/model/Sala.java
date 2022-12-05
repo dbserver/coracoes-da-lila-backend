@@ -93,6 +93,7 @@ public class Sala {
 	}
 
 	public void setDataHoraFimDeJogo(){
+            
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
 	}
 }
