@@ -45,12 +45,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	@Autowired
 	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
-			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+			SimpMessagingTemplate template, CartaDoJogoService cartaService, CartaObjetivoService cartaObjetivoService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
 		this.jogadorService = jogadorService;
 		this.template = template;
 		this.cartaService = cartaService;
+		this.cartaObjetivoService = cartaObjetivoService;
 		this.jogador = new Jogador();
 		this.cartaComprada = new CartaDoJogo();
 		this.cartaCompradaObjetivo = new CartaObjetivo();
@@ -277,8 +278,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 						this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
 
 						System.out.println("------------------SALA DO FRONT");
-						System.out.println(this.cartaCompradaObjetivo);
-
 
 						if (this.cartaCompradaObjetivo.getId() == null) {
 							this.sendSala(salaParaAtualizar.get());
@@ -296,7 +295,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 						//Atualizar o jogador que comprou a carta
 						Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
 
-
+						
 						if(RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
 							//TODO: Incluir os bônus que a carta objetivo dá ao jogador
 
@@ -306,25 +305,31 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 							//Desconta um coração do jogador ao comprar uma carta objetivo
 							this.jogador = RegrasDoJogo.descontaCoracaoPequeno(this.jogador);
+							
 
 							//Salvar a carta no jogador
+							System.out.println("--------------- CARTA ID");
+							System.out.println(this.cartaCompradaObjetivo.getId());
+							System.out.println(this.cartaService);
+							System.out.println(this.cartaObjetivoService);
+							
 							Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService.findById(this.cartaCompradaObjetivo.getId());
 
 							jogadorParaAtualizar.get().adicionaObjetivo(cartaParaAtualizarNoJogador.get());
 							jogadorParaAtualizar.get().setStatus(StatusEnumJogador.ESPERANDO);
 
 							this.jogadorService.saveJogador(jogadorParaAtualizar.get());
-
+							
 							if (jogadorParaAtualizar.get().getPosicao() >= salaParaAtualizar.get().getJogadores().size()) {
 								this.indexDoProximoJogador = 1;
 							} else {
 								this.indexDoProximoJogador = jogadorParaAtualizar.get().getPosicao() + 1;
 							}
 
+							
 							salaParaAtualizar.get().getCartasObjetivo().remove(cartaParaAtualizarNoJogador.get());
 						
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-								
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
