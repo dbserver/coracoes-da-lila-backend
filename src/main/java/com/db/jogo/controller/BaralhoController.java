@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.db.jogo.model.Baralho;
 import com.db.jogo.service.BaralhoService;
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
 
 @RestController
-@CrossOrigin(exposedHeaders = "errors, content-type")
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/baralho")
 public class BaralhoController {
 

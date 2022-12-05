@@ -17,9 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
 
 @RestController
-@CrossOrigin(exposedHeaders = "errors, content-type")
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/sala")
 public class SalaController {
 

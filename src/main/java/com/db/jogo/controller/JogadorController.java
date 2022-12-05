@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.db.jogo.service.impl.JogadorServiceImpl;
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
 
 @RestController
-@CrossOrigin(exposedHeaders = "errors, content-type")
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/jogador")
 public class JogadorController {
 
