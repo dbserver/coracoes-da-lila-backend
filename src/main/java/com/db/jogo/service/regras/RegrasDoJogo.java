@@ -2,7 +2,6 @@ package com.db.jogo.service.regras;
 
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
@@ -15,8 +14,7 @@ public class RegrasDoJogo {
         }
     }
 
-
-    public static Jogador descontaCoracoes(Jogador jogador, CartaDoJogo carta) {
+    public static Jogador descontaCoracoesCartaDoJogo(Jogador jogador, CartaDoJogo carta) {
     	
     	int numCoracoesGraDaCarta = carta.getValorCoracaoGrande();
 		int numCoracoesPeqDaCarta = carta.getValorCoracaoPequeno();
@@ -36,7 +34,7 @@ public class RegrasDoJogo {
     	return jogador ;
     }
 
-	public static Jogador descontaCoracaoPequeno(Jogador jogador) {
+	public static Jogador descontaCoracaoPequenoCartaObjetivo(Jogador jogador) {
     	
 		if (jogador.getBonusCoracaoPequeno() > 0){
 			return jogador;
@@ -47,8 +45,7 @@ public class RegrasDoJogo {
 		return jogador;
 	}
 
-    
-	public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
+    public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
 
 		if (carta.getValorCoracaoPequeno() >= 0) {
 			if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() < carta.getValorCoracaoPequeno()) {
@@ -67,7 +64,6 @@ public class RegrasDoJogo {
 			return true;
 	}
 	
-
 	public static Jogador adicionaCoracoesPequenos (Jogador jogador) {
 	
 		 int coracaoPequenouenos = 2;
@@ -83,11 +79,7 @@ public class RegrasDoJogo {
 		return jogador;
 		
 	}
-	
 
-	
-	// metodo para coracoes grande 
-	
 	public static Jogador adicionaCoracoesGrandes (Jogador jogador) {
 		
 		 int coracaoGrandendes = 1;
@@ -97,12 +89,10 @@ public class RegrasDoJogo {
 			 jogador.setCoracaoGrande(coracaoGrandendes += jogador.getCoracaoGrande());
 		 }
 			
-		
 		return jogador;
 		
 	}
 
-	
 	public static boolean validaCompraCartaObjetivo(Jogador jogador) {
 
 		if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() + jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() < 1) {
