@@ -97,6 +97,16 @@ class WebSocketServiceImplTest {
     }
 
     @Test
+    @DisplayName("Teste do método sorteia carta objetivo, se retorna uma carta contida no arrayList Cartas Objetivo da sala")
+    void testSorteiaCartaObjetivo(){
+        sala.adicionarCartaDoObjetivo(cartaObjetivo);
+        sala.adicionarCartaDoObjetivo(cartaObjetivoNula);
+        CartaObjetivo cartaSorteada = webSocketServiceImpl.sorteiaCartaObjetivo(sala);
+
+        assertEquals(sala.cartasObjetivo.contains(cartaSorteada), true);
+    }
+
+    @Test
     @DisplayName("Teste para verificar se o jogo está finalizado")
     void testVerificaJogoFinalizado() {
 
@@ -161,5 +171,5 @@ class WebSocketServiceImplTest {
     }
 
 
-
+ 
 }
