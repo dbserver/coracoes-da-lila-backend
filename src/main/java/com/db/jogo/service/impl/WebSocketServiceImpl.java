@@ -117,7 +117,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 								salaParaAtualizar.get().setStatus(StatusEnum.ULTIMA_RODADA);
 							}
 							// Retira os corações da carta do jogador
-							this.jogador = RegrasDoJogo.descontaCoracoes(this.jogador, cartaComprada);
+							this.jogador = RegrasDoJogo.descontaCoracoesCartaDoJogo(this.jogador, cartaComprada);
 
 							jogadorParaAtualizar.get().setCoracaoGrande(this.jogador.getCoracaoGrande());
 							jogadorParaAtualizar.get().setCoracaoPequeno(this.jogador.getCoracaoPequeno());
@@ -330,7 +330,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 						if (RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
 							// Desconta um coração do jogador ao comprar uma carta objetivo
-							this.jogador = RegrasDoJogo.descontaCoracaoPequeno(this.jogador);
+							this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
 
 							// Salvar a carta no jogador
 							Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService
