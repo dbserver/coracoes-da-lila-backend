@@ -44,7 +44,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private CartaObjetivo cartaCompradaObjetivo;
 
 	@Autowired
-	private WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
+	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService, JogadorService jogadorService,
 			SimpMessagingTemplate template, CartaDoJogoService cartaService,
 			CartaObjetivoService cartaObjetivoService) {
 		this.salaService = salaService;
