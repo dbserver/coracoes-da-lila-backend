@@ -2,7 +2,6 @@ package com.db.jogo.service.regras;
 
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;

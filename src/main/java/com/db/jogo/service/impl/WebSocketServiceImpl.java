@@ -58,22 +58,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 		this.cartaCompradaObjetivo = new CartaObjetivo();
 	}
 
-	// public Optional<Sala> comprarCarta(Sala salaFront) throws
-	// IllegalArgumentException {
-	// Optional<Sala> salaParaAtualizar =
-	// this.salaService.findSalaByHash(salaFront.getHash());
-	// if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
-	// salaParaAtualizar.get().setDado(0);
-	// return salaParaAtualizar;
-	// }
-	// return salaParaAtualizar;
-	// }
 
 	public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
 
-		if (StatusEnum.FINALIZADO.equals(salaParaAtualizar.get().getStatus())) {
+		if (verificaJogoFinalizado(salaParaAtualizar.get())) {
 			salaParaAtualizar.get().setDado(0);
 			return salaParaAtualizar;
 		}
@@ -82,7 +72,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 			// verifico se a sala existe no banco
 			if (salaParaAtualizar.isPresent()) {
 				// AQUI verificar status da sala, se for JOGANDO continua
-				for (int index = 0; index < salaParaAtualizar.get().getJogadores().size(); index++) {
+				for (int index = 0; index < getQuantidadeJogadores(salaParaAtualizar.get().getHash()); index++) {
 
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
 					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
@@ -156,36 +146,25 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 							this.jogadorService.saveJogador(jogadorParaAtualizar.get());
 
-							if (jogadorParaAtualizar.get().getPosicao() >= salaParaAtualizar.get().getJogadores()
-									.size()) {
-								this.indexDoProximoJogador = 1;
-							} else {
-								this.indexDoProximoJogador = jogadorParaAtualizar.get().getPosicao() + 1;
-							}
+							definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
 
 							salaParaAtualizar.get().getBaralho().getCartasDoJogo()
 									.remove(cartaParaAtualizarNoJogador.get());
 
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
-								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-										break;
-									}
+							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())){
+									finalizaJogo(salaParaAtualizar.get());
 								}
+								
 							}
 						}
 						/*---*Fim da Lógica para Adicionar a Carta*----*/
 					}
 				}
 
-				for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-					if (jog.getPosicao() == this.indexDoProximoJogador) {
-						jog.setStatus(StatusEnumJogador.JOGANDO);
-					}
-				}
+				passaAVezDoJogador(salaParaAtualizar.get());
 
 				// TODO: Colocar método para destruir as cartas restantes do jogo
 
@@ -254,25 +233,26 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	// Método para verificar se status da sala está como finalizado
-	public boolean verificaJogoFinalizado(Optional<Sala> sala) {
-		if (StatusEnum.FINALIZADO.equals(sala.get().getStatus())) {
+	public boolean verificaJogoFinalizado(Sala sala) {
+		if (StatusEnum.FINALIZADO.equals(sala.getStatus())) {
 			return true;
 		}
 		return false;
 	}
 
-	public void definePosicaoDoProximoJogador(Optional <Sala> sala, Optional <Jogador> jogador){
-		if (jogador.get().getPosicao() >= getQuantidadeJogadores(sala.get().getHash())){
-			this.indexDoProximoJogador = 1;
+	//Define a posição do próximo jogador
+	public void definePosicaoDoProximoJogador(Sala sala, Jogador jogador){
+		if (jogador.getPosicao() >= getQuantidadeJogadores(sala.getHash())){
+			setIndexDoProximoJogador(1);
 		} else {
-			this.indexDoProximoJogador = jogador.get().getPosicao() + 1;
+			setIndexDoProximoJogador(jogador.getPosicao() + 1);
 		}
 	}
 
 	//Passa o status jogando para o próximo jogador
-	public void passaAVezDoJogador(Optional <Sala> sala){
-		for (Jogador jog : sala.get().getJogadores()) {
-			if (jog.getPosicao() == this.indexDoProximoJogador) {
+	public void passaAVezDoJogador(Sala sala){
+		for (Jogador jog : sala.getJogadores()) {
+			if (jog.getPosicao() == getIndexDoProximoJogador()) {
 				jog.setStatus(StatusEnumJogador.JOGANDO);
 			}
 		}
@@ -281,27 +261,31 @@ public class WebSocketServiceImpl implements WebSocketService {
 	//Métodos para validar carta de objetivo
 	public boolean validaCartaObjetivo(CartaObjetivo cartaObjetivo){
 		if (cartaObjetivo == null){
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	//Método para verificar se status da sala é de última rodada
-	public boolean verificaJogoUltimaRodada(Optional <Sala> sala){
-		if (StatusEnum.ULTIMA_RODADA.equals(sala.get().getStatus())){
+	public boolean verificaJogoUltimaRodada(Sala sala){
+		if (StatusEnum.ULTIMA_RODADA.equals(sala.getStatus())){
 			return true;
 		}
 		return false;
 	}
 
-	//Método para finalizar o jogo
-	public void finalizaJogo(Optional <Sala> sala){
-		for (Jogador jog : sala.get().getJogadores()){
-			if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()){
-				sala.get().setStatus(StatusEnum.FINALIZADO);
-				break;
+	//Método para verificar se está na última jogada do turno
+	public boolean verificaUltimaJogadaDoTurno(Sala sala){
+		for (Jogador jog : sala.getJogadores()){
+			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getIsHost()){
+				return true;
 			}
 		}
+		return false;
+	}
+
+	public void finalizaJogo(Sala sala){
+		sala.setStatus(StatusEnum.FINALIZADO);
 	}
 
 	// Método para comprar carta de objetivo
@@ -312,7 +296,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		// Verifica se esta sala possui status finalizado, e se sim, retorna a sala sem
 		// fazer a ação da compra de carta
-		if (verificaJogoFinalizado(salaParaAtualizar)) {
+		if (verificaJogoFinalizado(salaParaAtualizar.get())) {
 			salaParaAtualizar.get().setDado(0);
 			return salaParaAtualizar;
 		}
@@ -330,7 +314,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 						this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
 	
 						//Verifica se a carta está nula, se sim retorna a sala sem nenhuma ação
-						if (validaCartaObjetivo(this.cartaCompradaObjetivo)) {
+						if (validaCartaObjetivo(this.cartaCompradaObjetivo) == false) {
 							this.sendSala(salaParaAtualizar.get());
 							return salaParaAtualizar;
 						}
@@ -357,17 +341,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 							this.jogadorService.saveJogador(jogadorParaAtualizar.get());
 
-							definePosicaoDoProximoJogador(salaParaAtualizar, jogadorParaAtualizar);
+							definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
 
 							salaParaAtualizar.get().removerCartaDoObjetivo(cartaParaAtualizarNoJogador.get());
 
-							if (verificaJogoUltimaRodada(salaParaAtualizar)) {
-								finalizaJogo(salaParaAtualizar);
+							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())){
+									finalizaJogo(salaParaAtualizar.get());
+								}
 							}
 						}
 					}
 				}
-				passaAVezDoJogador(salaParaAtualizar);
+				passaAVezDoJogador(salaParaAtualizar.get());
 
 				//Salva o resultado da compra no banco
 				Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
@@ -410,7 +396,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		return carta;
 	}
 
-	private List<CartaObjetivo> criarCartasObjetivo() {
+	public List<CartaObjetivo> criarCartasObjetivo() {
 		Baralho baralho = baralhoService.findByCodigo("Clila").get();
 		List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
 		System.out.println(cartasObjetivo);
@@ -674,5 +660,14 @@ public class WebSocketServiceImpl implements WebSocketService {
 			throw new JogoInvalidoException("Sala não encontrada");
 		}
 		return salaParaAtualizar;
+	}
+
+	//US072
+	public Integer getIndexDoProximoJogador(){
+		return this.indexDoProximoJogador;
+	}
+
+	public void setIndexDoProximoJogador(Integer index){
+		this.indexDoProximoJogador = index;
 	}
 }
