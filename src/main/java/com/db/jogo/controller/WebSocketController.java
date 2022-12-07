@@ -111,6 +111,8 @@ public class WebSocketController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    
 
     @PutMapping("/iniciarpartida")
     public ResponseEntity<Sala> updateSala(@RequestBody Sala sala) throws JogoInvalidoException {
