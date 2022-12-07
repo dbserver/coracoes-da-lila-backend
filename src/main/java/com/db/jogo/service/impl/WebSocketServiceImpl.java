@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import java.util.Collections;
+import java.util.List;
 
 import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
+import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
@@ -50,6 +52,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		this.cartaComprada = new CartaDoJogo();
 	}
 
+	Sala sala = new Sala();
 	public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
@@ -67,7 +70,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
 					Jogador jogadorStatusJogandoFront = procuraJogadorJogandoNoFront(salaFront);
-
 					// verifica qual o jogador da vez
 					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
 
@@ -147,7 +149,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 							
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-								
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
@@ -200,14 +201,16 @@ public class WebSocketServiceImpl implements WebSocketService {
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");
 		}
-		Sala sala = new Sala();
+		
 		SalaResponse salaResp = new SalaResponse();
 		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
 		Baralho baralho = criarBaralho();
-                baralho.sorteiaCartaInicial();
+        baralho.sorteiaCartaInicial();
 		Collections.shuffle(baralho.getCartasDoJogo());
 		Collections.shuffle(baralho.getCartasInicio());
-		Collections.shuffle(baralho.getCartasObjetivo());
+		
+		sala.cartasObjetivo = criarCartasObjetivo();
+	
 		sala.setId(UUID.randomUUID());
 		sala.setJogadores(new ArrayList<>());
 		sala.adicionarJogador(savedJogador);
@@ -241,13 +244,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 		return carta;
 	}
 
+	private List<CartaObjetivo> criarCartasObjetivo(){
+		Baralho baralho = baralhoService.findByCodigo("Clila").get();
+		List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
+		System.out.println(cartasObjetivo);
+		return cartasObjetivo;
+	}	
+
 	private Baralho criarBaralho() {
 		Baralho baralho = baralhoService.findByCodigo("Clila").get();
 		Baralho baralhoCopy = new Baralho();
 		baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
 		baralhoCopy.setCartasInicio(baralho.getCartasInicio());
-		baralhoCopy.setCartasObjetivo(baralho.getCartasObjetivo());
-		baralhoCopy.setCodigo("Clila");
+		baralhoCopy.setCodigo("Copy");
 		baralhoCopy.setDescricao(baralho.getDescricao());
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());
@@ -361,7 +370,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Coração não pode ser comprado!! ", e);
 		}
-
 		return salaParaAtualizar;
 	}
 
@@ -447,7 +455,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 			throw new JogoInvalidoException("Parametros nulos");
 		}
 		Optional<Sala> sala = salaService.findSalaByHash(hash);
-
 		SalaResponse salaResp = new SalaResponse();
 
 		if (sala.isPresent()) {
@@ -491,7 +498,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
 		try {
 			if (salaParaAtualizar.isPresent()) {
-
 				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
 				this.salaService.saveSala(salaParaAtualizar.get());
 

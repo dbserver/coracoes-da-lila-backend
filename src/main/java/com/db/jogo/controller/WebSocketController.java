@@ -25,9 +25,13 @@ import com.db.jogo.service.impl.WebSocketServiceImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
-@CrossOrigin
-@Slf4j
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
+
 @RestController
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
+@Slf4j
 @RequestMapping(path = "/api")
 public class WebSocketController {
 
