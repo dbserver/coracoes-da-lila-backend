@@ -43,7 +43,8 @@ public class Sala {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores;
-
+        
+        private Jogador escolhido;
 
 	@OneToOne
 	private Baralho baralho;
@@ -87,16 +88,13 @@ public class Sala {
 		this.status= status;
 	}
         
-        public void mudaPrimeiroJogador(){
-                for(int i = 1; i <= jogadores.size(); i++){
-                    if(jogadores.get(i).getStatus() == StatusEnumJogador.JOGANDO){
-                        jogadores.get(i).setStatus(StatusEnumJogador.ESPERANDO);
-                    }
-                }
-                for(int i = 1; i <= jogadores.size(); i++){
-                    if(jogadores.get(i).getStatus() == StatusEnumJogador.ESCOLHIDO){
-                        jogadores.get(i).setStatus(StatusEnumJogador.JOGANDO);
-                    }
-                }
-        }
+        public Jogador getEscolhido() {
+		return this.escolhido;
+	}
+
+	public void setEscolhido(Jogador escolhido) {
+		this.escolhido= escolhido;
+	}
+        
+        
 }
