@@ -74,13 +74,13 @@ class WebSocketServiceImplTest {
         assertEquals(webSocketServiceImpl.validaCartaObjetivo(cartaObjetivoNula), false);
     }
 
-    // @Test
-    // @DisplayName("Teste do método sorteia carta objetivo")
-    // void testSorteiaCartaObjetivo(){
-    //     sala.adicionarCartaDoObjetivo(cartaObjetivo);
-    //     assertEquals(sorteia)
-    // }
+    @Test
+    @DisplayName("Teste do método sorteia carta objetivo, se retorna uma carta contida no arrayList Cartas Objetivo da sala")
+    void testSorteiaCartaObjetivo(){
+        sala.adicionarCartaDoObjetivo(cartaObjetivo);
+        sala.adicionarCartaDoObjetivo(cartaObjetivoNula);
+        CartaObjetivo cartaSorteada = webSocketServiceImpl.sorteiaCartaObjetivo(sala);
 
-
-
+        assertEquals(sala.cartasObjetivo.contains(cartaSorteada), true);
+    }
 }
