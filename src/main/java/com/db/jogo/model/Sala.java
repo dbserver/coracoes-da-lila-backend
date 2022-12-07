@@ -40,99 +40,92 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name="sala")
+@Table(name = "sala")
 public class Sala {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
-	
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
-			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
-					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
-	@Builder.Default
-	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Jogador> jogadores;
 
-	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
-		this.cartasObjetivo.add(cartaObjetivo);
-	}
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "sala_cartaobjetivo", joinColumns = {
+        @JoinColumn(name = "sala_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id")})
+    @Builder.Default
+    public List<CartaObjetivo> cartasObjetivo = new ArrayList<>();
 
-	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
-		return this.cartasObjetivo.remove(cartaDoObjetivo);
-	}
-	@OneToOne
-	private Jogador escolhido;
-
-	@OneToOne
-	private Baralho baralho;
-	
-	@NonNull
-	@Column(name = "hash" , nullable =false)
-	String hash;
-	
-	@NonNull
-	@Column(name = "dth_inicio", nullable = false)
-	@Builder.Default
-	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
-    
-	@NonNull
-	@Column(name="dado" , length =1 , nullable = false)
-	private Integer dado;
-	
-	
-	@Column(name="dth_fim")
-        @JsonIgnore
-	private Timestamp dataHoraFimDoJogo;
-	
-	@NotNull
-	@Column(name="status")
-	@Builder.Default
-	private StatusEnum status = StatusEnum.NOVO;
-
-	public String generateHash() {
-		SecureRandom random = new SecureRandom();
-		byte[] bytes = new byte[6];
-		random.nextBytes(bytes);
-		Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-		return encoder.encodeToString(bytes);
-	}
-
-	@NonNull
-	public void adicionarJogador(Jogador jogador) {
-		this.jogadores.add(jogador);
-	}
-
-	public boolean removerJogador(Jogador jogador) {
-		return this.jogadores.remove(jogador);
-	}
-
-	@NonNull
-	public StatusEnum getStatus() {
-		return this.status;
-	}
-
-	public void setStatus(@NonNull StatusEnum status) {
-		this.status= status;
-		this.setDataHoraFimDeJogo();
-	}
-        
-	public void setDataHoraFimDeJogo(){
-            	public void mudaPrimeiroJogador(Jogador escolhido){
-		int posicao = escolhido.getPosicao();
-		Collections.rotate(this.jogadores, (posicao*-1));
+    public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+        this.cartasObjetivo.add(cartaObjetivo);
     }
-	public Jogador getEscolhido() {
-		return this.escolhido;
-	}
 
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
-	}
-	public void setEscolhido(Jogador escolhido) {
-		this.escolhido= escolhido;
-	}
+    public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+        return this.cartasObjetivo.remove(cartaDoObjetivo);
+    }
+
+    @OneToOne
+    private Baralho baralho;
+
+    @NonNull
+    @Column(name = "hash", nullable = false)
+    String hash;
+
+    @NonNull
+    @Column(name = "dth_inicio", nullable = false)
+    @Builder.Default
+    @JsonIgnore
+    private Timestamp dth_inicio = Timestamp.from(Instant.now());
+
+    @NonNull
+    @Column(name = "dado", length = 1, nullable = false)
+    private Integer dado;
+
+    @Column(name = "dth_fim")
+    @JsonIgnore
+    private Timestamp dataHoraFimDoJogo;
+
+    @NotNull
+    @Column(name = "status")
+    @Builder.Default
+    private StatusEnum status = StatusEnum.NOVO;
+
+    public String generateHash() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[6];
+        random.nextBytes(bytes);
+        Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+        return encoder.encodeToString(bytes);
+    }
+
+    @NonNull
+    public void adicionarJogador(Jogador jogador) {
+        this.jogadores.add(jogador);
+    }
+
+    public boolean removerJogador(Jogador jogador) {
+        return this.jogadores.remove(jogador);
+    }
+
+    @NonNull
+    public StatusEnum getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(@NonNull StatusEnum status) {
+        this.status = status;
+        this.setDataHoraFimDeJogo();
+    }
+
+    public void setDataHoraFimDeJogo() {
+        this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+    }
+
+    public void mudaPrimeiroJogador(Jogador escolhido) {
+        int posicao = escolhido.getPosicao() - 1;
+        Collections.rotate(this.jogadores, (posicao * -1));
+        escolhido.setStatus(StatusEnumJogador.JOGANDO);
+    }
+   
 }

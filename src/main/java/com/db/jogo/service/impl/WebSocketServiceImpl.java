@@ -273,7 +273,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		jogador.setPosicao(1);
 		jogador.setIsHost(true);
 		jogador.setNome(jogador.getNome());
-		jogador.setStatus(StatusEnumJogador.JOGANDO);
+		jogador.setStatus(StatusEnumJogador.ESPERANDO);
 		return jogador;
 	}
 
@@ -507,5 +507,33 @@ public class WebSocketServiceImpl implements WebSocketService {
 			throw new JogoInvalidoException("Sala não encontrada");
 		}
 		return salaParaAtualizar;
+	}
+        
+        public void sendJogador(Jogador jogador) throws JsonInvalidoException {
+		ObjectMapper mapper = new ObjectMapper();
+		String jogadorAsJSON;
+		String url = "/gameplay/game-update/" + jogador.getId();
+		try {
+			jogadorAsJSON = mapper.writeValueAsString(jogador);
+		} catch (JsonProcessingException e) {
+			throw new JsonInvalidoException("Não foi possível construir o JSON da sala.");
+		}
+                sala.mudaPrimeiroJogador(jogador);
+		template.convertAndSend(url, jogadorAsJSON);
+	}
+        
+        public Optional<Jogador> pegaJogadorEscolhido(Jogador jogador) throws JogoInvalidoException {
+		Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+		try {
+			if (atualizarJogador.isPresent()) {
+				atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
+				this.jogadorService.saveJogador(atualizarJogador.get());
+
+				return atualizarJogador;
+			}
+		} catch (Exception e) {
+			throw new JogoInvalidoException("Sala não encontrada");
+		}
+		return atualizarJogador;
 	}
 }
