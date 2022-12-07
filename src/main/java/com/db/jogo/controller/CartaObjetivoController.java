@@ -12,9 +12,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-@CrossOrigin(exposedHeaders = "errors, content-type")
-@RequestMapping("/cartaobjetivo")
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
+
 @RestController
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
+@RequestMapping("/cartaobjetivo")
 public class CartaObjetivoController {
 
     @Autowired
