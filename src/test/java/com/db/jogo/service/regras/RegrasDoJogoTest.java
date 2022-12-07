@@ -73,6 +73,32 @@ class RegrasDoJogoTest {
     }
 
 	@Test
+	@DisplayName("Teste jogador com oito pontos, status do jogo ULTIMA_JOGADA")
+	void testeValidaFinalPartida() {
+		jogador.setPontos(8);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
+		assertEquals("ULTIMA_RODADA", sala.getStatus().name());
+	}
+	
+	@Test
+	@DisplayName("Teste jogador com menos de oito pontos, status do jogo NOVO")
+	void testeValidaAntesFinalPartida() {
+		jogador.setPontos(6);
+		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
+		assertEquals("NOVO", sala.getStatus().name());
+	}
+
+	@Test
+	@DisplayName("Teste desconta corações ao comprar CartaDoJogo")
+	void testDescontaCoracoesCartaDoJogo() {
+		jogador.setBonusCoracaoGrande(0);
+		jogador.setBonusCoracaoPequeno(0);		
+		RegrasDoJogo.descontaCoracoesCartaDoJogo(jogador, carta);
+		assertEquals(0, jogador.getCoracaoPequeno());
+		assertEquals(0, jogador.getCoracaoGrande());
+	}
+
+	@Test
 	@DisplayName("Teste valida compra CartaDoJogo VERDADEIRO")
 	void testValidaCoracoesVerdadeiro() {
 		
@@ -92,21 +118,25 @@ class RegrasDoJogoTest {
 				RegrasDoJogo.validaCompraCarta(jogador, carta);
 		assertEquals(valida, false);
 	}
-	
-	@Test
-	@DisplayName("Teste valida compra CartaDoJogo FALSO")
-	void testValidaCoracoes() {
-		
-		jogador.setBonusCoracaoGrande(0);
-		jogador.setBonusCoracaoPequeno(2);
-		jogador.setCoracaoPequeno(0);	
-		jogador.setCoracaoGrande(0);
-					
-			boolean valida =  
-				RegrasDoJogo.validaCompraCarta(jogador, carta);
-		assertEquals(valida, false);
 
+	@Test
+	@DisplayName("Teste adiciona coracoes pequenos")
+	void testAdicionaCoracoesPequenos() {
+		jogador.setBonusCoracaoPequeno(0);
+		jogador.setCoracaoPequeno(0);
+		RegrasDoJogo.adicionaCoracoesPequenos(jogador);
+		assertEquals(2, jogador.getCoracaoPequeno());
 	}
+
+	@Test
+	@DisplayName("Teste adiciona coracoes grandes")
+	void testAdicionaCoracoesGrandes() {
+		jogador.setBonusCoracaoGrande(0);
+		jogador.setCoracaoGrande(0);
+		RegrasDoJogo.adicionaCoracoesGrandes(jogador);
+		assertEquals(1, jogador.getCoracaoGrande());
+	}
+
 	@Test
 	@DisplayName("Teste Compra CartaObjetivo coracoes VERDADEIRO")
 	void testValidaCompraCartaObjetivoVerdadeiro() {
@@ -114,7 +144,6 @@ class RegrasDoJogoTest {
 		boolean valida =  
 				RegrasDoJogo.validaCompraCartaObjetivo(jogador);
 		assertEquals(valida, true);
-		
 	}
 	
 	@Test
@@ -127,22 +156,5 @@ class RegrasDoJogoTest {
 		boolean valida =  
 				RegrasDoJogo.validaCompraCartaObjetivo(jogador);
 		assertEquals(valida, false);
-		
-	}
-
-	@Test
-	@DisplayName("Teste jogador com oito pontos, status do jogo ULTIMA_JOGADA")
-	void testeValidaFinalPartida() {
-		jogador.setPontos(8);
-		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
-		assertEquals("ULTIMA_RODADA", sala.getStatus().name());
-	}
-	
-	@Test
-	@DisplayName("Teste jogador com menos de oito pontos, status do jogo NOVO")
-	void testeValidaAntesFinalPartida() {
-		jogador.setPontos(6);
-		RegrasDoJogo.defineEstadoFinalPartida(jogador, sala);
-		assertEquals("NOVO", sala.getStatus().name());
 	}
 }
