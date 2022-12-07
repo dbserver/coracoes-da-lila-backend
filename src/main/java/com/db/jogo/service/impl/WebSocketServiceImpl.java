@@ -195,7 +195,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		}
 		return null;
 	}
-
+        
 	public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");

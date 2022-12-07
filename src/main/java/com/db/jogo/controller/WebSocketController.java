@@ -117,7 +117,7 @@ public class WebSocketController {
         try {
             Optional<Sala> salaComStatusTrocado = webSocketServiceImpl.iniciarPartida(sala);
             webSocketServiceImpl.sendSala(salaComStatusTrocado.get()); // envia a sala para o websocket
-            sala.mudaPrimeiroJogador(0); //Coloquei como zero apenas para não dar erro, aqui precisa receber do front a posição do jogador escolhido
+            sala.mudaPrimeiroJogador();
             return new ResponseEntity<>(salaComStatusTrocado.get(), HttpStatus.OK);
             
         } catch (JsonInvalidoException e) {
