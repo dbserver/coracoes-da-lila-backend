@@ -6,6 +6,7 @@ import com.db.jogo.enums.StatusEnumJogador;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +45,8 @@ public class Sala {
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores;
 
+	@OneToOne
+	private Jogador escolhido;
 
 	@OneToOne
 	private Baralho baralho;
@@ -87,16 +90,15 @@ public class Sala {
 		this.status= status;
 	}
         
-        public void mudaPrimeiroJogador(){
-                for(int i = 1; i <= jogadores.size(); i++){
-                    if(jogadores.get(i).getStatus() == StatusEnumJogador.JOGANDO){
-                        jogadores.get(i).setStatus(StatusEnumJogador.ESPERANDO);
-                    }
-                }
-                for(int i = 1; i <= jogadores.size(); i++){
-                    if(jogadores.get(i).getStatus() == StatusEnumJogador.ESCOLHIDO){
-                        jogadores.get(i).setStatus(StatusEnumJogador.JOGANDO);
-                    }
-                }
-        }
+	public void mudaPrimeiroJogador(Jogador escolhido){
+		int posicao = escolhido.getPosicao();
+		Collections.rotate(this.jogadores, (posicao*-1));
+    }
+	public Jogador getEscolhido() {
+		return this.escolhido;
+	}
+
+	public void setEscolhido(Jogador escolhido) {
+		this.escolhido= escolhido;
+	}
 }
