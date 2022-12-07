@@ -1,15 +1,14 @@
 package com.db.jogo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.dto.SalaRequest;
+import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
@@ -42,6 +41,10 @@ class WebSocketServiceImplTest {
     private CartaObjetivo cartaObjetivo = new CartaObjetivo();
     private CartaObjetivo cartaObjetivoNula;
     private Sala sala = new Sala();
+    private Jogador jogador = new Jogador();
+    private Jogador jogador2 = new Jogador();
+    private SalaRequest salaRequest = new SalaRequest();
+    private SalaResponse salaResponse = new SalaResponse();
 
     private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService, cartaObjetivoService);
 
@@ -57,6 +60,66 @@ class WebSocketServiceImplTest {
         sala.setCartasObjetivo(new ArrayList<>());
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
+
+        jogador.setId(UUID.randomUUID());
+        jogador.setNome("Felipe");
+        jogador.setPontos(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setCoracaoGrande(0);
+        jogador.setCoracaoPequeno(0);
+        jogador.setPosicao(1);
+        jogador.adicionaObjetivo(cartaObjetivo);
+        jogador.setStatus(StatusEnumJogador.JOGANDO);
+        jogador.setIsHost(true);
+
+
+        jogador2.setId(UUID.randomUUID());
+        jogador2.setNome("Guilherme");
+        jogador2.setPontos(2);
+        jogador2.setBonusCoracaoGrande(3);
+        jogador2.setBonusCoracaoPequeno(2);
+        jogador2.setCoracaoGrande(5);
+        jogador2.setCoracaoPequeno(3);
+        jogador2.adicionaObjetivo(cartaObjetivo);
+
+        sala.setJogadores(new ArrayList<>());
+        sala.adicionarJogador(jogador);
+        sala.adicionarJogador(jogador2);
+
+        salaRequest.setHash("hashpraentrar");
+        salaRequest.setJogador(jogador);
+
+
+        salaResponse.setSala(sala);
+        salaResponse.setJogador(jogador);
+
+    }
+
+    @Test
+    @DisplayName("Teste para verificar se o jogo está finalizado")
+    void testVerificaJogoFinalizado() {
+
+        assertEquals(webSocketServiceImpl.verificaJogoFinalizado(sala), false);
+    }
+
+    
+
+   @Test
+    @DisplayName("Teste para verificar o método definePosicaoDoProximoJogador")
+    void testDefinePosicaoDoProximoJogador() {
+        webSocketServiceImpl.definePosicaoDoProximoJogador(sala, jogador);
+        assertEquals(webSocketServiceImpl.getIndexDoProximoJogador(), 2);
+
+    }
+
+    @Test
+    @DisplayName("Teste para verificar o método passaAVezDoJogador")
+    void testPassaAVezDoJogador() {
+
+        webSocketServiceImpl.passaAVezDoJogador(sala);
+        assertEquals(jogador2.getStatus(), StatusEnumJogador.JOGANDO);
+
 
     }
 
@@ -74,12 +137,28 @@ class WebSocketServiceImplTest {
         assertEquals(webSocketServiceImpl.validaCartaObjetivo(cartaObjetivoNula), false);
     }
 
-    // @Test
-    // @DisplayName("Teste do método sorteia carta objetivo")
-    // void testSorteiaCartaObjetivo(){
-    //     sala.adicionarCartaDoObjetivo(cartaObjetivo);
-    //     assertEquals(sorteia)
-    // }
+    @Test
+    @DisplayName("Teste para verificar se o jogo está finalizado")
+    void testVerificaJogoUltimaRodada() {
+
+        assertEquals(webSocketServiceImpl.verificaJogoUltimaRodada(sala), false);
+    }
+
+    @Test
+    @DisplayName("Teste para verificar o método verificaUltimaJogadaDoTurno")
+    void testVerificaUltimaJogadaDoTurno() {
+        
+        webSocketServiceImpl.setIndexDoProximoJogador(1);
+        assertEquals( webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala), true);
+    }
+
+    @Test
+    @DisplayName("Teste para verificar o método verificaUltimaJogadaDoTurno False")
+    void testVerificaUltimaJogadaDoTurnoFalse() {
+        
+        webSocketServiceImpl.setIndexDoProximoJogador(2);
+        assertEquals( webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala), false);
+    }
 
 
 

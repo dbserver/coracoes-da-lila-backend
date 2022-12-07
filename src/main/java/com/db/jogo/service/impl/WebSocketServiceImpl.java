@@ -242,7 +242,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	//Define a posição do próximo jogador
 	public void definePosicaoDoProximoJogador(Sala sala, Jogador jogador){
-		if (jogador.getPosicao() >= getQuantidadeJogadores(sala.getHash())){
+		if (jogador.getPosicao() >= sala.getJogadores().size()){
 			setIndexDoProximoJogador(1);
 		} else {
 			setIndexDoProximoJogador(jogador.getPosicao() + 1);

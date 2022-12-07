@@ -175,22 +175,5 @@ public class WebSocketServiceTest {
 
     }
 
-    @Test
-    @DisplayName("Teste para verificar se o jogo está finalizado")
-    void testVerificaJogoFinalizado() {
-
-        assertEquals(webSocketServiceImpl.verificaJogoFinalizado(sala), false);
-    }
-
-    /**
-     * 
-     */
-    @Test
-    @DisplayName("Teste para verificar se o jogo está finalizado")
-    void testVerificaJogoUltimaRodada() {
-
-        assertEquals(webSocketServiceImpl.verificaJogoUltimaRodada(sala), false);
-   }
-
 }
 
