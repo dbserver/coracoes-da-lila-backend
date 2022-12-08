@@ -243,8 +243,4 @@ public class WebSocketControllerTest {
                         .andExpect(status().isBadRequest());
     }
     
-    
-    
-    
-    
 }
