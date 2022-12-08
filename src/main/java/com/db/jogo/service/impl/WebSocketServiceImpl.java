@@ -305,51 +305,47 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		try {
 			if (salaParaAtualizar.isPresent()) {
-				for (int index = 0; index < getQuantidadeJogadores(salaParaAtualizar.get().getHash()); index++) {
-					this.jogador = salaParaAtualizar.get().getJogadores().get(index);
+				this.jogador = buscaJogadorJogando(salaParaAtualizar.get());
+			
+				// Sorteia uma carta da sala atual
+				this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
 
-					// Verifica qual jogador está jogando no front
-					if (StatusEnumJogador.JOGANDO.equals(this.jogador.getStatus())) {
-						// Sorteia uma carta da sala atual
-						this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
-						// Verifica se a carta está nula, se sim retorna a sala sem nenhuma ação
-						if (validaCartaObjetivo(this.cartaCompradaObjetivo) == false) {
-							this.sendSala(salaParaAtualizar.get());
-							return salaParaAtualizar;
-						}
-						// Verifica se o jogador já possui aquela carta na mão, se sim retorna a sala
-						// sem nenhuma ação
-						if (this.jogador.getCartasObjetivo().contains(cartaCompradaObjetivo)) {
-							this.sendSala(salaParaAtualizar.get());
-							return salaParaAtualizar;
-						}
-
-						// --Lógica para atualizar o jogador que comprou a carta
-						Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
-
-						if (RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
-							// Desconta um coração do jogador ao comprar uma carta objetivo
-							this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
-							// Salvar a carta no jogador
-							adicionaCartaObjetivoAoJogador(jogadorParaAtualizar.get(), this.cartaCompradaObjetivo);
-							atualizaStatusDoJogadorEsperando(jogadorParaAtualizar.get());
-
-							Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService
-									.findById(this.cartaCompradaObjetivo.getId());
-							salaParaAtualizar.get().removerCartaDoObjetivo(cartaParaAtualizarNoJogador.get());
-
-
-							definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
-
-							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-									finalizaJogo(salaParaAtualizar.get());
-								}
-							}
-						}
-					}
+				// Verifica se a carta está nula, se sim retorna a sala sem nenhuma ação
+				if (validaCartaObjetivo(this.cartaCompradaObjetivo) == false) {
+					this.sendSala(salaParaAtualizar.get());
+					return salaParaAtualizar;
 				}
 
+				// Verifica se o jogador já possui aquela carta na mão, se sim retorna a sala
+				// sem nenhuma ação
+				if (this.jogador.getCartasObjetivo().contains(cartaCompradaObjetivo)) {
+					this.sendSala(salaParaAtualizar.get());
+					return salaParaAtualizar;
+				}
+
+				// --Lógica para atualizar o jogador que comprou a carta
+				Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
+
+				if (RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
+				// Desconta um coração do jogador ao comprar uma carta objetivo
+				this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
+				// Salvar a carta no jogador
+				adicionaCartaObjetivoAoJogador(jogadorParaAtualizar.get(), this.cartaCompradaObjetivo);
+				atualizaStatusDoJogadorEsperando(jogadorParaAtualizar.get());
+
+				Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService
+					.findById(this.cartaCompradaObjetivo.getId());
+				salaParaAtualizar.get().removerCartaDoObjetivo(cartaParaAtualizarNoJogador.get());
+
+
+				definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
+
+				if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+					if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+						finalizaJogo(salaParaAtualizar.get());
+					}
+				}
+			}
 				passaAVezDoJogador(salaParaAtualizar.get());
 
 				// Salva o resultado da compra no banco
@@ -364,25 +360,37 @@ public class WebSocketServiceImpl implements WebSocketService {
 				}
 			}
 
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
-		}
+		}catch(
 
-		return salaParaAtualizar;
+	Exception e)
+	{
+		throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
+	}
+
+	return salaParaAtualizar;
 	}
 
 	// ------US073
 
-	public void adicionaCartaObjetivoAoJogador(Jogador jogador, CartaObjetivo cartaObjetivo){
+	public void adicionaCartaObjetivoAoJogador(Jogador jogador, CartaObjetivo cartaObjetivo) {
 		jogador.adicionaObjetivo(cartaObjetivo);
 		this.jogadorService.saveJogador(jogador);
 	}
 
-	public void atualizaStatusDoJogadorEsperando(Jogador jogador){
+	public void atualizaStatusDoJogadorEsperando(Jogador jogador) {
 		jogador.setStatus(StatusEnumJogador.ESPERANDO);
 		this.jogadorService.saveJogador(jogador);
 	}
 
+	public Jogador buscaJogadorJogando(Sala sala) {
+		Jogador jogador = new Jogador();
+		for (int index = 0; index < getQuantidadeJogadores(sala.getHash()); index++) {
+			if (StatusEnumJogador.JOGANDO.equals(sala.getJogadores().get(index).getStatus())) {
+				jogador = sala.getJogadores().get(index);
+			}
+		}
+		return jogador;
+	}
 
 	private CartaDoJogo procuraCartaComprada(Sala sala) throws CartaCompradaInvalidaException {
 

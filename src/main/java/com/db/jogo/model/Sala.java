@@ -23,6 +23,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import lombok.NonNull;
@@ -53,6 +54,9 @@ public class Sala {
 					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
 	@Builder.Default
 	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
+
+	@Transient
+	public List<CartaObjetivo> opcoesCartaObjetivo = new ArrayList<>();
 
 	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
 		this.cartasObjetivo.add(cartaObjetivo);
