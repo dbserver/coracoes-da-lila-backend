@@ -37,7 +37,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private BaralhoService baralhoService;
 	private JogadorService jogadorService;
 	private CartaDoJogoService cartaService;
-	private CartaObjetivoService cartaObjetivoService;
 	private Integer indexDoProximoJogador;
 	private Jogador jogador;
 	private CartaDoJogo cartaComprada;
@@ -46,14 +45,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
 			JogadorService jogadorService,
-			SimpMessagingTemplate template, CartaDoJogoService cartaService,
-			CartaObjetivoService cartaObjetivoService) {
+			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
 		this.jogadorService = jogadorService;
 		this.template = template;
 		this.cartaService = cartaService;
-		this.cartaObjetivoService = cartaObjetivoService;
 		this.jogador = new Jogador();
 		this.cartaComprada = new CartaDoJogo();
 		this.cartaCompradaObjetivo = new CartaObjetivo();
@@ -324,29 +321,26 @@ public class WebSocketServiceImpl implements WebSocketService {
 				}
 
 				// --Lógica para atualizar o jogador que comprou a carta
-				Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(this.jogador.getId());
+				if (RegrasDoJogo.validaCompraCartaObjetivo(this.jogador)) {
+				
+					this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
+				
+					adicionaCartaObjetivoAoJogador(this.jogador, this.cartaCompradaObjetivo);
 
-				if (RegrasDoJogo.validaCompraCartaObjetivo(jogadorParaAtualizar.get())) {
-				// Desconta um coração do jogador ao comprar uma carta objetivo
-				this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
-				// Salvar a carta no jogador
-				adicionaCartaObjetivoAoJogador(jogadorParaAtualizar.get(), this.cartaCompradaObjetivo);
-				atualizaStatusDoJogadorEsperando(jogadorParaAtualizar.get());
+					atualizaStatusDoJogadorEsperando(this.jogador);
 
-				Optional<CartaObjetivo> cartaParaAtualizarNoJogador = this.cartaObjetivoService
-					.findById(this.cartaCompradaObjetivo.getId());
-				salaParaAtualizar.get().removerCartaDoObjetivo(cartaParaAtualizarNoJogador.get());
+					salaParaAtualizar.get().removerCartaDoObjetivo(this.cartaCompradaObjetivo);
 
+					definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
 
-				definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
-
-				if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-					if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-						finalizaJogo(salaParaAtualizar.get());
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
+						}
 					}
+
+					passaAVezDoJogador(salaParaAtualizar.get());
 				}
-			}
-				passaAVezDoJogador(salaParaAtualizar.get());
 
 				// Salva o resultado da compra no banco
 				Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
@@ -360,14 +354,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 				}
 			}
 
-		}catch(
+		}catch(Exception e){
+			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
+		}	
 
-	Exception e)
-	{
-		throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
-	}
-
-	return salaParaAtualizar;
+		return salaParaAtualizar;
 	}
 
 	// ------US073
@@ -391,6 +382,15 @@ public class WebSocketServiceImpl implements WebSocketService {
 		}
 		return jogador;
 	}
+
+	// public Sala escolheEntreDuasCartasObjetivo(Sala salaFront){
+	// 	Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+
+
+
+	// 	return salaFront;
+
+	// }
 
 	private CartaDoJogo procuraCartaComprada(Sala sala) throws CartaCompradaInvalidaException {
 
