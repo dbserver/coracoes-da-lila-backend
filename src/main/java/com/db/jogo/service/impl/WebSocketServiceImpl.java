@@ -383,14 +383,22 @@ public class WebSocketServiceImpl implements WebSocketService {
 		return jogador;
 	}
 
-	// public Sala escolheEntreDuasCartasObjetivo(Sala salaFront){
-	// 	Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+	public Optional <Sala> escolheEntreDuasCartasObjetivo(Sala salaFront){
+		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+
+		salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
+		salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
+
+		while (salaParaAtualizar.get().opcoesCartaObjetivo.get(0) == salaParaAtualizar.get().opcoesCartaObjetivo.get(1)){
+			salaParaAtualizar.get().opcoesCartaObjetivo.set(1, sorteiaCartaObjetivo(salaFront));
+		}
+
+		salaService.saveSala(salaParaAtualizar.get());
+
+		return salaParaAtualizar;
+	}
 
 
-
-	// 	return salaFront;
-
-	// }
 
 	private CartaDoJogo procuraCartaComprada(Sala sala) throws CartaCompradaInvalidaException {
 
