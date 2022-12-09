@@ -341,7 +341,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.equals(salaParaAtualizar.get().getEscolhido())) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -416,7 +416,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.equals(salaParaAtualizar.get().getEscolhido())) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -516,7 +516,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		try {
 			jogadorAsJSON = mapper.writeValueAsString(jogador);
 		} catch (JsonProcessingException e) {
-			throw new JsonInvalidoException("Não foi possível construir o JSON da sala.");
+			throw new JsonInvalidoException("Não foi possível construir o JSON do jogador.");
 		}
                 sala.mudaPrimeiroJogador(jogador);
 		template.convertAndSend(url, jogadorAsJSON);
@@ -532,7 +532,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 				return atualizarJogador;
 			}
 		} catch (Exception e) {
-			throw new JogoInvalidoException("Sala não encontrada");
+			throw new JogoInvalidoException("Jogador não encontrada");
 		}
 		return atualizarJogador;
 	}
