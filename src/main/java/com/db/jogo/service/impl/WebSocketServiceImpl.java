@@ -341,7 +341,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.equals(salaParaAtualizar.get().getEscolhido())) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == sala.getEscolhido().getPosicao()) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -416,7 +416,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 						
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.equals(salaParaAtualizar.get().getEscolhido())) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getEscolhido().getPosicao()) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}

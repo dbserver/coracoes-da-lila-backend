@@ -134,7 +134,7 @@ public class Sala {
     
     public void mudaPrimeiroJogador(Jogador escolhido) {
         int posicao = escolhido.getPosicao() - 1;
-        //this.escolhido = escolhido;
+        this.escolhido = escolhido;
         Collections.rotate(this.jogadores, (posicao * -1));
         escolhido.setStatus(StatusEnumJogador.JOGANDO);
     }   
