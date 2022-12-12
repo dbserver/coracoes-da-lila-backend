@@ -56,7 +56,12 @@ public class Sala {
 	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
 
 	@Transient
+	@Builder.Default
 	public List<CartaObjetivo> opcoesCartaObjetivo = new ArrayList<>();
+
+	@Transient
+	@Builder.Default
+	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
 
 	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
 		this.cartasObjetivo.add(cartaObjetivo);

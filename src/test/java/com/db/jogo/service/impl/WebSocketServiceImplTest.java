@@ -1,6 +1,7 @@
 package com.db.jogo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,7 +16,6 @@ import com.db.jogo.model.Sala;
 import com.db.jogo.service.JogadorService;
 import com.db.jogo.service.BaralhoService;
 import com.db.jogo.service.CartaDoJogoService;
-import com.db.jogo.service.CartaObjetivoService;
 import com.db.jogo.service.SalaService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,6 @@ class WebSocketServiceImplTest {
     private JogadorService jogadorService;
     private SimpMessagingTemplate template;
     private CartaDoJogoService cartaDoJogoService;
-    private CartaObjetivoService cartaObjetivoService;
     private CartaObjetivo cartaObjetivo = new CartaObjetivo();
     private CartaObjetivo cartaObjetivoNula;
     private Sala sala = new Sala();
@@ -46,7 +45,7 @@ class WebSocketServiceImplTest {
     private SalaRequest salaRequest = new SalaRequest();
     private SalaResponse salaResponse = new SalaResponse();
 
-    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService, cartaObjetivoService);
+    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
 
     @BeforeEach
     public void init(){
@@ -81,7 +80,6 @@ class WebSocketServiceImplTest {
         jogador2.setBonusCoracaoPequeno(2);
         jogador2.setCoracaoGrande(5);
         jogador2.setCoracaoPequeno(3);
-        jogador2.adicionaObjetivo(cartaObjetivo);
 
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
@@ -169,7 +167,25 @@ class WebSocketServiceImplTest {
         webSocketServiceImpl.setIndexDoProximoJogador(2);
         assertEquals( webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala), false);
     }
+    
+    @Test
+    @DisplayName("Teste para verificar o método de atualizar status do jogador para ESPERANDO")
+    void testAtualizaStatusDoJogadorEsperando() {
+        webSocketServiceImpl.atualizaStatusDoJogadorEsperando(jogador2);
+        webSocketServiceImpl.atualizaStatusDoJogadorEsperando(jogador);
 
+        assertEquals(jogador.getStatus(), StatusEnumJogador.ESPERANDO);
+        assertEquals(jogador2.getStatus(), StatusEnumJogador.ESPERANDO);
+    }
 
+    @Test
+    @DisplayName("Teste do método de buscar jogador jogando na sala")
+    void testBuscaJogadorJogando() {
+
+        Jogador jogadorJogando = webSocketServiceImpl.buscaJogadorJogando(sala);
+        
+        assertEquals(jogadorJogando.getStatus(), StatusEnumJogador.JOGANDO);
+        assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
+    }
  
 }

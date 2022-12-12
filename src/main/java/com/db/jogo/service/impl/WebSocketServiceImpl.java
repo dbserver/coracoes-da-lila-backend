@@ -303,7 +303,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		try {
 			if (salaParaAtualizar.isPresent()) {
 				this.jogador = buscaJogadorJogando(salaParaAtualizar.get());
-			
+
 				// Sorteia uma carta da sala atual
 				this.cartaCompradaObjetivo = sorteiaCartaObjetivo(salaFront);
 
@@ -315,19 +315,20 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 				// Verifica se o jogador já possui aquela carta na mão, se sim retorna a sala
 				// sem nenhuma ação
-				if (this.jogador.getCartasObjetivo().contains(cartaCompradaObjetivo)) {
+				if (this.jogador.getCartasObjetivo().contains(this.cartaCompradaObjetivo)) {
 					this.sendSala(salaParaAtualizar.get());
 					return salaParaAtualizar;
 				}
 
 				// --Lógica para atualizar o jogador que comprou a carta
-				if (RegrasDoJogo.validaCompraCartaObjetivo(this.jogador)) {
-				
-					this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
-				
-					adicionaCartaObjetivoAoJogador(this.jogador, this.cartaCompradaObjetivo);
+				if (RegrasDoJogo.validaCompraCartaObjetivoCoracaoPequeno(this.jogador)) {
 
+					this.jogador = RegrasDoJogo.descontaCoracaoPequenoCartaObjetivo(this.jogador);
+
+					this.jogador.adicionaObjetivo(this.cartaCompradaObjetivo);
 					atualizaStatusDoJogadorEsperando(this.jogador);
+
+					jogadorService.saveJogador(this.jogador);
 
 					salaParaAtualizar.get().removerCartaDoObjetivo(this.cartaCompradaObjetivo);
 
@@ -354,28 +355,22 @@ public class WebSocketServiceImpl implements WebSocketService {
 				}
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
-		}	
+		}
 
 		return salaParaAtualizar;
 	}
 
 	// ------US073
 
-	public void adicionaCartaObjetivoAoJogador(Jogador jogador, CartaObjetivo cartaObjetivo) {
-		jogador.adicionaObjetivo(cartaObjetivo);
-		this.jogadorService.saveJogador(jogador);
-	}
-
 	public void atualizaStatusDoJogadorEsperando(Jogador jogador) {
 		jogador.setStatus(StatusEnumJogador.ESPERANDO);
-		this.jogadorService.saveJogador(jogador);
 	}
 
 	public Jogador buscaJogadorJogando(Sala sala) {
 		Jogador jogador = new Jogador();
-		for (int index = 0; index < getQuantidadeJogadores(sala.getHash()); index++) {
+		for (int index = 0; index < sala.getJogadores().size(); index++) {
 			if (StatusEnumJogador.JOGANDO.equals(sala.getJogadores().get(index).getStatus())) {
 				jogador = sala.getJogadores().get(index);
 			}
@@ -383,22 +378,113 @@ public class WebSocketServiceImpl implements WebSocketService {
 		return jogador;
 	}
 
-	public Optional <Sala> escolheEntreDuasCartasObjetivo(Sala salaFront){
+	public Optional<Sala> escolheEntreDuasCartasObjetivo(Sala salaFront) {
 		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
 
-		salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
-		salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
+		try {
+			salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
+			salaParaAtualizar.get().opcoesCartaObjetivo.add(sorteiaCartaObjetivo(salaFront));
 
-		while (salaParaAtualizar.get().opcoesCartaObjetivo.get(0) == salaParaAtualizar.get().opcoesCartaObjetivo.get(1)){
-			salaParaAtualizar.get().opcoesCartaObjetivo.set(1, sorteiaCartaObjetivo(salaFront));
+			while (salaParaAtualizar.get().opcoesCartaObjetivo.get(0) == salaParaAtualizar.get().opcoesCartaObjetivo
+					.get(1)) {
+				salaParaAtualizar.get().opcoesCartaObjetivo.set(1, sorteiaCartaObjetivo(salaFront));
+			}
+
+			this.jogador = buscaJogadorJogando(salaFront);
+			RegrasDoJogo.descontaCoracaoGrande(this.jogador);
+
+			jogadorService.saveJogador(this.jogador);
+			salaService.saveSala(salaParaAtualizar.get());
+
+			Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
+					this.salaService.saveSala(salaParaAtualizar.get()));
+
+			if (salaRetornoDoSaveNoBanco.isPresent()) {
+				this.template.convertAndSend("/gameplay/game-update/" + salaRetornoDoSaveNoBanco.get().getHash(),
+						salaRetornoDoSaveNoBanco.get());
+
+				return salaRetornoDoSaveNoBanco;
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
 		}
-
-		salaService.saveSala(salaParaAtualizar.get());
-
 		return salaParaAtualizar;
 	}
 
+	public Optional<Sala> compraCartaObjetivoEscolhida(Sala salaFront) {
+		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
 
+		// Verifica se esta sala possui status finalizado, e se sim, retorna a sala sem
+		// fazer a ação da compra de carta
+		if (verificaJogoFinalizado(salaParaAtualizar.get())) {
+			salaParaAtualizar.get().setDado(0);
+			return salaParaAtualizar;
+		}
+
+		try {
+			if (salaParaAtualizar.isPresent()) {
+				this.jogador = buscaJogadorJogando(salaParaAtualizar.get());
+
+				// Sorteia uma carta da sala atual
+				this.cartaCompradaObjetivo = salaFront.cartaObjetivoEscolhida;
+
+				// Verifica se a carta está nula, se sim retorna a sala sem nenhuma ação
+				if (validaCartaObjetivo(this.cartaCompradaObjetivo) == false) {
+					this.sendSala(salaParaAtualizar.get());
+					return salaParaAtualizar;
+				}
+
+				// Verifica se o jogador já possui aquela carta na mão, se sim retorna a sala
+				// sem nenhuma ação
+				if (this.jogador.getCartasObjetivo().contains(this.cartaCompradaObjetivo)) {
+					this.sendSala(salaParaAtualizar.get());
+					return salaParaAtualizar;
+				}
+
+				// --Lógica para atualizar o jogador que comprou a carta
+				if (RegrasDoJogo.validaCompraCartaObjetivoCoracaoGrande(this.jogador)) {
+
+					this.jogador.adicionaObjetivo(this.cartaCompradaObjetivo);
+
+					atualizaStatusDoJogadorEsperando(this.jogador);
+
+					jogadorService.saveJogador(this.jogador);
+
+					salaParaAtualizar.get().removerCartaDoObjetivo(this.cartaCompradaObjetivo);
+
+					definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
+
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
+						}
+					}
+
+					passaAVezDoJogador(salaParaAtualizar.get());
+
+					// Salva o resultado da compra no banco
+					Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
+							this.salaService.saveSala(salaParaAtualizar.get()));
+
+					if (salaRetornoDoSaveNoBanco.isPresent()) {
+						this.template.convertAndSend(
+								"/gameplay/game-update/" + salaRetornoDoSaveNoBanco.get().getHash(),
+								salaRetornoDoSaveNoBanco.get());
+
+						return salaRetornoDoSaveNoBanco;
+					}
+
+				}
+
+			}
+
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
+		}
+
+		return salaParaAtualizar;
+
+	}
 
 	private CartaDoJogo procuraCartaComprada(Sala sala) throws CartaCompradaInvalidaException {
 

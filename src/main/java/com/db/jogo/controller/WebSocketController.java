@@ -189,5 +189,24 @@ public class WebSocketController {
                 throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
             }
     }
+
+    @PutMapping("jogada/compracartaobjetivoescolhida")
+    public ResponseEntity<?> compraCartaObjetivoEscolhida(@RequestBody Sala sala, BindingResult bindingResult)
+        throws JogoInvalidoException {
+            if (bindingResult.hasErrors() || sala == null || sala.getHash() == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            try {
+                Optional<Sala> salaParaAtualizar = this.webSocketServiceImpl.compraCartaObjetivoEscolhida(sala);
+
+                if (salaParaAtualizar.isPresent()) {
+                    return new ResponseEntity<Sala>(salaParaAtualizar.get(), HttpStatus.OK);
+                }
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
+            }
+        }
 }
 
