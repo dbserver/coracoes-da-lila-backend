@@ -442,43 +442,42 @@ public class WebSocketServiceImpl implements WebSocketService {
 				}
 
 				// --Lógica para atualizar o jogador que comprou a carta
-				if (RegrasDoJogo.validaCompraCartaObjetivoCoracaoGrande(this.jogador)) {
 
-					this.jogador.adicionaObjetivo(this.cartaCompradaObjetivo);
+				this.jogador.adicionaObjetivo(this.cartaCompradaObjetivo);
 
-					atualizaStatusDoJogadorEsperando(this.jogador);
+				atualizaStatusDoJogadorEsperando(this.jogador);
 
-					jogadorService.saveJogador(this.jogador);
+				jogadorService.saveJogador(this.jogador);
 
-					salaParaAtualizar.get().removerCartaDoObjetivo(this.cartaCompradaObjetivo);
+				salaParaAtualizar.get().removerCartaDoObjetivo(this.cartaCompradaObjetivo);
 
-					definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
+				definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
 
-					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-							finalizaJogo(salaParaAtualizar.get());
-						}
+				if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+					if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+						finalizaJogo(salaParaAtualizar.get());
 					}
+				}
 
-					passaAVezDoJogador(salaParaAtualizar.get());
+				passaAVezDoJogador(salaParaAtualizar.get());
 
-					// Salva o resultado da compra no banco
-					Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
-							this.salaService.saveSala(salaParaAtualizar.get()));
+				// Salva o resultado da compra no banco
+				Optional<Sala> salaRetornoDoSaveNoBanco = Optional.ofNullable(
+						this.salaService.saveSala(salaParaAtualizar.get()));
 
-					if (salaRetornoDoSaveNoBanco.isPresent()) {
-						this.template.convertAndSend(
-								"/gameplay/game-update/" + salaRetornoDoSaveNoBanco.get().getHash(),
-								salaRetornoDoSaveNoBanco.get());
+				if (salaRetornoDoSaveNoBanco.isPresent()) {
+					this.template.convertAndSend(
+							"/gameplay/game-update/" + salaRetornoDoSaveNoBanco.get().getHash(),
+							salaRetornoDoSaveNoBanco.get());
 
-						return salaRetornoDoSaveNoBanco;
-					}
-
+					return salaRetornoDoSaveNoBanco;
 				}
 
 			}
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
 		}
 
