@@ -142,7 +142,7 @@ class RegrasDoJogoTest {
 	void testValidaCompraCartaObjetivoVerdadeiro() {
 		
 		boolean valida =  
-				RegrasDoJogo.validaCompraCartaObjetivo(jogador);
+				RegrasDoJogo.validaCompraCartaObjetivoCoracaoGrande(jogador);
 		assertEquals(valida, true);
 	}
 	
@@ -153,8 +153,11 @@ class RegrasDoJogoTest {
 		jogador.setBonusCoracaoPequeno(0);
 		jogador.setCoracaoPequeno(0);	
 		jogador.setCoracaoGrande(0);
-		boolean valida =  
-				RegrasDoJogo.validaCompraCartaObjetivo(jogador);
-		assertEquals(valida, false);
+		boolean validaCoracaoGrande =  
+				RegrasDoJogo.validaCompraCartaObjetivoCoracaoGrande(jogador);
+		boolean validaCoracaoPequeno = RegrasDoJogo.validaCompraCartaObjetivoCoracaoPequeno(jogador);
+		assertEquals(validaCoracaoGrande, false);
+		assertEquals(validaCoracaoPequeno, false);
+
 	}
 }
