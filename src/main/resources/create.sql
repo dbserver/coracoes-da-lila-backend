@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS baralho_cartaobjetivo CASCADE;
 DROP TABLE IF EXISTS baralho_cartadojogo CASCADE;
 DROP TABLE IF EXISTS baralho_cartainicio CASCADE;
 DROP TABLE IF EXISTS sala_jogadores CASCADE;
+DROP TABLE IF EXISTS sala_cartaobjetivo CASCADE;
 
 DROP TABLE IF EXISTS admin CASCADE;
 
@@ -119,16 +120,26 @@ create table jogador_cartaobjetivo (
      REFERENCES carta_objetivo (id),
      CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)
      REFERENCES jogador (id));
-    
+
 create table sala (
-    id uuid not null, 
-    hash varchar(255) not null,
+     id uuid not null, 
+     hash varchar(255) not null,
      status int4 not null,
      baralho_id uuid, 
      dado int4 not null,
-     primary key (id));
+     dth_fim timestamp,
+     dth_inicio timestamp not null,
+     primary key (id)
+);
 
 create table sala_jogadores (
     sala_id uuid not null,
     jogadores_id uuid not null);
 
+create table sala_cartaobjetivo (
+     sala_id uuid not null,
+     cartaobjetivo_id uuid not null,
+     CONSTRAINT FK_cartaobjetivo_id FOREIGN KEY (cartaobjetivo_id)
+     REFERENCES carta_objetivo (id),
+     CONSTRAINT FK_sala_id FOREIGN KEY (sala_id)
+     REFERENCES sala (id));

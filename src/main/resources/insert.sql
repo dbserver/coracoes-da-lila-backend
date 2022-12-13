@@ -196,10 +196,11 @@ INSERT INTO baralho_cartadojogo(
 ('a28ebdb0-d3bc-4220-9814-9a743a4d829e','7b3e8a21-6335-4690-ae69-bd7ecf862346'),
 ('a28ebdb0-d3bc-4220-9814-9a743a4d829e','3c16a975-e904-48f5-9557-816930cdafaf'),
 ('a28ebdb0-d3bc-4220-9814-9a743a4d829e','c7f83c84-d8b1-454b-bdc4-526cebbd7972'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','272f930e-1adc-4405-b4a5-e9b909ce5738'),
 ('a28ebdb0-d3bc-4220-9814-9a743a4d829e','04e501a8-e6a4-4ab5-84aa-1d76df1f62dc');
 
-INSERT INTO sala(id, hash, status, dado,baralho_id) values
-       ('7d487fb2-6fe2-4413-b7f7-1f7a2f9694ab', '6g-Rg8V5', 0,2, 'a28ebdb0-d3bc-4220-9814-9a743a4d829e' );
+INSERT INTO sala(id, hash, status, dado,baralho_id, dth_inicio) values
+       ('7d487fb2-6fe2-4413-b7f7-1f7a2f9694ab', '6g-Rg8V5', 0,2, 'a28ebdb0-d3bc-4220-9814-9a743a4d829e', '2022-11-11 14:00:10.123872' );
 
 INSERT INTO jogador(id, posicao, bonus_coracao_gra, bonus_coracao_peq, coracao_gra, coracao_peq, nome, pontos,status,is_host  ) values
         ('01fa2624-bc16-4d3b-a1d6-6e797b47e04d', 1, 0, 0, 2, 3, 'João', 5,0,'true'),

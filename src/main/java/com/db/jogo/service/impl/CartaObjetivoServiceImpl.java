@@ -35,4 +35,5 @@ public class CartaObjetivoServiceImpl implements CartaObjetivoService {
 	public CartaObjetivo saveCartaObjetivo(CartaObjetivo cartaObjetivo) throws DataAccessException {
 		return cartaObjetivoRepository.save(cartaObjetivo);
 	}
+
 }

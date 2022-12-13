@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.service.CartaDoJogoService;
+import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
+import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
+
 
 @RestController
-@CrossOrigin(exposedHeaders = "errors, content-type")
+@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/cartadojogo")
 public class CartaDoJogoController {
 
