@@ -155,6 +155,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 										break;
 									}
+                                                                       modificaStatusJogador(jog);
 								}
 
 							}
@@ -679,6 +680,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
+                                                        modificaStatusJogador(jog);
 						}
 					}
 				}
@@ -775,4 +777,16 @@ public class WebSocketServiceImpl implements WebSocketService {
 	public void setIndexDoProximoJogador(Integer index) {
 		this.indexDoProximoJogador = index;
 	}
+        
+        public void modificaStatusJogador(Jogador jog){
+            boolean achouGenerica = false;
+            for (int i = 0; i < jog.getCartasDoJogo().size(); i++){
+                if(jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")){
+                    jog.setStatus(StatusEnumJogador.DEFININDO);
+                    achouGenerica = true;
+                }
+            }
+            if(!achouGenerica)
+                jog.setStatus(StatusEnumJogador.FINALIZADO);
+        }
 }
