@@ -274,4 +274,5 @@ public class WebSocketControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(status().isBadRequest());
     }
+
 }

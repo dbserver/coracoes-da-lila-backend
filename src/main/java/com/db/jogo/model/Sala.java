@@ -2,7 +2,6 @@ package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.db.jogo.enums.StatusEnumJogador;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -10,7 +9,6 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +38,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "sala")
+@Table(name="sala")
 public class Sala {
 
 	@Id
@@ -56,12 +54,6 @@ public class Sala {
 					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
 	@Builder.Default
 	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
-  
-  @OneToOne
-    @JoinTable(name = "sala_jogadores", joinColumns = {
-        @JoinColumn(name = "sala_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "jogadores_id", referencedColumnName = "id")})
-  private Jogador escolhido;
 
 	@Transient
 	@Builder.Default
@@ -70,6 +62,14 @@ public class Sala {
 	@Transient
 	@Builder.Default
 	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
+
+	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+		this.cartasObjetivo.add(cartaObjetivo);
+	}
+
+	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+		return this.cartasObjetivo.remove(cartaDoObjetivo);
+	}
 
 	@OneToOne
 	private Baralho baralho;
@@ -88,6 +88,7 @@ public class Sala {
 	@Column(name="dado" , length =1 , nullable = false)
 	private Integer dado;
 	
+	
 	@Column(name="dth_fim")
         @JsonIgnore
 	private Timestamp dataHoraFimDoJogo;
@@ -96,14 +97,6 @@ public class Sala {
 	@Column(name="status")
 	@Builder.Default
 	private StatusEnum status = StatusEnum.NOVO;
-
-	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
-		this.cartasObjetivo.add(cartaObjetivo);
-	}
-
-	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
-		return this.cartasObjetivo.remove(cartaDoObjetivo);
-	}
 
 	public String generateHash() {
 		SecureRandom random = new SecureRandom();
@@ -132,18 +125,10 @@ public class Sala {
 		this.setDataHoraFimDeJogo();
 	}
 
-	public void setDataHoraFimDeJogo(){        
+	public void setDataHoraFimDeJogo(){
+            
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
 	}
-  
-  public Jogador getEscolhido() {
-        return this.escolhido;
-    }
-    
-  public void mudaPrimeiroJogador(Jogador escolhido) {
-        int posicao = escolhido.getPosicao() - 1;
-        this.escolhido = escolhido;
-        Collections.rotate(this.jogadores, (posicao * -1));
-        escolhido.setStatus(StatusEnumJogador.JOGANDO);
-    }   
 }
+
+

@@ -72,8 +72,8 @@ public class Jogador {
 
 
 	@Column(name="is_host", nullable = false)
-        private Boolean isHost;
-        
+     private Boolean isHost;
+	
 	@Column(name = "status")
 	@Builder.Default
 	private StatusEnumJogador status = StatusEnumJogador.ESPERANDO ;
