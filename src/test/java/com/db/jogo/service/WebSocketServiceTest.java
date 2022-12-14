@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.db.jogo.service.impl.WebSocketServiceImpl;
@@ -37,7 +36,6 @@ public class WebSocketServiceTest {
     Baralho baralho = new Baralho();
     CartaDoJogo carta = new CartaDoJogo();
     CartaObjetivo cartaObjetivo = new CartaObjetivo();
-    List <CartaObjetivo> cartasObjetivo = new ArrayList<>();
     Jogador jogador = new Jogador();
     Jogador jogador2 = new Jogador();
     Sala sala = new Sala();
@@ -100,14 +98,12 @@ public class WebSocketServiceTest {
         jogador2.adicionaObjetivo(cartaObjetivo);
 
         sala.setId(UUID.randomUUID());
-        sala.setCartasObjetivo(new ArrayList<>());
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
 
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
-        sala.adicionarJogador(jogador2);
 
         salaRequest.setHash("hashpraentrar");
         salaRequest.setJogador(jogador2);
@@ -174,6 +170,5 @@ public class WebSocketServiceTest {
         assertEquals(numero, webSocketServiceImpl.getQuantidadeJogadores(sala.getHash()));
 
     }
-
 }
 
