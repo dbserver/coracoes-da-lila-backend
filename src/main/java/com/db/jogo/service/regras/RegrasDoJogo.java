@@ -13,8 +13,10 @@ public class RegrasDoJogo {
             sala.setStatus(StatusEnum.ULTIMA_RODADA);
         }
     }
+	
 
-    public static Jogador descontaCoracoesCartaDoJogo(Jogador jogador, CartaDoJogo carta) {
+
+    public static Jogador descontaCoracoes(Jogador jogador, CartaDoJogo carta) {
     	
     	int numCoracoesGraDaCarta = carta.getValorCoracaoGrande();
 		int numCoracoesPeqDaCarta = carta.getValorCoracaoPequeno();
@@ -33,29 +35,8 @@ public class RegrasDoJogo {
 		}
     	return jogador ;
     }
-
-	public static Jogador descontaCoracaoPequenoCartaObjetivo(Jogador jogador) {
-    	
-		if (jogador.getBonusCoracaoPequeno() > 0){
-			return jogador;
-		}
-		if (jogador.getCoracaoPequeno() > 0){
-			jogador.setCoracaoPequeno(jogador.getCoracaoPequeno() - 1);
-		}
-		return jogador;
-	}
-
-	public static Jogador descontaCoracaoGrande(Jogador jogador) {
-		if (jogador.getBonusCoracaoGrande() > 0){
-			return jogador;
-		}
-		if (jogador.getCoracaoGrande() > 0){
-			jogador.setCoracaoGrande((jogador.getCoracaoGrande() - 1));
-		}
-		return jogador;
-	}
-	
-    public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
+    
+	public static boolean validaCompraCarta(Jogador jogador, CartaDoJogo carta) {
 
 		if (carta.getValorCoracaoPequeno() >= 0) {
 			if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() < carta.getValorCoracaoPequeno()) {
@@ -74,6 +55,7 @@ public class RegrasDoJogo {
 			return true;
 	}
 	
+
 	public static Jogador adicionaCoracoesPequenos (Jogador jogador) {
 	
 		 int coracaoPequenouenos = 2;
@@ -89,7 +71,11 @@ public class RegrasDoJogo {
 		return jogador;
 		
 	}
+	
 
+	
+	// metodo para coracoes grande 
+	
 	public static Jogador adicionaCoracoesGrandes (Jogador jogador) {
 		
 		 int coracaoGrandendes = 1;
@@ -99,23 +85,18 @@ public class RegrasDoJogo {
 			 jogador.setCoracaoGrande(coracaoGrandendes += jogador.getCoracaoGrande());
 		 }
 			
+		
 		return jogador;
 		
 	}
 
-	public static boolean validaCompraCartaObjetivoCoracaoPequeno(Jogador jogador) {
-		if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() < 1) {
-			return false;
-		}
+	
+	public static boolean validaCompraCartaObjetivo(Jogador jogador) {
 
-		return true;
-	}
-
-	public static boolean validaCompraCartaObjetivoCoracaoGrande(Jogador jogador) {
-
-		if (jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() < 1) {
+		if (jogador.getBonusCoracaoPequeno() + jogador.getCoracaoPequeno() + jogador.getBonusCoracaoGrande() + jogador.getCoracaoGrande() < 1) {
 				return false;
 			}
+
 		return true;
 
 	}

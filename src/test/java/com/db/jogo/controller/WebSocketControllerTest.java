@@ -179,6 +179,7 @@ public class WebSocketControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+
     @Test
     @DisplayName("Teste para sucesso na conexão")
     void tesaConexaoComSucesso() throws Exception {
@@ -241,37 +242,5 @@ public class WebSocketControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(status().isBadRequest());
     }
-
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta objetivo")
-    void comprarCartaObjetivo() throws Exception{
-    	
-        Optional<Sala> salaReposta = Optional.of(sala);
-        given(webSocketServiceImpl.comprarCartaObjetivo(sala)).willReturn(salaReposta);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(sala);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcartaobjetivo")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta objetivo Error")
-    void comprarCartaObjetivoNula() throws Exception{
-    	
-        given(webSocketServiceImpl.comprarCartaObjetivo(null)).willReturn(null);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(null);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcartaobjetivo")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isBadRequest());
-    }
+    
 }
