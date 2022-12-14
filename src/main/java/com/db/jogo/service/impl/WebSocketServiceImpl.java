@@ -151,11 +151,14 @@ public class WebSocketServiceImpl implements WebSocketService {
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-										break;
+									modificaStatusJogador(jog);
+		
+									if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+										if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+											salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+											break;
+										}
 									}
-                                                                       modificaStatusJogador(jog);
 								}
 
 							}
@@ -602,9 +605,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
+							modificaStatusJogador(jog);
+
+							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+									break;
+								}
 							}
 						}
 					}
@@ -676,11 +683,14 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
+							modificaStatusJogador(jog);
+
+							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+									break;
+								}
 							}
-                                                        modificaStatusJogador(jog);
 						}
 					}
 				}
@@ -777,16 +787,17 @@ public class WebSocketServiceImpl implements WebSocketService {
 	public void setIndexDoProximoJogador(Integer index) {
 		this.indexDoProximoJogador = index;
 	}
-        
-        public void modificaStatusJogador(Jogador jog){
-            boolean achouGenerica = false;
-            for (int i = 0; i < jog.getCartasDoJogo().size(); i++){
-                if(jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")){
-                    jog.setStatus(StatusEnumJogador.DEFININDO);
-                    achouGenerica = true;
-                }
-            }
-            if(!achouGenerica)
-                jog.setStatus(StatusEnumJogador.FINALIZADO);
-        }
+
+	public void modificaStatusJogador(Jogador jog) {
+		boolean achouGenerica = false;
+		for (int i = 0; i < jog.getCartasDoJogo().size(); i++) {
+			if (jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+				jog.setStatus(StatusEnumJogador.DEFININDO);
+				achouGenerica = true;
+			}
+		}
+		if (!achouGenerica) {
+			jog.setStatus(StatusEnumJogador.FINALIZADO);
+		}
+	}
 }
