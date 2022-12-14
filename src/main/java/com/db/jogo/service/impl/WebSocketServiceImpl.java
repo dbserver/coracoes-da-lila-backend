@@ -1,33 +1,22 @@
 package com.db.jogo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.db.jogo.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
-import com.db.jogo.model.Baralho;
-import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.model.CartaObjetivo;
-import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
+import com.db.jogo.model.*;
+import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -41,11 +30,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private Jogador jogador;
 	private CartaDoJogo cartaComprada;
 	private CartaObjetivo cartaCompradaObjetivo;
+	Sala sala = new Sala();
 
 	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
-			JogadorService jogadorService,
-			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+								   JogadorService jogadorService,
+								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
 		this.jogadorService = jogadorService;
@@ -194,7 +184,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		}
 		return null;
 	}
-        
+
 	public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");
@@ -477,7 +467,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		} catch (
 
-		Exception e) {
+				Exception e) {
 			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
 		}
 
@@ -774,8 +764,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	public void setIndexDoProximoJogador(Integer index) {
 		this.indexDoProximoJogador = index;
-        
-        public void sendJogador(Jogador jogador) throws JsonInvalidoException {
+	}
+
+	public void sendJogador(Jogador jogador) throws JsonInvalidoException {
 		ObjectMapper mapper = new ObjectMapper();
 		String jogadorAsJSON;
 		String url = "/gameplay/game-update/" + jogador.getId();
@@ -784,22 +775,22 @@ public class WebSocketServiceImpl implements WebSocketService {
 		} catch (JsonProcessingException e) {
 			throw new JsonInvalidoException("Não foi possível construir o JSON do jogador.");
 		}
-                sala.mudaPrimeiroJogador(jogador);
+		sala.mudaPrimeiroJogador(jogador);
 		template.convertAndSend(url, jogadorAsJSON);
 	}
-        
-        public Optional<Jogador> pegaJogadorEscolhido(Jogador jogador) throws JogoInvalidoException {
-		Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
-		try {
-			if (atualizarJogador.isPresent()) {
-				atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
-				this.jogadorService.saveJogador(atualizarJogador.get());
 
-				return atualizarJogador;
+		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
+			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+			try {
+				if (atualizarJogador.isPresent()) {
+					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
+					this.jogadorService.saveJogador(atualizarJogador.get());
+
+					return atualizarJogador;
+				}
+			} catch (Exception e) {
+				throw new JogoInvalidoException("Jogador não encontrado");
 			}
-		} catch (Exception e) {
-			throw new JogoInvalidoException("Jogador não encontrada");
+			return atualizarJogador;
 		}
-		return atualizarJogador;
 	}
-}
