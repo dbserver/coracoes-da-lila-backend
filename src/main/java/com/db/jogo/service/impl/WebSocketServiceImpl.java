@@ -148,7 +148,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 									.remove(cartaParaAtualizarNoJogador.get());
 
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+							iniciaRodadaDefinicao(salaFront);
+							/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 									modificaStatusJogador(jog);
@@ -160,8 +161,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 										}
 									}
 								}
-
-							}
+							} */
 						}
 						/*---*Fim da Lógica para Adicionar a Carta*----*/
 					}
@@ -255,8 +255,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 	// indexDoProximoJogador
 	public void passaAVezDoJogador(Sala sala) {
 		for (Jogador jog : sala.getJogadores()) {
-			if (jog.getPosicao() == getIndexDoProximoJogador()) {
-				jog.setStatus(StatusEnumJogador.JOGANDO);
+			if(StatusEnum.JOGANDO.equals(sala.getStatus()) || StatusEnum.ULTIMA_RODADA.equals(sala.getStatus())) {
+				if (jog.getPosicao() == getIndexDoProximoJogador()) {
+					jog.setStatus(StatusEnumJogador.JOGANDO);
+				}
 			}
 		}
 	}
@@ -602,7 +604,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+					iniciaRodadaDefinicao(salaFront);
+					/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							modificaStatusJogador(jog);
@@ -614,7 +617,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 								}
 							}
 						}
-					}
+					} */
 				}
 			}
 
@@ -680,7 +683,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+					iniciaRodadaDefinicao(salaFront);
+					/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
 							modificaStatusJogador(jog);
@@ -692,7 +696,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 								}
 							}
 						}
-					}
+					} */
 				}
 			}
 
@@ -798,6 +802,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 		}
 		if (!achouGenerica) {
 			jog.setStatus(StatusEnumJogador.FINALIZADO);
+		}
+	}
+
+	public void iniciaRodadaDefinicao(Sala salaFront) {
+		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
+
+		if(verificaJogoUltimaRodada(salaFront) && verificaUltimaJogadaDoTurno(salaFront)) {
+			for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
+				modificaStatusJogador(jog);
+			}
+
+			salaParaAtualizar.get().setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
+			this.salaService.saveSala(salaParaAtualizar.get());
 		}
 	}
 }
