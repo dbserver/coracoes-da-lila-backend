@@ -58,7 +58,7 @@ INSERT INTO baralho(
  ('fd039d09-d5d4-4eed-9a24-a6e6acff67f3','false', 'Genérica','Joyce C. S. Bastos (TCC)', 'Promova a interação e convivência de pessoas com e sem deficiência.', 'Ação', '1', '2', '3'),
  ('cbbac91b-f3f1-4780-b079-17fadb445cf9','false', 'Genérica', ' Programa de Inclusão DBServer', 'Antes da contratação, percorra as dependências da empresa com a pessoa para identificar pontos de dificuldades de acesso.', 'Ação', '2', '1', '3');
   
-INSERT INTO carta_objetivo( id,tipo_contagem, tipo, categoria, classificacao, descricao, pontos)
+INSERT INTO carta_objetivo( id,tipo_contagem, tipo, categoria, texto_regra, texto_tematico, pontos)
 	VALUES ( 'c15aafd2-8f1f-4863-9a9d-4bfe8c2d3261', '5', '', 'FISICA', 'Ganhe 3 pontos se você tiver a maior quantidade de cartas da categoria Física ao final da partida','Um dos seus
 funcionários passou a usar cadeira de rodas.','3') ,
 
