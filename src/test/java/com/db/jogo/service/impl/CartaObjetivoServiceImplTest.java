@@ -23,7 +23,7 @@ class CartaObjetivoServiceImplTest {
 	private CartaObjetivoServiceImpl cartaObjetivoService;
 
 	CartaObjetivo cartaObjetivo = CartaObjetivo.builder().id(UUID.randomUUID()).categoria("Filme")
-			.classificacao("Deficiencia fisica").descricao("Lorem ipsum").pontos(3).build();
+			.texto_regra("Deficiencia fisica").texto_tematico("Lorem ipsum").pontos(3).build();
 
 	private final ArrayList<CartaObjetivo> cartaObjetivoArraylist = new ArrayList<>();
 
@@ -45,7 +45,7 @@ class CartaObjetivoServiceImplTest {
 	@Test
 	void findCartaObjetivoById() {
 		Optional<CartaObjetivo> cartaObje = Optional.ofNullable(CartaObjetivo.builder().id(UUID.randomUUID())
-				.categoria("Filme").classificacao("Deficiencia fisica").descricao("Lorem ipsum").pontos(3).build());
+				.categoria("Filme").texto_regra("Deficiencia fisica").texto_tematico("Lorem ipsum").pontos(3).build());
 
 		String id = UUID.randomUUID().toString();
 		when(cartaObjetivoService.findById(UUID.fromString(id))).thenReturn(cartaObje);

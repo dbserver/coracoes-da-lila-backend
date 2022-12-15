@@ -35,14 +35,14 @@ class CartaObjetivoControllerTest {
 	@MockBean
 	CartaObjetivoServiceImpl cartaObjetivoService;
 	String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
-	CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.fromString(id)).classificacao("Deficiencia Física")
-			.categoria("Filmes").pontos(3).descricao("Exemplo descrição").build();
+	CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.fromString(id)).texto_regra("Deficiencia Física")
+			.categoria("Filmes").pontos(3).texto_tematico("Exemplo descrição").build();
 
 	@Test
 	@DisplayName("Teste do POST do Controller do Carta Objetivo")
 	public void testCriacaoCartaObjetivo() throws Exception {
 		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.randomUUID())
-				.classificacao("Deficiencia Visual").categoria("Filmes").pontos(1).descricao("Exemplo descrição")
+				.texto_regra("Deficiencia Visual").categoria("Filmes").pontos(1).texto_tematico("Exemplo descrição")
 				.build();
 
 		ObjectMapper mapper = new ObjectMapper();
