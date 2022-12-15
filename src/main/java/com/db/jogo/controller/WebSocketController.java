@@ -116,6 +116,19 @@ public class WebSocketController {
         }
     }
 
+    @PutMapping("/primeirojogador")
+    public ResponseEntity<Jogador> selecionaJogadorInicial (@RequestBody Jogador jogador) throws JogoInvalidoException{
+        try {
+            Optional<Jogador> jogadorEscolhido = webSocketServiceImpl.pegaJogadorEscolhido(jogador);
+            webSocketServiceImpl.sendJogador(jogadorEscolhido.get()); // envia o jogador para o websocket
+            return new ResponseEntity<>(jogadorEscolhido.get(), HttpStatus.OK);
+
+        } catch (JsonInvalidoException e) {
+            System.err.println("Não foi possível criar o JSON da sala.");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/iniciarpartida")
     public ResponseEntity<Sala> updateSala(@RequestBody Sala sala) throws JogoInvalidoException {
         try {

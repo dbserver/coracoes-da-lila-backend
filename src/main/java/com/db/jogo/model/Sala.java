@@ -1,12 +1,14 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.enums.StatusEnumJogador;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name="sala")
+@Table(name = "sala")
 public class Sala {
 
 	@Id
@@ -46,7 +48,13 @@ public class Sala {
 	private UUID id;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores ;
+	private List<Jogador> jogadores;
+
+	@OneToOne
+    @JoinTable(name = "sala_jogadores", joinColumns = {
+        @JoinColumn(name = "sala_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "jogadores_id", referencedColumnName = "id")})
+    private Jogador escolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
@@ -125,10 +133,20 @@ public class Sala {
 		this.setDataHoraFimDeJogo();
 	}
 
+	public Jogador getEscolhido() {
+        return this.escolhido;
+    }
+
 	public void setDataHoraFimDeJogo(){
             
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
 	}
+
+	public void mudaPrimeiroJogador(Jogador escolhido) {
+        int posicao = escolhido.getPosicao() - 1;
+        this.escolhido = escolhido;
+        Collections.rotate(this.jogadores, (posicao * -1));
+        escolhido.setStatus(StatusEnumJogador.JOGANDO);
+    }   
+	
 }
-
-
