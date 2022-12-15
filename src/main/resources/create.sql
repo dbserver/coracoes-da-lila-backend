@@ -63,6 +63,8 @@ create table carta_objetivo (
     classificacao varchar(255) not null,
     descricao varchar(255) not null, 
     pontos int4 not null,
+    tipo_contagem int4 not null,
+    tipo varchar(20),
     primary key (id)
     );
     
