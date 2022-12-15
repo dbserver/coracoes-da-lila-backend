@@ -84,13 +84,13 @@ ao final da partida
 
 ('7b3e8a21-6335-4690-ae69-bd7ecf862346', 'AUDITIVA','Ganhe 1 ponto por cada carta que você tiver da categoria Auditiva ao final da partida','Seu ambiente de trabalho é muito barulhento.', '1'),
 
-('3c16a975-e904-48f5-9557-816930cdafaf', 'CATEGORIA AO FINAL DA PARTIDA', 'Ganhe 3 pontos se você tiver a maior variedade de categorias ao final da partida', 'Seu filho pequeno está prendendo a respeitar os coleguinhas.', '3'),
+('3c16a975-e904-48f5-9557-816930cdafaf', '', 'Ganhe 3 pontos se você tiver a maior variedade de categorias ao final da partida', 'Seu filho pequeno está prendendo a respeitar os coleguinhas.', '3'),
 
-('c7f83c84-d8b1-454b-bdc4-526cebbd7972', 'CATEGORIA AO FINAL DA PARTIDA','Ganhe 1 ponto por cada categoria que você tiver ao final da partida', 'Sua empresa passou a ter mais de 100 
+('c7f83c84-d8b1-454b-bdc4-526cebbd7972', '','Ganhe 1 ponto por cada categoria que você tiver ao final da partida', 'Sua empresa passou a ter mais de 100 
 funcionários.', '1'),
-( '272f930e-1adc-4405-b4a5-e9b909ce5738','CARTA DE FILME', 'Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida', 'Sua sobrinha adolescente se identifica com personagens.', '2'),
+( '272f930e-1adc-4405-b4a5-e9b909ce5738','', 'Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida', 'Sua sobrinha adolescente se identifica com personagens.', '2'),
 
-('04e501a8-e6a4-4ab5-84aa-1d76df1f62dc', 'CARTA DE INFORMAÇÃO', 'Ganhe 2 pontos se você tiver alguma carta de informação ao final da partida', 'Você é responsável pelo newsletter da empresa', '2');
+('04e501a8-e6a4-4ab5-84aa-1d76df1f62dc', '', 'Ganhe 2 pontos se você tiver alguma carta de informação ao final da partida', 'Você é responsável pelo newsletter da empresa', '2');
   
   
 INSERT INTO carta_inicio(id, descricao, nome)
