@@ -70,9 +70,9 @@ class SalaControllerTest {
         carta.setTipo("Ação");
 
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setDescricao("Texto da carta");
+        cartaObjetivo.setTexto_tematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setClassificacao("Ganhe pontos");
+        cartaObjetivo.setTexto_regra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         baralho.setId(UUID.randomUUID());
