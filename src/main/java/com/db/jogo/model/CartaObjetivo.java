@@ -30,7 +30,7 @@ public class CartaObjetivo {
 	private UUID id;
 
 
-	@Column(name = "classificacao", length = 255, nullable = false)
+	@Column(name = "texto_regra", length = 255, nullable = false)
 	private String classificacao;
 
 	@Column(name = "pontos", length = 10, nullable = false)
@@ -39,7 +39,7 @@ public class CartaObjetivo {
 	@Column(name = "categoria", length = 80, nullable = true)
 	private String categoria;
 
-	@Column(name = "descricao", length = 255, nullable = false)
+	@Column(name = "texto_tematico", length = 255, nullable = false)
 	private String descricao;
 
 	@Column(name = "tipo_contagem", length = 10, nullable = false)
