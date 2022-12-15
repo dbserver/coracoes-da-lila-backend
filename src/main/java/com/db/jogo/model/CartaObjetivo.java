@@ -31,7 +31,7 @@ public class CartaObjetivo {
 
 
 	@Column(name = "texto_regra", length = 255, nullable = false)
-	private String classificacao;
+	private String texto_regra;
 
 	@Column(name = "pontos", length = 10, nullable = false)
 	private Integer pontos;
@@ -40,7 +40,7 @@ public class CartaObjetivo {
 	private String categoria;
 
 	@Column(name = "texto_tematico", length = 255, nullable = false)
-	private String descricao;
+	private String texto_tematico;
 
 	@Column(name = "tipo_contagem", length = 10, nullable = false)
 	private Integer tipo_contagem;
