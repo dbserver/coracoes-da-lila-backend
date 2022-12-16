@@ -50,11 +50,8 @@ public class Sala {
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores;
 
-/* 	@OneToOne
-    @JoinTable(name = "sala_jogadores", joinColumns = {
-        @JoinColumn(name = "sala_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "jogadores_id", referencedColumnName = "id")}) */
-	@Transient
+	@OneToOne
+	@JoinColumn(name = "escolhido")
     private Jogador escolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -141,13 +138,5 @@ public class Sala {
 	public void setDataHoraFimDeJogo(){
             
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
-	}
-
-	public void mudaPrimeiroJogador(Jogador escolhido) {
-        int posicao = escolhido.getPosicao() - 1;
-        this.escolhido = escolhido;
-        Collections.rotate(this.jogadores, (posicao * -1));
-        escolhido.setStatus(StatusEnumJogador.JOGANDO);
-    }   
-	
+	}	
 }
