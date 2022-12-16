@@ -33,8 +33,8 @@ class CartaDoJogoServiceTest {
 
 	@BeforeEach
 	void setup() {
-
-		MockitoAnnotations.initMocks(this);
+		
+		MockitoAnnotations.openMocks(this);
 		cartaDoJogoService = new CartaDoJogoServiceImpl(cartaDoJogoRepository);
 
 		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCoracaoGrande(1).valorCoracaoPequeno(0)
