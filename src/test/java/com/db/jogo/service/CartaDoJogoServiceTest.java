@@ -37,21 +37,28 @@ class CartaDoJogoServiceTest {
 		MockitoAnnotations.openMocks(this);
 		cartaDoJogoService = new CartaDoJogoServiceImpl(cartaDoJogoRepository);
 
-		cartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCoracaoGrande(1).valorCoracaoPequeno(0)
-				.categoria("Fisica").fonte("Google").tipo("Informação").pontos(3).texto("Teste").build();
+		cartaDoJogo = CartaDoJogo.builder()
+			.id(UUID.fromString(id))
+			.bonus(true)
+			.valorCoracaoGrande(1)
+			.valorCoracaoPequeno(0)
+			.categoria("Fisica")
+			.fonte("Google")
+			.tipo("INFORMACAO")
+			.pontos(3)
+			.texto("Teste")
+			.build();
 	}
 
-	@DisplayName("Teste do SAVE do Service de uma Carta Do Jogo")
 	@Test
+	@DisplayName("Teste do SAVE do Service de uma Carta Do Jogo")
 	void saveCartaDoJogo() {
-
 		when(cartaDoJogoService.saveCartaDoJogo(cartaDoJogo)).thenReturn(cartaDoJogo);
 		Assertions.assertEquals(cartaDoJogo, cartaDoJogoService.saveCartaDoJogo(cartaDoJogo));
 	}
 
 	@Test
 	void findAllCartaDoJogo() {
-
 		when(cartaDoJogoService.findAll()).thenReturn(cartaDoJogoArraylist);
 		Assertions.assertEquals(cartaDoJogoArraylist, cartaDoJogoService.findAll());
 	}
@@ -60,6 +67,7 @@ class CartaDoJogoServiceTest {
 	void findByIdCartaDoJogo() {
 
 		UUID id = UUID.fromString("fd7b6723-77e2-4846-bd22-88df15ca150a");
+
 		when(cartaDoJogoService.findById(id)).thenReturn(Optional.ofNullable(cartaDoJogo));
 
 		Assertions.assertEquals(cartaDoJogoService.findById(id).get(), cartaDoJogo);
