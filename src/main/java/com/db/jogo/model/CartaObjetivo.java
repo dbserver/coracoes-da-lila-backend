@@ -28,16 +28,22 @@ public class CartaObjetivo {
 	private UUID id;
 
 
-	@Column(name = "classificacao", length = 255, nullable = false)
-	private String classificacao;
+	@Column(name = "texto_regra", length = 255, nullable = false)
+	private String texto_regra;
 
 	@Column(name = "pontos", length = 10, nullable = false)
 	private Integer pontos;
 
-	@Column(name = "categoria", length = 80, nullable = false)
+	@Column(name = "categoria", length = 80, nullable = true)
 	private String categoria;
 
-	@Column(name = "descricao", length = 255, nullable = false)
-	private String descricao;
+	@Column(name = "texto_tematico", length = 255, nullable = false)
+	private String texto_tematico;
+
+	@Column(name = "tipo_contagem", length = 10, nullable = false)
+	private Integer tipo_contagem;
+
+	@Column(name = "tipo", length = 20, nullable = true)
+	private String tipo;
 
 }

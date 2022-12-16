@@ -35,7 +35,7 @@ class CartaInicioServiceTest {
     @BeforeEach
     void setup() {
 
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         cartaInicioService = new CartaInicioServiceImpl(cartaInicioRepository);
 
         cartaInicio = CartaInicio.builder()
