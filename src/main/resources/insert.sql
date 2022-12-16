@@ -202,10 +202,10 @@ INSERT INTO baralho_cartadojogo(
 INSERT INTO sala(id, hash, status, dado,baralho_id, dth_inicio) values
        ('7d487fb2-6fe2-4413-b7f7-1f7a2f9694ab', '6g-Rg8V5', 0,2, 'a28ebdb0-d3bc-4220-9814-9a743a4d829e', '2022-11-11 14:00:10.123872' );
 
-INSERT INTO jogador(id, posicao, bonus_coracao_gra, bonus_coracao_peq, coracao_gra, coracao_peq, nome, pontos,status,is_host  ) values
-        ('01fa2624-bc16-4d3b-a1d6-6e797b47e04d', 1, 0, 0, 2, 3, 'João', 5,0,'true'),
-        ('0accbbfb-075a-4e55-8fb5-3debe5813c0a', 2, 0, 0, 1, 2, 'Pedro', 5, 1 ,'false');
-        
+INSERT INTO jogador(id, posicao, bonus_coracao_gra, bonus_coracao_peq, coracao_gra, coracao_peq, nome, pontos,status,is_host, pontos_objetivo ) values
+        ('01fa2624-bc16-4d3b-a1d6-6e797b47e04d', 1, 0, 0, 2, 3, 'João', 5,0,'true', null),
+        ('0accbbfb-075a-4e55-8fb5-3debe5813c0a', 2, 0, 0, 1, 2, 'Pedro', 5, 1 ,'false', null);
+
      
 INSERT INTO sala_jogadores(sala_id, jogadores_id) values
         ('7d487fb2-6fe2-4413-b7f7-1f7a2f9694ab', '01fa2624-bc16-4d3b-a1d6-6e797b47e04d'),

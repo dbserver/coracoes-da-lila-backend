@@ -101,7 +101,8 @@ create table jogador (
      nome varchar(30) not null,
      pontos int4 not null,
      status int4 not null,
-     is_host boolean not null, 
+     is_host boolean not null,
+     pontos_objetivo int4,
      primary key (id)
      );
 
