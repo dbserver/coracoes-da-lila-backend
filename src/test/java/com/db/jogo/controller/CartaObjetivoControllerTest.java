@@ -49,16 +49,25 @@ class CartaObjetivoControllerTest {
 	@Test
 	@DisplayName("Teste do POST do Controller do Carta Objetivo")
 	public void testCriacaoCartaObjetivo() throws Exception {
-		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.randomUUID())
-				.texto_regra("Deficiência Visual").categoria("Filmes").pontos(1).texto_tematico("Exemplo descrição")
-				.build();
+		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder()
+			.id(UUID.randomUUID())
+			.tipo_contagem(3)
+			.tipo("")
+			.categoria("")
+			.texto_regra("Granhe 4 pontos")
+			.texto_tematico("Teste de POST do Controller")
+			.pontos(1)
+			.build();
 
 		ObjectMapper mapper = new ObjectMapper();
-
+		
 		String newCartaObjetivoAsJSON = mapper.writeValueAsString(newCartaObjetivo);
-		this.mockMvc.perform(post("/cartaobjetivo").content(newCartaObjetivoAsJSON)
-				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
+
+		this.mockMvc.perform(post("/cartaobjetivo")
+			.content(newCartaObjetivoAsJSON)
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -70,9 +79,11 @@ class CartaObjetivoControllerTest {
 		ObjectMapper mapper = new ObjectMapper();
 		String cartaComoJSON = mapper.writeValueAsString(newCartaObjetivo);
 
-		mockMvc.perform(get("/cartaobjetivo/" + newCartaObjetivo.getId())
-				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(cartaComoJSON));
+		this.mockMvc.perform(get("/cartaobjetivo/" + newCartaObjetivo.getId())
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.content().json(cartaComoJSON));
 
 	}
 }
