@@ -50,10 +50,11 @@ public class Sala {
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Jogador> jogadores;
 
-	@OneToOne
+/* 	@OneToOne
     @JoinTable(name = "sala_jogadores", joinColumns = {
         @JoinColumn(name = "sala_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "jogadores_id", referencedColumnName = "id")})
+        @JoinColumn(name = "jogadores_id", referencedColumnName = "id")}) */
+	@Transient
     private Jogador escolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
