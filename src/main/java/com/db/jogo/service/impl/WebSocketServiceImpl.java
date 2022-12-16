@@ -215,6 +215,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralho.setCodigo(sala.getHash());
 		sala.setBaralho(baralho);
 		sala.setDado(0);
+		sala.setEscolhido(jogador);
 		salaResp.setJogador(savedJogador);
 		sala.setStatus(StatusEnum.AGUARDANDO);
 		salaResp.setSala(salaService.saveSala(sala));
