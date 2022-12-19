@@ -1,5 +1,5 @@
 package com.db.jogo.enums;
 
-public enum CartaDoJojoEnumCategoria {
+public enum CartaDoJogoEnumCategoria {
     AUDITIVA,FISICA,GENERICA,INTELECTUAL,TEA,VISUAL
 }
