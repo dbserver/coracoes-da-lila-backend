@@ -30,7 +30,7 @@ public class DadoTest {
         
         CartaDoJogo	carta = CartaDoJogo.builder()
     			.bonus(true)
-    			.categoria("Ação")
+    			.categoria(null)
     			.fonte("")
     			.pontos(0)
     			.valorCoracaoGrande(0)

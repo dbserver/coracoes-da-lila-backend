@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
@@ -63,7 +64,7 @@ class SalaControllerTest {
         carta.setId(UUID.randomUUID());
         carta.setPontos(2);
         carta.setBonus(true);
-        carta.setCategoria("Visual");
+        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCoracaoGrande(0);

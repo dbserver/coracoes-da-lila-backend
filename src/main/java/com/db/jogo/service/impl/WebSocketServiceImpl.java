@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.db.jogo.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +41,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private CartaDoJogo cartaComprada;
 	private CartaObjetivo cartaCompradaObjetivo;
 
-	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
 			JogadorService jogadorService,
 			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
@@ -555,7 +553,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	public CartaDoJogo criarCartaDoJogo() {
-		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria("").fonte("").pontos(0).valorCoracaoGrande(0)
+		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
 				.valorCoracaoPequeno(0).tipo(null).build();
 		return carta;
 	}

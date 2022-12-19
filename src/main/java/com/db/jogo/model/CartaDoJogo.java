@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.persistence.*;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +27,9 @@ public class CartaDoJogo {
 	@Enumerated(EnumType.STRING)
 	private CartaDoJogoEnumTipo tipo;	
 
-	@Column(name = "categoria",length = 80, nullable = false)
-	private String categoria;
+	@Column(name = "categoria",length = 80, nullable = true)
+	@Enumerated(EnumType.STRING)
+	private CartaDoJogoEnumCategoria categoria;
 
 	@Column(name = "bonus",length =10 , nullable = false)
 	private Boolean bonus;

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
@@ -69,7 +70,7 @@ public class WebSocketControllerTest {
         carta.setId(UUID.randomUUID());
         carta.setPontos(2);
         carta.setBonus(true);
-        carta.setCategoria("Visual");
+        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCoracaoGrande(2);
