@@ -51,8 +51,8 @@ public class Sala {
 	private List<Jogador> jogadores;
 
 	@OneToOne
-	@JoinColumn(name = "escolhido")
-    private Jogador escolhido;
+	@JoinColumn(name = "jogador_escolhido")
+    private Jogador jogadorEscolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
@@ -131,8 +131,8 @@ public class Sala {
 		this.setDataHoraFimDeJogo();
 	}
 
-	public Jogador getEscolhido() {
-        return this.escolhido;
+	public Jogador getJogadorEscolhido() {
+        return this.jogadorEscolhido;
     }
 
 	public void setDataHoraFimDeJogo(){

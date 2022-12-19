@@ -127,7 +127,7 @@ create table sala (
      status int4 not null,
      baralho_id uuid, 
      dado int4 not null,
-     escolhido uuid,
+     jogador_escolhido uuid,
      dth_fim timestamp,
      dth_inicio timestamp not null,
      primary key (id)
