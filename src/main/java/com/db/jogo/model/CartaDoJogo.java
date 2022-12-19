@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.persistence.*;
 
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-
 @Table(name ="carta_do_jogo")
 public class CartaDoJogo {
 	@Id
@@ -22,8 +22,9 @@ public class CartaDoJogo {
 	@Column(name = "id", nullable = false)
 	private UUID id;
 
-	@Column(name = "tipo",length=50 ,nullable = false)
-	private String tipo;
+	@Column(name = "tipo", length=50, nullable = true)	
+	@Enumerated(EnumType.STRING)
+	private CartaDoJogoEnumTipo tipo;	
 
 	@Column(name = "categoria",length = 80, nullable = false)
 	private String categoria;
@@ -45,5 +46,4 @@ public class CartaDoJogo {
 
 	@Column(name = "pontos", length = 20 ,nullable = false)
 	private Integer pontos;
-
 }

@@ -196,18 +196,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
+		
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");
 		}
+
 		Sala sala = new Sala();
 		SalaResponse salaResp = new SalaResponse();
-		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
-		Baralho baralho = criarBaralho();
+		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));		
+		Baralho baralho = criarBaralho();		
 		baralho.sorteiaCartaInicial();
 		Collections.shuffle(baralho.getCartasDoJogo());
 		Collections.shuffle(baralho.getCartasInicio());
 		sala.cartasObjetivo = criarCartasObjetivo();
-
 		sala.setId(UUID.randomUUID());
 		sala.setJogadores(new ArrayList<>());
 		sala.adicionarJogador(savedJogador);
@@ -218,6 +219,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		salaResp.setJogador(savedJogador);
 		sala.setStatus(StatusEnum.AGUARDANDO);
 		salaResp.setSala(salaService.saveSala(sala));
+		
 		return salaResp;
 	}
 
@@ -522,6 +524,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());
 		System.out.println(baralhoCopy);
+		System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());		
 		return baralhoService.saveBaralho(baralhoCopy);
 	}
 
@@ -553,7 +556,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	public CartaDoJogo criarCartaDoJogo() {
 		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria("").fonte("").pontos(0).valorCoracaoGrande(0)
-				.valorCoracaoPequeno(0).tipo("").build();
+				.valorCoracaoPequeno(0).tipo(null).build();
 		return carta;
 	}
 

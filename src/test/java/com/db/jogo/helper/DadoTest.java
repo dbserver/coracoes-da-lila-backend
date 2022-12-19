@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
@@ -34,7 +35,7 @@ public class DadoTest {
     			.pontos(0)
     			.valorCoracaoGrande(0)
     			.valorCoracaoPequeno(0)
-    			.tipo("Ação")
+    			.tipo(CartaDoJogoEnumTipo.ACAO)
     			.build();
         
       
