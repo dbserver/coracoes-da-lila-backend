@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
@@ -34,7 +35,8 @@ public class Baralho {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-        private UUID idCartaInicio;
+
+	private UUID idCartaInicio;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "baralho_cartadojogo", joinColumns = @JoinColumn(name = "baralho_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "cartadojogo_id", referencedColumnName = "id"))
@@ -98,5 +100,4 @@ public class Baralho {
         int seletor = random.nextInt(cartasInicio.size());
         this.idCartaInicio = cartasInicio.get(seletor).getId();
     }
-
 }

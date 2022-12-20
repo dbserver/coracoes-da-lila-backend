@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -63,16 +64,11 @@ public class Sala {
 	@Builder.Default
 	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
 
-	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
-		this.cartasObjetivo.add(cartaObjetivo);
-	}
-
-	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
-		return this.cartasObjetivo.remove(cartaDoObjetivo);
-	}
-
 	@OneToOne
 	private Baralho baralho;
+
+	@Column(name = "carta_inicio_id", nullable =false)
+	private UUID cartaInicioId;
 	
 	@NonNull
 	@Column(name = "hash" , nullable =false)
@@ -106,6 +102,14 @@ public class Sala {
 		return encoder.encodeToString(bytes);
 	}
 
+	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+		this.cartasObjetivo.add(cartaObjetivo);
+	}
+
+	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+		return this.cartasObjetivo.remove(cartaDoObjetivo);
+	}
+
 	@NonNull
 	public void adicionarJogador(Jogador jogador) {
 		this.jogadores.add(jogador);
@@ -126,8 +130,11 @@ public class Sala {
 	}
 
 	public void setDataHoraFimDeJogo(){
-            
 		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+	}
+
+	public void setCartaInicio(UUID cartaInicioID){
+		this.cartaInicioId = cartaInicioID;
 	}
 }
 
