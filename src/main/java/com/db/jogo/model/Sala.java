@@ -5,11 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -82,7 +87,7 @@ public class Sala {
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
 	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
+	private Timestamp dth_inicio = dataHoraAtual();
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
@@ -126,9 +131,14 @@ public class Sala {
 	}
 
 	public void setDataHoraFimDeJogo(){
-            
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+		this.dataHoraFimDoJogo = dataHoraAtual();
 	}
+
+	public static Timestamp dataHoraAtual() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		return Timestamp.from(Instant.now());
+	}
+
 }
 
 
