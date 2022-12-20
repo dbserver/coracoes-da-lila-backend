@@ -34,23 +34,40 @@ class CartaObjetivoControllerTest {
 
 	@MockBean
 	CartaObjetivoServiceImpl cartaObjetivoService;
-	String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
-	CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.fromString(id)).classificacao("Deficiencia Física")
-			.categoria("Filmes").pontos(3).descricao("Exemplo descrição").build();
+
+	String id = "272f930e-1adc-4405-b4a5-e9b909ce5738";
+	CartaObjetivo newCartaObjetivo = CartaObjetivo.builder()
+			.id(UUID.fromString(id))
+			.tipo_contagem(2)
+			.tipo("FILME")
+			.categoria("")
+			.texto_regra("Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida")
+			.texto_tematico("Sua sobrinha adolescente se identifica com personagens.")
+			.pontos(2)
+			.build();
 
 	@Test
 	@DisplayName("Teste do POST do Controller do Carta Objetivo")
 	public void testCriacaoCartaObjetivo() throws Exception {
-		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder().id(UUID.randomUUID())
-				.classificacao("Deficiencia Visual").categoria("Filmes").pontos(1).descricao("Exemplo descrição")
-				.build();
+		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder()
+			.id(UUID.randomUUID())
+			.tipo_contagem(3)
+			.tipo("")
+			.categoria("")
+			.texto_regra("Granhe 4 pontos")
+			.texto_tematico("Teste de POST do Controller")
+			.pontos(1)
+			.build();
 
 		ObjectMapper mapper = new ObjectMapper();
-
+		
 		String newCartaObjetivoAsJSON = mapper.writeValueAsString(newCartaObjetivo);
-		this.mockMvc.perform(post("/cartaobjetivo").content(newCartaObjetivoAsJSON)
-				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isCreated());
+
+		this.mockMvc.perform(post("/cartaobjetivo")
+			.content(newCartaObjetivoAsJSON)
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -62,9 +79,11 @@ class CartaObjetivoControllerTest {
 		ObjectMapper mapper = new ObjectMapper();
 		String cartaComoJSON = mapper.writeValueAsString(newCartaObjetivo);
 
-		mockMvc.perform(get("/cartaobjetivo/" + newCartaObjetivo.getId())
-				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(cartaComoJSON));
+		this.mockMvc.perform(get("/cartaobjetivo/" + newCartaObjetivo.getId())
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.contentType(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.content().json(cartaComoJSON));
 
 	}
 }
