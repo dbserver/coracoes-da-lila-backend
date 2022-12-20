@@ -87,7 +87,7 @@ public class Sala {
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
 	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
+	private Timestamp dth_inicio = dataHoraAtual();
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
@@ -131,9 +131,14 @@ public class Sala {
 	}
 
 	public void setDataHoraFimDeJogo(){
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+		this.dataHoraFimDoJogo = dataHoraAtual();
 	}
+
+	public static Timestamp dataHoraAtual() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		return Timestamp.from(Instant.now());
+	}
+
 }
 
 
