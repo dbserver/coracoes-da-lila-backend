@@ -1,20 +1,5 @@
 package com.db.jogo.controller;
 
-import java.util.Optional;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.exception.JogoInvalidoException;
@@ -22,8 +7,15 @@ import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.impl.WebSocketServiceImpl;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Optional;
 
 import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
 import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
@@ -115,25 +107,13 @@ public class WebSocketController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    @PutMapping("/primeirojogador")
-    public ResponseEntity<Jogador> selecionaJogadorInicial (@RequestBody Jogador jogador) throws JogoInvalidoException{
-        try {
-            Optional<Jogador> jogadorEscolhido = webSocketServiceImpl.pegaJogadorEscolhido(jogador);
-            webSocketServiceImpl.sendJogador(jogadorEscolhido.get()); // envia o jogador para o websocket
-            return new ResponseEntity<>(jogadorEscolhido.get(), HttpStatus.OK);
-            
-        } catch (JsonInvalidoException e) {
-            System.err.println("Não foi possível criar o JSON da sala.");
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @PutMapping("/iniciarpartida")
     public ResponseEntity<Sala> updateSala(@RequestBody Sala sala) throws JogoInvalidoException {
         try {
-            Optional<Sala> salaComStatusTrocado = webSocketServiceImpl.iniciarPartida(sala);
+        	Optional<Sala> salaComStatusTrocado = webSocketServiceImpl.iniciarPartida(sala);
             webSocketServiceImpl.sendSala(salaComStatusTrocado.get()); // envia a sala para o websocket
+            
             return new ResponseEntity<>(salaComStatusTrocado.get(), HttpStatus.OK);
             
         } catch (JsonInvalidoException e) {

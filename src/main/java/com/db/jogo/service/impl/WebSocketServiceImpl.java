@@ -141,7 +141,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
 										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 										break;
 									}
@@ -205,6 +205,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralho.setCodigo(sala.getHash());
 		sala.setBaralho(baralho);
 		sala.setDado(0);
+		sala.setJogadorEscolhido(jogador);
 		salaResp.setJogador(savedJogador);
 		sala.setStatus(StatusEnum.AGUARDANDO);
 		salaResp.setSala(salaService.saveSala(sala));
@@ -266,7 +267,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 	// Método para verificar se está na última jogada do turno
 	public boolean verificaUltimaJogadaDoTurno(Sala sala) {
 		for (Jogador jog : sala.getJogadores()) {
-			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getIsHost()) {
+			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
 				return true;
 			}
 		}
@@ -591,7 +592,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == sala.getEscolhido().getPosicao()) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -665,7 +666,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
 
 						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getEscolhido().getPosicao()) {
+							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
 								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
 								break;
 							}
@@ -748,6 +749,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		try {
 			if (salaParaAtualizar.isPresent()) {
 				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
+				salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
 				this.salaService.saveSala(salaParaAtualizar.get());
 
 				return salaParaAtualizar;
@@ -765,32 +767,17 @@ public class WebSocketServiceImpl implements WebSocketService {
 	public void setIndexDoProximoJogador(Integer index) {
 		this.indexDoProximoJogador = index;
 	}
-
-	public void sendJogador(Jogador jogador) throws JsonInvalidoException {
-		ObjectMapper mapper = new ObjectMapper();
-		String jogadorAsJSON;
-		String url = "/gameplay/game-update/" + jogador.getId();
-		try {
-			jogadorAsJSON = mapper.writeValueAsString(jogador);
-		} catch (JsonProcessingException e) {
-			throw new JsonInvalidoException("Não foi possível construir o JSON do jogador.");
-		}
-		sala.mudaPrimeiroJogador(jogador);
-		template.convertAndSend(url, jogadorAsJSON);
-	}
-
 		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
 			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
 			try {
 				if (atualizarJogador.isPresent()) {
 					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
 					this.jogadorService.saveJogador(atualizarJogador.get());
-
+						return atualizarJogador;
+						}
+					} catch (Exception e) {
+						throw new JogoInvalidoException("Jogador não encontrado");
+					}
 					return atualizarJogador;
-				}
-			} catch (Exception e) {
-				throw new JogoInvalidoException("Jogador não encontrado");
-			}
-			return atualizarJogador;
-		}
+	}
 	}
