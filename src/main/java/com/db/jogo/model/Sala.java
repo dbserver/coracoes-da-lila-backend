@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -78,7 +78,7 @@ public class Sala {
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
 	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
+	private Timestamp dth_inicio = dataHoraAtual();
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
@@ -130,12 +130,14 @@ public class Sala {
 	}
 
 	public void setDataHoraFimDeJogo(){
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+		this.dataHoraFimDoJogo = dataHoraAtual();
 	}
 
-	public void setCartaInicio(UUID cartaInicioID){
-		this.cartaInicioId = cartaInicioID;
+	public static Timestamp dataHoraAtual() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		return Timestamp.from(Instant.now());
 	}
+
 }
 
 
