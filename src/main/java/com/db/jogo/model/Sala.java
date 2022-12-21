@@ -1,39 +1,16 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
-import com.db.jogo.enums.StatusEnumJogador;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.*;
 import java.util.Base64.Encoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
-import lombok.NonNull;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -88,7 +65,7 @@ public class Sala {
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
 	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
+	private Timestamp dth_inicio = dataHoraAtual();
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
@@ -136,7 +113,12 @@ public class Sala {
     }
 
 	public void setDataHoraFimDeJogo(){
-            
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
-	}	
+		this.dataHoraFimDoJogo = dataHoraAtual();
+	}
+
+	public static Timestamp dataHoraAtual() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		return Timestamp.from(Instant.now());
+	}
+
 }
