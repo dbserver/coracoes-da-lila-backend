@@ -30,7 +30,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private Jogador jogador;
 	private CartaDoJogo cartaComprada;
 	private CartaObjetivo cartaCompradaObjetivo;
-	Sala sala = new Sala();
 
 	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
@@ -138,15 +137,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 									.remove(cartaParaAtualizarNoJogador.get());
 
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
-										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-										break;
-									}
+							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+									finalizaJogo(salaParaAtualizar.get());
 								}
-
 							}
 						}
 						/*---*Fim da Lógica para Adicionar a Carta*----*/
@@ -589,13 +583,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
 					}
 				}
@@ -663,13 +653,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getPosicao() == salaParaAtualizar.get().getJogadorEscolhido().getPosicao()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
 					}
 				}
