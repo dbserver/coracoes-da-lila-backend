@@ -1,5 +1,6 @@
 package com.db.jogo.service.impl;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
@@ -821,29 +822,59 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public void contagemPontosObjetivo(Sala sala) {
+        Integer max5 = 0;
+        Jogador retorno5 = sala.getJogadores().get(0);
+        CartaObjetivo retornoCartaObjetivo = sala.getJogadores().get(0).getCartasObjetivo().get(0);
         for (Jogador jogador : sala.getJogadores()) {
             boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
             if (jogadorSemCartaObjetivo) {
                 jogador.setPontosObjetivo(0);
             } else {
                 for(CartaObjetivo cartaObjetivo: jogador.getCartasObjetivo()){
+
                             switch (cartaObjetivo.getTipo_contagem()) {
                                 case 1:
                                     int resultado1 = logicaContagemTipoCartaObjetivo1(cartaObjetivo.getCategoria());
                                     jogador.setPontosObjetivo(resultado1 * cartaObjetivo.getPontos());
                                     break;
                                 case 2:
-
+                                    int resultado2 = logicaContagemTipoCartaObjetivo2(cartaObjetivo.getTipo());
+                                    jogador.setPontosObjetivo(resultado2 * cartaObjetivo.getPontos());
                                     break;
                                 case 3:
                                     int resultado3 = logicaContagemTipoCartaObjetivo3();
                                     jogador.setPontosObjetivo(resultado3 * cartaObjetivo.getPontos());
                                     break;
+                                case 4:
+                                    int resultado4;
 
+                                    break;
+
+                                case 5:
+                                    int resultado5 = logicaContagemTipoCartaObjetivo1(cartaObjetivo.getCategoria());
+                                    if(resultado5>max5){
+                                        max5=resultado5;
+                                        retorno5 = jogador;
+                                    }
+
+                                    break;
+
+                                default:
+                                    //código de default;
                             }
                         }
             }
         }
+
+
+        if(retorno5.getCartasObjetivo().get().getTipo_contagem() == 4){
+            //CASE 4
+
+        }
+
+        //CASE 5
+        retorno5.setPontosObjetivo(max5 * retornoCartaObjetivo.getPontos());
+
     }
     public Integer logicaContagemTipoCartaObjetivo1 (String categoria){
         int quantidadeCartasMesmaCategoria = 0;
@@ -854,14 +885,50 @@ public class WebSocketServiceImpl implements WebSocketService {
         return quantidadeCartasMesmaCategoria;
     }
 
+    public Integer logicaContagemTipoCartaObjetivo2 (String tipo){
+        for(int i =0; i<jogador.getCartasDoJogo().size(); i++){
+            if(jogador.getCartasDoJogo().get(i).getTipo().equals(tipo))
+                return 1;
+        }
+    }
+
     public Integer logicaContagemTipoCartaObjetivo3 (){
-        List<String> listaDeCategorias = new ArrayList<>();
+        Integer [] contadorDeCategorias = {0, 0, 0, 0, 0};
+        Integer aux = 0;
         for(int i = 0; i < jogador.getCartasDoJogo().size(); i++){
-            if(!jogador.getCartasDoJogo().get(i).getCategoria().contains(listaDeCategorias.toString())){
-                listaDeCategorias.add(jogador.getCartasDoJogo().get(i).getCategoria());
+            switch (jogador.getCartasDoJogo().get(i).getCategoria()) {
+                case "VISUAL" -> contadorDeCategorias[0]++;
+                case "INTELECTUAL" -> contadorDeCategorias[1]++;
+                case "TEA" -> contadorDeCategorias[2]++;
+                case "AUDITIVA" -> contadorDeCategorias[3]++;
+                default -> //para acrescentar na física
+                        contadorDeCategorias[4]++;
             }
         }
-        Integer quantidadeCategoriasDiferentes = listaDeCategorias.size();
-        return quantidadeCategoriasDiferentes;
+        for (Integer contadorDeCategoria : contadorDeCategorias) {
+            if (contadorDeCategoria != 0) {
+                aux++;
+            }
+        }
+
+        return aux;
     }
+
+//    public Jogador logicaContagemTipoCartaObjetivo5 (String categoria, Sala sala) {
+//        Integer[] posicaoJogador = {0, 0, 0, 0, 0, 0};
+//        Integer maximo = 0;
+//        Jogador retorno;
+//        for (Jogador jogador : sala.getJogadores()) {
+//            posicaoJogador [jogador.getPosicao()] = logicaContagemTipoCartaObjetivo1(categoria);
+//        }
+//        for (int i = 0; i<posicaoJogador.length; i++){
+//            if(posicaoJogador[i]>maximo){
+//                maximo = posicaoJogador[i];
+//                retorno =
+//            }
+//
+//        }
+//
+//        return maximo;
+//    }
 }
