@@ -1,33 +1,22 @@
 package com.db.jogo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.db.jogo.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
-import com.db.jogo.model.Baralho;
-import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.model.CartaObjetivo;
-import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
+import com.db.jogo.model.*;
+import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -205,7 +194,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 		Baralho baralho = criarBaralho();
 		sala.sorteiaCartaInicial(baralho.getCartasInicio());
 		Collections.shuffle(baralho.getCartasDoJogo());
-		Collections.shuffle(baralho.getCartasInicio());
 		sala.cartasObjetivo = criarCartasObjetivo();
 
 		sala.setId(UUID.randomUUID());
