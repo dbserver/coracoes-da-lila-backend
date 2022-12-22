@@ -1,13 +1,7 @@
 package com.db.jogo.service.impl;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -822,9 +816,6 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public void contagemPontosObjetivo(Sala sala) {
-        Integer max5 = 0;
-        Jogador retorno5 = sala.getJogadores().get(0);
-        CartaObjetivo retornoCartaObjetivo = sala.getJogadores().get(0).getCartasObjetivo().get(0);
         for (Jogador jogador : sala.getJogadores()) {
             boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
             if (jogadorSemCartaObjetivo) {
@@ -834,26 +825,26 @@ public class WebSocketServiceImpl implements WebSocketService {
                     switch (cartaObjetivo.getTipo_contagem()) {
                         case 1:
                             int resultado1 = logicaContagemTipoCartaObjetivo1(cartaObjetivo.getCategoria());
-                            jogador.setPontosObjetivo(resultado1 * cartaObjetivo.getPontos());
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado1 * cartaObjetivo.getPontos()));
                             break;
                         case 2:
                             int resultado2 = logicaContagemTipoCartaObjetivo2(cartaObjetivo.getTipo());
-                            jogador.setPontosObjetivo(resultado2 * cartaObjetivo.getPontos());
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado2 * cartaObjetivo.getPontos()));
                             break;
                         case 3:
                             int resultado3 = logicaContagemTipoCartaObjetivo3();
-                            jogador.setPontosObjetivo(resultado3 * cartaObjetivo.getPontos());
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado3 * cartaObjetivo.getPontos()));
                             break;
                         case 4:
-                            int resultado4;
-
+                            int resultado4 = logicaContagemTipoCartaObjetivo4(jogador.getId(), sala);
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado4 * cartaObjetivo.getPontos()));
                             break;
                         case 5:
-                            int resultado5 = logicaContagemTipoCartaObjetivo5(cartaObjetivo.getCategoria());
-
+                            int resultado5 = logicaContagemTipoCartaObjetivo5(cartaObjetivo.getCategoria(), jogador.getId(), sala);
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado5 * cartaObjetivo.getPontos()));
                             break;
                         default:
-                            //código de default;
+                            throw new RuntimeException("\nCategoria da Carta Objetivo não corresponde a nenhuma lógica de contagem\n");
                     }
                 }
             }
@@ -861,24 +852,31 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public Integer logicaContagemTipoCartaObjetivo1(String categoria) {
-        int quantidadeCartasMesmaCategoria = 0;
+        int cartasDeMesmaCategoria = 0;
+
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            if (jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria))
-                quantidadeCartasMesmaCategoria++;
+            boolean categoriasIguais = jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria);
+
+            if (categoriasIguais)
+                cartasDeMesmaCategoria++;
         }
-        return quantidadeCartasMesmaCategoria;
+        return cartasDeMesmaCategoria;
     }
 
     public Integer logicaContagemTipoCartaObjetivo2(String tipo) {
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            if (jogador.getCartasDoJogo().get(i).getTipo().equals(tipo))
+            boolean tiposIguais = jogador.getCartasDoJogo().get(i).getTipo().equals(tipo);
+
+            if (tiposIguais)
                 return 1;
         }
+
+        return 0;
     }
 
     public Integer logicaContagemTipoCartaObjetivo3() {
         Integer[] contadorDeCategorias = {0, 0, 0, 0, 0};
-        Integer aux = 0;
+        Integer cartasDeCategoriasDistintas = 0;
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             switch (jogador.getCartasDoJogo().get(i).getCategoria()) {
                 case "VISUAL" -> contadorDeCategorias[0]++;
@@ -891,28 +889,103 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
         for (Integer contadorDeCategoria : contadorDeCategorias) {
             if (contadorDeCategoria != 0) {
+                cartasDeCategoriasDistintas++;
+            }
+        }
+
+        return cartasDeCategoriasDistintas;
+    }
+
+    public Integer logicaContagemTipoCartaObjetivo4(UUID idDoJogadorComCartaObjetivo, Sala sala) {
+        Integer[] categoriasDistintas = {0, 0, 0, 0, 0};
+        Integer categoriasDistintasJogador = 0;
+        int aux = 0;
+
+        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+            String categoriaCartaDoJogador = jogador.getCartasDoJogo().get(i).getCategoria();
+
+            switch (categoriaCartaDoJogador) {
+                case "VISUAL" -> categoriasDistintas[0]++;
+                case "INTELECTUAL" -> categoriasDistintas[1]++;
+                case "TEA" -> categoriasDistintas[2]++;
+                case "AUDITIVA" -> categoriasDistintas[3]++;
+                default -> //para acrescentar na física
+                        categoriasDistintas[4]++;
+            }
+        }
+        for (Integer contadorDeCategoria : categoriasDistintas) {
+            if (contadorDeCategoria != 0) {
                 aux++;
             }
         }
+        categoriasDistintasJogador = aux;
 
-        return aux;
-    }
 
-    public Jogador logicaContagemTipoCartaObjetivo5 (String categoria, Jogador jogador) {
-        Integer[] posicaoJogador = {0, 0, 0, 0, 0, 0};
-        int quantidadeCartasMesmaCategoria5 = 0;
-        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            if (jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria))
-                quantidadeCartasMesmaCategoria5++;
-        }
-        posicaoJogador[0] = quantidadeCartasMesmaCategoria5;
-        for(Jogador jogadores : sala.getJogadores()) {
-            for (int i = 0; i < jogadores.getCartasDoJogo().size(); i++) {
-                if
-                if(jogadores.getCartasDoJogo().get(i).getCategoria().equals(categoria))
-                    quantidadeCartasMesmaCategoria5++;
+        for (Jogador jogador : sala.getJogadores()) {
+            Integer[] categoriasDistintasAdversario = {0, 0, 0, 0, 0};
+            aux = 0;
+            Integer categoriasAdversario = 0;
+            for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+                boolean forUmAdversario = sala.getJogadores().get(i).getId() != idDoJogadorComCartaObjetivo;
+
+                if (forUmAdversario) {
+                    for (int j = 0; j < jogador.getCartasDoJogo().size(); j++) {
+                        String categoriaCartaDoAdversario = jogador.getCartasDoJogo().get(j).getCategoria();
+
+                        switch (categoriaCartaDoAdversario) {
+                            case "VISUAL" -> categoriasDistintasAdversario[0]++;
+                            case "INTELECTUAL" -> categoriasDistintasAdversario[1]++;
+                            case "TEA" -> categoriasDistintasAdversario[2]++;
+                            case "AUDITIVA" -> categoriasDistintasAdversario[3]++;
+                            default -> //para acrescentar na física
+                                    categoriasDistintasAdversario[4]++;
+                        }
+                    }
+
+                    for (Integer contadorDeCategoria : categoriasDistintasAdversario) {
+                        if (contadorDeCategoria != 0) {
+                            aux++;
+                        }
+                    }
+                    categoriasAdversario = aux;
+
+                    if (categoriasAdversario > categoriasDistintasJogador)
+                        return 0;
+                }
             }
         }
 
+        // Se nenhum jogador adversário tem mais cartas de categorias distintas
+        return 1;
+    }
+
+    public Integer logicaContagemTipoCartaObjetivo5(String categoria, UUID idDoJogadorComCartaObjetivo, Sala sala) {
+
+        int cartasIguaisDoJogador = 0;
+        int aux = 0;
+        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+            boolean categoriasIguais = jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria);
+
+            if (categoriasIguais)
+                aux++;
+        }
+        cartasIguaisDoJogador = aux;
+
+        for (Jogador jogador : sala.getJogadores()) {
+            int cartasIguaisDoAdversario = 0;
+            for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+                boolean forUmAdversario = sala.getJogadores().get(i).getId() != idDoJogadorComCartaObjetivo;
+
+                if (forUmAdversario) {
+                    if (jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria))
+                        cartasIguaisDoAdversario++;
+                }
+                if (cartasIguaisDoAdversario > cartasIguaisDoJogador)
+                    return 0;
+            }
+        }
+
+        // Se nenhum jogador adversário tem mais cartas de mesma categoria
+        return 1;
     }
 }
