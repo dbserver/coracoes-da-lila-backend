@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -47,14 +48,14 @@ public class Sala {
 	private UUID id;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores ;
+	private List<Jogador> jogadores;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
 			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
 	@Builder.Default
-	public List<CartaObjetivo> cartasObjetivo= new ArrayList<>();
+	public List<CartaObjetivo> cartasObjetivo = new ArrayList<>();
 
 	@Transient
 	@Builder.Default
@@ -69,7 +70,7 @@ public class Sala {
 
 	@Column(name = "carta_inicio_id", nullable =false)
 	private UUID cartaInicioId;
-	
+
 	@NonNull
 	@Column(name = "hash" , nullable =false)
 	String hash;
@@ -137,6 +138,12 @@ public class Sala {
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
 		return Timestamp.from(Instant.now());
 	}
+
+	public void sorteiaCartaInicial(List <CartaInicio> cartasInicio){
+        Random random = new Random();
+        int seletor = random.nextInt(cartasInicio.size());
+        this.cartaInicioId = cartasInicio.get(seletor).getId();
+    }
 
 }
 
