@@ -46,16 +46,11 @@ public class Sala {
 	@Builder.Default
 	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
 
-	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
-		this.cartasObjetivo.add(cartaObjetivo);
-	}
-
-	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
-		return this.cartasObjetivo.remove(cartaDoObjetivo);
-	}
-
 	@OneToOne
 	private Baralho baralho;
+
+	@Column(name = "carta_inicio_id", nullable =false)
+	private UUID cartaInicioId;
 	
 	@NonNull
 	@Column(name = "hash" , nullable =false)
@@ -87,6 +82,14 @@ public class Sala {
 		random.nextBytes(bytes);
 		Encoder encoder = Base64.getUrlEncoder().withoutPadding();
 		return encoder.encodeToString(bytes);
+	}
+
+	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+		this.cartasObjetivo.add(cartaObjetivo);
+	}
+
+	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+		return this.cartasObjetivo.remove(cartaDoObjetivo);
 	}
 
 	@NonNull
