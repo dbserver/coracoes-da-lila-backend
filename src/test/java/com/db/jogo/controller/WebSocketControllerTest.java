@@ -78,9 +78,9 @@ public class WebSocketControllerTest {
         carta.setTipo(CartaDoJogoEnumTipo.ACAO);
 
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setTexto_tematico("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setTexto_regra("Ganhe pontos");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         baralho.setCodigo("qwerty");
