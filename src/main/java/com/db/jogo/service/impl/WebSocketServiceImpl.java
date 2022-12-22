@@ -1,33 +1,22 @@
 package com.db.jogo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.db.jogo.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
-import com.db.jogo.model.Baralho;
-import com.db.jogo.model.CartaDoJogo;
-import com.db.jogo.model.CartaObjetivo;
-import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Sala;
 import com.db.jogo.helper.Dado;
+import com.db.jogo.model.*;
+import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -44,8 +33,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
-			JogadorService jogadorService,
-			SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+								   JogadorService jogadorService,
+								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
 		this.jogadorService = jogadorService;
@@ -148,15 +137,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 									.remove(cartaParaAtualizarNoJogador.get());
 
 							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-							if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-										salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-										break;
-									}
+							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+									finalizaJogo(salaParaAtualizar.get());
 								}
-
 							}
 						}
 						/*---*Fim da Lógica para Adicionar a Carta*----*/
@@ -216,6 +200,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralho.setCodigo(sala.getHash());
 		sala.setBaralho(baralho);
 		sala.setDado(0);
+		sala.setJogadorEscolhido(jogador);
 		salaResp.setJogador(savedJogador);
 		sala.setStatus(StatusEnum.AGUARDANDO);
 		salaResp.setSala(salaService.saveSala(sala));
@@ -277,7 +262,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 	// Método para verificar se está na última jogada do turno
 	public boolean verificaUltimaJogadaDoTurno(Sala sala) {
 		for (Jogador jog : sala.getJogadores()) {
-			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getIsHost()) {
+			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
 				return true;
 			}
 		}
@@ -478,7 +463,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 		} catch (
 
-		Exception e) {
+				Exception e) {
 			throw new IllegalArgumentException("Jogada não pode ser processada!!", e);
 		}
 
@@ -535,7 +520,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		jogador.setPosicao(1);
 		jogador.setIsHost(true);
 		jogador.setNome(jogador.getNome());
-		jogador.setStatus(StatusEnumJogador.JOGANDO);
+		jogador.setStatus(StatusEnumJogador.ESPERANDO);
 		return jogador;
 	}
 
@@ -599,13 +584,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
 					}
 				}
@@ -673,13 +654,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 					}
 
-					if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-								salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-								break;
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
 					}
 				}
@@ -759,6 +736,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		try {
 			if (salaParaAtualizar.isPresent()) {
 				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
+				salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
 				this.salaService.saveSala(salaParaAtualizar.get());
 
 				return salaParaAtualizar;
@@ -776,4 +754,17 @@ public class WebSocketServiceImpl implements WebSocketService {
 	public void setIndexDoProximoJogador(Integer index) {
 		this.indexDoProximoJogador = index;
 	}
-}
+		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
+			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+			try {
+				if (atualizarJogador.isPresent()) {
+					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
+					this.jogadorService.saveJogador(atualizarJogador.get());
+						return atualizarJogador;
+						}
+					} catch (Exception e) {
+						throw new JogoInvalidoException("Jogador não encontrado");
+					}
+					return atualizarJogador;
+	}
+	}

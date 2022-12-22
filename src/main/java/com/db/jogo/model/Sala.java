@@ -2,44 +2,22 @@ package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Base64;
+import java.util.*;
 import java.util.Base64.Encoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
-import lombok.NonNull;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Entity
-@Table(name="sala")
+@Table(name = "sala")
 public class Sala {
 
 	@Id
@@ -47,7 +25,11 @@ public class Sala {
 	private UUID id;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores ;
+	private List<Jogador> jogadores;
+
+	@OneToOne
+	@JoinColumn(name = "jogador_escolhido")
+    private Jogador jogadorEscolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
@@ -129,6 +111,10 @@ public class Sala {
 		this.setDataHoraFimDeJogo();
 	}
 
+	public Jogador getJogadorEscolhido() {
+        return this.jogadorEscolhido;
+    }
+
 	public void setDataHoraFimDeJogo(){
 		this.dataHoraFimDoJogo = dataHoraAtual();
 	}
@@ -139,5 +125,3 @@ public class Sala {
 	}
 
 }
-
-
