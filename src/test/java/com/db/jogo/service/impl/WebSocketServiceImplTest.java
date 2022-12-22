@@ -84,6 +84,7 @@ class WebSocketServiceImplTest {
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
         sala.adicionarJogador(jogador2);
+        sala.setJogadorEscolhido(jogador);
 
         salaRequest.setHash("hashpraentrar");
         salaRequest.setJogador(jogador);
