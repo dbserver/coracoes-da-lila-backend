@@ -815,9 +815,10 @@ public class WebSocketServiceImpl implements WebSocketService {
         try {
             if (salaParaAtualizar.isPresent()) {
                 int cont = 0;
-                for (int i = 0; i < salaParaAtualizar.get().getJogadores().size();i++){
-                    if(salaParaAtualizar.get().getJogadores().get(i).getStatus()==StatusEnumJogador.FINALIZADO)
+                for (int i = 0; i < salaParaAtualizar.get().getJogadores().size(); i++){
+                    if(salaParaAtualizar.get().getJogadores().get(i).getStatus()==StatusEnumJogador.FINALIZADO){
                         cont++;
+                    }
                 }
                 if(cont == salaParaAtualizar.get().getJogadores().size()){
                     
@@ -825,7 +826,16 @@ public class WebSocketServiceImpl implements WebSocketService {
                     // Aqui foi finalizado a sala, então o tiver que escrever no banco vem aqui
                     //Talvez o mudaTipoCarta fique aqui
                 }
+
                 this.salaService.saveSala(salaParaAtualizar.get());
+
+                if (salaParaAtualizar.isPresent()) {
+                    this.template.convertAndSend(
+                            "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
+                            salaParaAtualizar.get());
+
+                    return salaParaAtualizar;
+                }
 
                 return salaParaAtualizar;
             }
@@ -833,5 +843,12 @@ public class WebSocketServiceImpl implements WebSocketService {
             throw new JogoInvalidoException("Sala não encontrada");
         }
         return salaParaAtualizar;
+    }
+
+    public Optional<Jogador> finalizaStatusJogador(Jogador jogador) {
+        Optional<Jogador> jogadorSalvo = this.jogadorService.findById(jogador.getId());
+        jogadorSalvo.get().setStatus(StatusEnumJogador.FINALIZADO);
+        jogadorService.saveJogador(jogadorSalvo.get());
+        return jogadorSalvo;
     }
 }

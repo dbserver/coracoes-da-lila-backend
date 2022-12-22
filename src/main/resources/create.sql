@@ -40,6 +40,7 @@ create table carta_do_jogo (
      id uuid primary key  not null,
      bonus boolean not null, 
      categoria varchar(80) not null,
+     nova_categoria varchar(80),
      fonte varchar(80) not null, 
      pontos int4 not null,
      texto varchar(255) not null, 
@@ -107,8 +108,7 @@ create table jogador (
 
 create table jogador_cartadojogo (
   jogador_id uuid not null ,
-  cartadojogo_id uuid not null ,
-  nova_categoria varchar(80),
+  cartadojogo_id uuid not null,
     CONSTRAINT FK_cartadojogo_id FOREIGN KEY (cartadojogo_id)
      REFERENCES carta_do_jogo (id),
      CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)

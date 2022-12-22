@@ -130,7 +130,7 @@ public class WebSocketController {
         }
     }
     
-    @PutMapping("/atualizarcategorias")
+    @PutMapping("jogada/atualizarcategorias")
     public ResponseEntity<Sala> recebeListaCartaModificada(@RequestBody Sala sala, BindingResult bindingResult) throws JogoInvalidoException {
         
         if (bindingResult.hasErrors() || sala == null) {
@@ -142,6 +142,26 @@ public class WebSocketController {
 
             if (salaParaAtualizar.isPresent()) {
                 return new ResponseEntity<>(salaParaAtualizar.get(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Jogada Não pode ser processada!! ", e);
+        }
+    }
+
+    @PutMapping("/jogada/finalizastatusjogador")
+    public ResponseEntity<Jogador> finalizaStatusJogador (@RequestBody Jogador jogador, BindingResult bindingResult) throws JogoInvalidoException {
+        
+        if (bindingResult.hasErrors() || jogador == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        try {
+            Optional<Jogador> jogadorParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(jogador);
+
+            if (jogadorParaAtualizar.isPresent()) {
+                return new ResponseEntity<>(jogadorParaAtualizar.get(), HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
