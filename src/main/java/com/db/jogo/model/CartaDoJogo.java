@@ -45,5 +45,8 @@ public class CartaDoJogo {
 
 	@Column(name = "pontos", length = 20 ,nullable = false)
 	private Integer pontos;
+        
+        @Column(name = "nova_categoria",length = 80, nullable = true)
+	private String novaCategoria;
 
 }
