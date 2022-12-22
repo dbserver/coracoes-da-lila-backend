@@ -1,7 +1,13 @@
 package com.db.jogo.service.impl;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+
+import java.util.Collections;
+import java.util.List;
 
 import com.db.jogo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -900,7 +906,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Integer[] categoriasDistintas = {0, 0, 0, 0, 0};
         Integer categoriasDistintasJogador = 0;
         int aux = 0;
-
+        int j = 0;
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             String categoriaCartaDoJogador = jogador.getCartasDoJogo().get(i).getCategoria();
 
@@ -925,22 +931,22 @@ public class WebSocketServiceImpl implements WebSocketService {
             Integer[] categoriasDistintasAdversario = {0, 0, 0, 0, 0};
             aux = 0;
             Integer categoriasAdversario = 0;
-            for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-                boolean forUmAdversario = sala.getJogadores().get(i).getId() != idDoJogadorComCartaObjetivo;
+            boolean forUmAdversario = sala.getJogadores().get(j).getId() != idDoJogadorComCartaObjetivo;
 
-                if (forUmAdversario) {
-                    for (int j = 0; j < jogador.getCartasDoJogo().size(); j++) {
-                        String categoriaCartaDoAdversario = jogador.getCartasDoJogo().get(j).getCategoria();
+            if (forUmAdversario) {
+                for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
 
-                        switch (categoriaCartaDoAdversario) {
-                            case "VISUAL" -> categoriasDistintasAdversario[0]++;
-                            case "INTELECTUAL" -> categoriasDistintasAdversario[1]++;
-                            case "TEA" -> categoriasDistintasAdversario[2]++;
-                            case "AUDITIVA" -> categoriasDistintasAdversario[3]++;
-                            default -> //para acrescentar na física
-                                    categoriasDistintasAdversario[4]++;
-                        }
+                    String categoriaCartaDoAdversario = jogador.getCartasDoJogo().get(i).getCategoria();
+
+                    switch (categoriaCartaDoAdversario) {
+                        case "VISUAL" -> categoriasDistintasAdversario[0]++;
+                        case "INTELECTUAL" -> categoriasDistintasAdversario[1]++;
+                        case "TEA" -> categoriasDistintasAdversario[2]++;
+                        case "AUDITIVA" -> categoriasDistintasAdversario[3]++;
+                        default -> //para acrescentar na física
+                                categoriasDistintasAdversario[4]++;
                     }
+
 
                     for (Integer contadorDeCategoria : categoriasDistintasAdversario) {
                         if (contadorDeCategoria != 0) {
@@ -951,8 +957,11 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                     if (categoriasAdversario > categoriasDistintasJogador)
                         return 0;
+
+
                 }
             }
+            j++;
         }
 
         // Se nenhum jogador adversário tem mais cartas de categorias distintas
