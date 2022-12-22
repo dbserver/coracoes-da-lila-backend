@@ -212,7 +212,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         Collections.shuffle(baralho.getCartasDoJogo());
         Collections.shuffle(baralho.getCartasInicio());
         sala.cartasObjetivo = criarCartasObjetivo();
-
         sala.setId(UUID.randomUUID());
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(savedJogador);
@@ -232,6 +231,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Random random = new Random();
         int seletor = random.nextInt(sala.cartasObjetivo.size());
         cartaSorteada = sala.cartasObjetivo.get(seletor);
+
         return cartaSorteada;
     }
 
@@ -837,16 +837,17 @@ public class WebSocketServiceImpl implements WebSocketService {
                 for (CartaObjetivo cartaObjetivo : jogador.getCartasObjetivo()) {
                     switch (cartaObjetivo.getTipo_contagem()) {
                         case 1:
-                            int quantidadeCartasMesmaCategoria = logicaContagemTipoCartaObjetivo1(cartaObjetivo.getCategoria(), jogador);
+                            int quantidadeCartasMesmaCategoria = calculaCartasMesmaCategoria(cartaObjetivo.getCategoria(), jogador);
                             jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (quantidadeCartasMesmaCategoria * cartaObjetivo.getPontos()));
                             break;
                         case 2:
-                            int resultado2 = logicaContagemTipoCartaObjetivo2(cartaObjetivo.getTipo(), jogador);
-                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado2 * cartaObjetivo.getPontos()));
+                            if(verificaTiposIguais(cartaObjetivo.getTipo(), jogador)){
+                                jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
+                            }
                             break;
                         case 3:
-                            int resultado3 = logicaContagemTipoCartaObjetivo3(jogador);
-                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (resultado3 * cartaObjetivo.getPontos()));
+                            int quantidadeCartasCategoriasDistintas = calculaCartasCategoriasDistintas(jogador);
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (quantidadeCartasCategoriasDistintas * cartaObjetivo.getPontos()));
                             break;
                         case 4:
                             int resultado4 = logicaContagemTipoCartaObjetivo4(jogador.getId(), sala, jogador);
@@ -866,7 +867,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Integer logicaContagemTipoCartaObjetivo1(String categoria, Jogador jogador) {
+    public Integer calculaCartasMesmaCategoria(String categoria, Jogador jogador) {
         int cartasDeMesmaCategoria = 0;
 
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
@@ -878,18 +879,16 @@ public class WebSocketServiceImpl implements WebSocketService {
         return cartasDeMesmaCategoria;
     }
 
-    public Integer logicaContagemTipoCartaObjetivo2(String tipo, Jogador jogador) {
+    public Boolean verificaTiposIguais(String tipo, Jogador jogador) {
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             boolean tiposIguais = jogador.getCartasDoJogo().get(i).getTipo().equals(tipo);
-
             if (tiposIguais)
-                return 1;
+                return true;
         }
-
-        return 0;
+        return false;
     }
 
-    public Integer logicaContagemTipoCartaObjetivo3(Jogador jogador) {
+    public Integer calculaCartasCategoriasDistintas(Jogador jogador) {
         Integer[] contadorDeCategorias = {0, 0, 0, 0, 0};
         Integer cartasDeCategoriasDistintas = 0;
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
@@ -981,6 +980,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         int cartasIguaisDoJogador = 0;
         int aux = 0;
+        int j = 0;
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             boolean categoriasIguais = jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria);
 
@@ -991,19 +991,18 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         for (Jogador jogador : sala.getJogadores()) {
             int cartasIguaisDoAdversario = 0;
-            for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-                boolean forUmAdversario = sala.getJogadores().get(i).getId() != idDoJogadorComCartaObjetivo;
-
-                if (forUmAdversario) {
+            boolean forUmAdversario = sala.getJogadores().get(j).getId() != idDoJogadorComCartaObjetivo;
+            if (forUmAdversario) {
+                for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
                     if (jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria))
                         cartasIguaisDoAdversario++;
                 }
                 if (cartasIguaisDoAdversario > cartasIguaisDoJogador)
                     return 0;
             }
-        }
 
-        // Se nenhum jogador adversário tem mais cartas de mesma categoria
+            // Se nenhum jogador adversário tem mais cartas de mesma categoria
+        }
         return 1;
     }
 }
