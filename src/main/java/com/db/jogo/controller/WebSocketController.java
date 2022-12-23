@@ -1,6 +1,8 @@
 package com.db.jogo.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -151,17 +153,22 @@ public class WebSocketController {
     }
 
     @PutMapping("/jogada/finalizastatusjogador")
-    public ResponseEntity<Jogador> finalizaStatusJogador (@RequestBody Jogador jogador, BindingResult bindingResult) throws JogoInvalidoException {
+    public ResponseEntity<Sala> finalizaStatusJogador (@RequestBody List<String> params , BindingResult bindingResult) throws JogoInvalidoException {
         
-        if (bindingResult.hasErrors() || jogador == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        String salaHash = params.get(0);
+        UUID jogadorID = UUID.fromString(params.get(1));
+
+        //TODO: FAZER VERIFICAÇÕES DE BAD REQUEST AQUI COM SALA/JOGADOR NULOS AQUI
+
+        if (bindingResult.hasErrors()) {
+             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         
         try {
-            Optional<Jogador> jogadorParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(jogador);
+            Optional<Sala> salaParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(salaHash, jogadorID);
 
-            if (jogadorParaAtualizar.isPresent()) {
-                return new ResponseEntity<>(jogadorParaAtualizar.get(), HttpStatus.OK);
+            if (salaParaAtualizar.isPresent()) {
+                return new ResponseEntity<>(salaParaAtualizar.get(), HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 

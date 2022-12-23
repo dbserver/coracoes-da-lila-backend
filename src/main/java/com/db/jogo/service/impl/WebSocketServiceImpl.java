@@ -338,11 +338,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                     definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
 
-                    if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-                        if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-                            finalizaJogo(salaParaAtualizar.get());
-                        }
-                    }
+                    iniciaRodadaDefinicao(salaParaAtualizar.get());
 
                     passaAVezDoJogador(salaParaAtualizar.get());
                 }
@@ -366,7 +362,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         return salaParaAtualizar;
     }
 
-    // ------US073
     public void atualizaStatusDoJogadorEsperando(Jogador jogador) {
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
     }
@@ -455,11 +450,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                 definePosicaoDoProximoJogador(salaParaAtualizar.get(), this.jogador);
 
-                if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-                    if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-                        finalizaJogo(salaParaAtualizar.get());
-                    }
-                }
+                iniciaRodadaDefinicao(salaParaAtualizar.get());
+
+                // if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+                //     if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+                //         finalizaJogo(salaParaAtualizar.get());
+                //     }
+                // }
 
                 passaAVezDoJogador(salaParaAtualizar.get());
 
@@ -786,28 +783,78 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.indexDoProximoJogador = index;
     }
 
-    public void modificaStatusJogador(Jogador jog) {
-        boolean achouGenerica = false;
-        for (int i = 0; i < jog.getCartasDoJogo().size(); i++) {
-            if (jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
-                jog.setStatus(StatusEnumJogador.DEFININDO);
-                achouGenerica = true;
+    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador){
+        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+            if (jogador.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+                return true;
             }
         }
-        if (!achouGenerica) {
+        return false;
+    }
+
+    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) {
+        if (verificaJogadorTemCartaGenerica(jog)){
+            jog.setStatus(StatusEnumJogador.DEFININDO);
+        }else{
             jog.setStatus(StatusEnumJogador.FINALIZADO);
         }
+        
+        // boolean achouGenerica = false;
+        // for (int i = 0; i < jog.getCartasDoJogo().size(); i++) {
+        //     if (jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+                
+        //         achouGenerica = true;
+        //     }
+        // }
+        // if (!achouGenerica) {
+        //     jog.setStatus(StatusEnumJogador.FINALIZADO);
+        // }
+
+    }
+
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador){
+        if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)){
+            return true;
+        }
+        return false;
+    }
+
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala){
+        if (verificaTodosJogadoresFinalizados(sala)){
+            finalizaJogo(sala);
+        }else{
+            sala.setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
+        }
+    }
+
+    public Boolean verificaTodosJogadoresFinalizados(Sala sala){
+        for (int i = 0; i < sala.getJogadores().size(); i++){
+            if (verificaStatusJogadorFinalizado(jogador) == false){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void iniciaRodadaDefinicao(Sala salaFront) {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         if (verificaJogoUltimaRodada(salaFront) && verificaUltimaJogadaDoTurno(salaFront)) {
+
             salaParaAtualizar.get().getJogadores().forEach(jog -> {
-                modificaStatusJogador(jog);
+                modificaStatusJogadorDefinindoOuFinalizado(jog);
             });
-            salaParaAtualizar.get().setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
+
+            modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());;
+
             this.salaService.saveSala(salaParaAtualizar.get());
         }
+
+        if (salaParaAtualizar.isPresent()) {
+            this.template.convertAndSend(
+                    "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
+                    salaParaAtualizar.get());
+        }
+
     }
     
     public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException{
@@ -845,10 +892,31 @@ public class WebSocketServiceImpl implements WebSocketService {
         return salaParaAtualizar;
     }
 
-    public Optional<Jogador> finalizaStatusJogador(Jogador jogador) {
-        Optional<Jogador> jogadorSalvo = this.jogadorService.findById(jogador.getId());
-        jogadorSalvo.get().setStatus(StatusEnumJogador.FINALIZADO);
-        jogadorService.saveJogador(jogadorSalvo.get());
-        return jogadorSalvo;
+    public Optional<Sala> finalizaStatusJogador(String salaHash, UUID jogadorID) throws JogoInvalidoException {
+        Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(jogadorID);
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaHash);
+        try{
+            if (salaParaAtualizar.isPresent()){
+                if(jogadorParaAtualizar.isPresent()){
+                    jogadorParaAtualizar.get().setStatus(StatusEnumJogador.FINALIZADO);
+                    jogadorService.saveJogador(jogadorParaAtualizar.get());
+                }
+            }
+
+            recebeAtualizacaoSala(salaParaAtualizar.get());
+
+            if (salaParaAtualizar.isPresent()) {
+                this.template.convertAndSend(
+                        "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
+                        salaParaAtualizar.get());
+
+                return salaParaAtualizar;
+            }
+
+            return salaParaAtualizar;
+            
+        } catch (Exception e) {
+            throw new JogoInvalidoException("Sala não encontrada");
+        }
     }
 }
