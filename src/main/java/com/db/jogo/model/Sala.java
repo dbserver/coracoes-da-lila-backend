@@ -2,43 +2,22 @@ package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Base64;
+import java.util.*;
 import java.util.Base64.Encoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
-import lombok.NonNull;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Entity
-@Table(name="sala")
+@Table(name = "sala")
 public class Sala {
 
 	@Id
@@ -46,7 +25,11 @@ public class Sala {
 	private UUID id;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores ;
+	private List<Jogador> jogadores;
+
+	@OneToOne
+	@JoinColumn(name = "jogador_escolhido")
+    private Jogador jogadorEscolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
@@ -63,16 +46,11 @@ public class Sala {
 	@Builder.Default
 	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
 
-	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
-		this.cartasObjetivo.add(cartaObjetivo);
-	}
-
-	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
-		return this.cartasObjetivo.remove(cartaDoObjetivo);
-	}
-
 	@OneToOne
 	private Baralho baralho;
+
+	@Column(name = "carta_inicio_id", nullable =false)
+	private UUID cartaInicioId;
 	
 	@NonNull
 	@Column(name = "hash" , nullable =false)
@@ -82,7 +60,7 @@ public class Sala {
 	@Column(name = "dth_inicio", nullable = false)
 	@Builder.Default
 	@JsonIgnore
-	private Timestamp dth_inicio = Timestamp.from(Instant.now());
+	private Timestamp dth_inicio = dataHoraAtual();
     
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
@@ -106,6 +84,14 @@ public class Sala {
 		return encoder.encodeToString(bytes);
 	}
 
+	public void adicionarCartaDoObjetivo(CartaObjetivo cartaObjetivo) {
+		this.cartasObjetivo.add(cartaObjetivo);
+	}
+
+	public boolean removerCartaDoObjetivo(CartaObjetivo cartaDoObjetivo) {
+		return this.cartasObjetivo.remove(cartaDoObjetivo);
+	}
+
 	@NonNull
 	public void adicionarJogador(Jogador jogador) {
 		this.jogadores.add(jogador);
@@ -125,10 +111,17 @@ public class Sala {
 		this.setDataHoraFimDeJogo();
 	}
 
+	public Jogador getJogadorEscolhido() {
+        return this.jogadorEscolhido;
+    }
+
 	public void setDataHoraFimDeJogo(){
-            
-		this.dataHoraFimDoJogo = Timestamp.from(Instant.now());
+		this.dataHoraFimDoJogo = dataHoraAtual();
 	}
+
+	public static Timestamp dataHoraAtual() {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+		return Timestamp.from(Instant.now());
+	}
+
 }
-
-
