@@ -187,10 +187,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 		SalaResponse salaResp = new SalaResponse();
 		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
 		Baralho baralho = criarBaralho();
-		baralho.sorteiaCartaInicial();
-		sala.setCartaInicioId(baralho.getIdCartaInicio());
+		sala.sorteiaCartaInicial(baralho.getCartasInicio());
 		Collections.shuffle(baralho.getCartasDoJogo());
-		Collections.shuffle(baralho.getCartasInicio());
 		sala.cartasObjetivo = criarCartasObjetivo();
 
 		sala.setId(UUID.randomUUID());
