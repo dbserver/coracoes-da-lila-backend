@@ -839,11 +839,11 @@ public class WebSocketServiceImpl implements WebSocketService {
                             }
                             break;
                         case 3:
-                            int quantidadeCartasCategoriasDistintas = calculaCartasCategoriasDistintas(jogador);
+                            int quantidadeCartasCategoriasDistintas = calculaCartasCategoriasDistintasDoJogador(jogador);
                             jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (quantidadeCartasCategoriasDistintas * cartaObjetivo.getPontos()));
                             break;
                         case 4:
-                            if (logicaContagemTipoCartaObjetivo4(jogador.getId(), sala, jogador)) {
+                            if (jogadorTemMaiorVariedadeDeCategorias(sala, jogador)) {
                                 jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
                             }
                             break;
@@ -883,78 +883,44 @@ public class WebSocketServiceImpl implements WebSocketService {
         return false;
     }
 
-    public Integer calculaCartasCategoriasDistintas(Jogador jogador) {
+    public Integer calculaCartasCategoriasDistintasDoJogador(Jogador jogador) {
+
         Integer[] contadorDeCategorias = {0, 0, 0, 0, 0};
+
         int cartasDeCategoriasDistintas;
-        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            switch (jogador.getCartasDoJogo().get(i).getCategoria()) {
+
+        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
+            switch (cartaDoJogo.getCategoria()) {
                 case "VISUAL" -> contadorDeCategorias[0]++;
                 case "INTELECTUAL" -> contadorDeCategorias[1]++;
                 case "TEA" -> contadorDeCategorias[2]++;
                 case "AUDITIVA" -> contadorDeCategorias[3]++;
-                default -> //para acrescentar na física
-                        contadorDeCategorias[4]++;
-            }
+                case "FISICA" -> contadorDeCategorias[4]++;
+            }            
         }
+
         cartasDeCategoriasDistintas = (int) Arrays.stream(contadorDeCategorias)
                 .filter(contadorDeCategoria -> contadorDeCategoria != 0).count();
 
         return cartasDeCategoriasDistintas;
     }
 
-    public Boolean logicaContagemTipoCartaObjetivo4(UUID idDoJogadorComCartaObjetivo, Sala sala, Jogador jogador) {
-        Integer[] categoriasDistintas = {0, 0, 0, 0, 0};
-        int categoriasDistintasJogador = 0;
-        int j = 0;
-        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            String categoriaCartaDoJogador = jogador.getCartasDoJogo().get(i).getCategoria();
+    public Boolean jogadorTemMaiorVariedadeDeCategorias(Sala sala, Jogador jogador) {
+        
+        int quantidadeCategoriasDistintasJogadorAtual = calculaCartasCategoriasDistintasDoJogador(jogador);
+        int quantidadeCategoriasDistintasAdversario;
 
-            switch (categoriaCartaDoJogador) {
-                case "VISUAL" -> categoriasDistintas[0]++;
-                case "INTELECTUAL" -> categoriasDistintas[1]++;
-                case "TEA" -> categoriasDistintas[2]++;
-                case "AUDITIVA" -> categoriasDistintas[3]++;
-                default -> //para acrescentar na física
-                        categoriasDistintas[4]++;
+        for (Jogador jogadorAdversario : sala.getJogadores()) {
+
+            if (jogadorAdversario.getId() != jogador.getId()){
+
+                quantidadeCategoriasDistintasAdversario = calculaCartasCategoriasDistintasDoJogador(jogadorAdversario);        
+
+                if (quantidadeCategoriasDistintasAdversario >= quantidadeCategoriasDistintasJogadorAtual)
+                    return false;                
             }
         }
-        categoriasDistintasJogador = (int) Arrays.stream(categoriasDistintas)
-                .filter(contadorDeCategoria -> contadorDeCategoria != 0).count();
 
-
-        for (Jogador jog : sala.getJogadores()) {
-            Integer[] categoriasDistintasAdversario = {0, 0, 0, 0, 0};
-            int categoriasAdversario = 0;
-            boolean forUmAdversario = sala.getJogadores().get(j).getId() != idDoJogadorComCartaObjetivo;
-
-            if (forUmAdversario) {
-                for (int i = 0; i < jog.getCartasDoJogo().size(); i++) {
-
-                    String categoriaCartaDoAdversario = jog.getCartasDoJogo().get(i).getCategoria();
-
-                    switch (categoriaCartaDoAdversario) {
-                        case "VISUAL" -> categoriasDistintasAdversario[0]++;
-                        case "INTELECTUAL" -> categoriasDistintasAdversario[1]++;
-                        case "TEA" -> categoriasDistintasAdversario[2]++;
-                        case "AUDITIVA" -> categoriasDistintasAdversario[3]++;
-                        default -> //para acrescentar na física
-                                categoriasDistintasAdversario[4]++;
-                    }
-
-
-                    categoriasAdversario = (int) Arrays.stream(categoriasDistintasAdversario)
-                            .filter(contadorDeCategoria -> contadorDeCategoria != 0).count();
-
-                    if (categoriasAdversario >= categoriasDistintasJogador)
-                        return false;
-
-
-                }
-            }
-            j++;
-        }
-
-        // Se nenhum adversário do jogador tem mais cartas de categorias distintas retorna
         return true;
     }
 
