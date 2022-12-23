@@ -249,12 +249,11 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    // Passa o status jogando para o próximo jogador seguindo o
-    // indexDoProximoJogador
+    // Passa o status jogando para o próximo jogador seguindo o indexDoProximoJogador
     public void passaAVezDoJogador(Sala sala) {
         for (Jogador jog : sala.getJogadores()) {
             if (StatusEnum.JOGANDO.equals(sala.getStatus()) || StatusEnum.ULTIMA_RODADA.equals(sala.getStatus())) {
-                if (jog.getPosicao() == getIndexDoProximoJogador()) {
+                if (jog.getPosicao() == getIndexDoProximoJogador() && StatusEnumJogador.ESPERANDO.equals(jog.getStatus())) {
                     jog.setStatus(StatusEnumJogador.JOGANDO);
                 }
             }
@@ -612,11 +611,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 }
             }
 
-            for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-                if (jog.getPosicao() == this.indexDoProximoJogador) {
-                    jog.setStatus(StatusEnumJogador.JOGANDO);
-                }
-            }
+            passaAVezDoJogador(salaParaAtualizar.get());
 
             salaParaAtualizar.get().setDado(0);
 
@@ -691,11 +686,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 }
             }
 
-            for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-                if (jog.getPosicao() == this.indexDoProximoJogador) {
-                    jog.setStatus(StatusEnumJogador.JOGANDO);
-                }
-            }
+            passaAVezDoJogador(salaParaAtualizar.get());
 
             salaParaAtualizar.get().setDado(0);
 
@@ -870,8 +861,6 @@ public class WebSocketServiceImpl implements WebSocketService {
                 if(cont == salaParaAtualizar.get().getJogadores().size()){
                     
                     salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-                    // Aqui foi finalizado a sala, então o tiver que escrever no banco vem aqui
-                    //Talvez o mudaTipoCarta fique aqui
                 }
 
                 this.salaService.saveSala(salaParaAtualizar.get());
