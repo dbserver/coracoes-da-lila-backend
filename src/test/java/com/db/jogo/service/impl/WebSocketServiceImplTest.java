@@ -1,16 +1,17 @@
 package com.db.jogo.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
+import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaObjetivo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -44,10 +44,21 @@ class WebSocketServiceImplTest {
     private CartaObjetivo cartaObjetivo = new CartaObjetivo();
     private CartaObjetivo cartaObjetivoNula;
     private Sala sala = new Sala();
+
+
     private Jogador jogador = new Jogador();
     private Jogador jogador2 = new Jogador();
     private SalaRequest salaRequest = new SalaRequest();
     private SalaResponse salaResponse = new SalaResponse();
+
+    private Jogador jogadorMock;
+
+    private CartaDoJogo cartasdoJogoMock;
+    private Sala salaMock;
+    private List<CartaObjetivo> listaCartasObjetivoMock;
+
+    private CartaObjetivo cartaObjetivoMock;
+    private List<CartaDoJogo> listaCartasDoJogoMock;
 
     private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
 
@@ -58,6 +69,7 @@ class WebSocketServiceImplTest {
         cartaObjetivo.setPontos(0);
         cartaObjetivo.setTexto_regra("Ganhe pontos");
         cartaObjetivo.setCategoria("FISICA");
+        cartaObjetivo.setTipo("FILME");
 
         sala.setId(UUID.randomUUID());
         sala.setCartasObjetivo(new ArrayList<>());
@@ -73,7 +85,7 @@ class WebSocketServiceImplTest {
         jogador.setCoracaoPequeno(0);
         jogador.setPosicao(1);
         jogador.adicionaObjetivo(cartaObjetivo);
-        jogador.setStatus(StatusEnumJogador.JOGANDO);
+        jogador.setStatus(JOGANDO);
         jogador.setIsHost(true);
 
 
@@ -95,6 +107,9 @@ class WebSocketServiceImplTest {
 
         salaResponse.setSala(sala);
         salaResponse.setJogador(jogador);
+
+        salaMock = mock(Sala.class);
+        startCartasObjetivoMock();
 
     }
 
@@ -192,30 +207,18 @@ class WebSocketServiceImplTest {
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
 
-    @Test
-    void contagemPontosObjetivo() {
-
-    }
-
-//    @Test
-//    @DisplayName("Testa o retorno de pontos para o metódo de contagem das cartas objetivo tipo 1")
-//    void logicaContagemTipoCartaObjetivo1() {
-//
-//        sala.adicionarCartaDoObjetivo(cartaObjetivo);
-//        cartaObjetivo.setCategoria("FISICA");
-//        String categoriaFisica = cartaObjetivo.getCategoria();
-//        Integer cartaObjetivoTipo1 = webSocketServiceImpl.logicaContagemTipoCartaObjetivo1(categoriaFisica);
-//
-//        assertEquals(cartaObjetivoTipo1, anyInt());
-//
-//    }
 
     @Test
-    void logicaContagemTipoCartaObjetivo2() {
+    void calculaCartasMesmaCategoria() {
     }
 
     @Test
-    void logicaContagemTipoCartaObjetivo3() {
+    void testeVerificaTiposIguais() {
+
+    }
+
+    @Test
+    void calculaCartasCategoriasDistintas() {
     }
 
     @Test
@@ -224,5 +227,72 @@ class WebSocketServiceImplTest {
 
     @Test
     void logicaContagemTipoCartaObjetivo5() {
+    }
+
+    private void startCartasObjetivoMock() {
+        jogadorMock = new Jogador(UUID.fromString("01fa2624-bc16-4d3b-a1d6-6e797b47e04d"),
+                1,
+                List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
+                        "FILME",
+                        "FISICA",
+                        true,
+                        "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
+                        2,
+                        1,
+                        "deficienteonline.com.br",
+                        3)),
+                List.of(new CartaObjetivo(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"),
+                        "Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida",
+                        2,
+                        "FISICA",
+                        "Sua sobrinha adolescente se identifica com personagens.",
+                        2,
+                        "FILME")),
+                "Pedro",
+                5,
+                2,
+                1,
+                0,
+                0,
+                true,
+                0,
+                JOGANDO
+                );
+
+        cartasdoJogoMock = new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
+                "FILME",
+                "FISICA",
+                true,
+                "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
+                2,
+                1,
+                "deficienteonline.com.br",
+                3);
+
+        listaCartasDoJogoMock = List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
+                "FILME",
+                "FISICA",
+                true,
+                "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
+                2,
+                1,
+                "deficienteonline.com.br",
+                3));
+
+        cartaObjetivoMock = new CartaObjetivo(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"),
+                "Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida",
+                2,
+                "FISICA",
+                "Sua sobrinha adolescente se identifica com personagens.",
+                2,
+                "FILME");
+
+        listaCartasObjetivoMock = List.of(new CartaObjetivo(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"),
+                "Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida",
+                2,
+                "FISICA",
+                "Sua sobrinha adolescente se identifica com personagens.",
+                2,
+                "FILME"));
     }
 }
