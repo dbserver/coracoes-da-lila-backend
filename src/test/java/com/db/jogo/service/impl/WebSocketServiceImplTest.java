@@ -2,6 +2,7 @@ package com.db.jogo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,8 +24,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +57,7 @@ class WebSocketServiceImplTest {
         cartaObjetivo.setTexto_tematico("Texto da carta");
         cartaObjetivo.setPontos(0);
         cartaObjetivo.setTexto_regra("Ganhe pontos");
-        cartaObjetivo.setCategoria("Física");
+        cartaObjetivo.setCategoria("FISICA");
 
         sala.setId(UUID.randomUUID());
         sala.setCartasObjetivo(new ArrayList<>());
@@ -187,5 +191,38 @@ class WebSocketServiceImplTest {
         assertEquals(jogadorJogando.getStatus(), StatusEnumJogador.JOGANDO);
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
- 
+
+    @Test
+    void contagemPontosObjetivo() {
+
+    }
+
+//    @Test
+//    @DisplayName("Testa o retorno de pontos para o metódo de contagem das cartas objetivo tipo 1")
+//    void logicaContagemTipoCartaObjetivo1() {
+//
+//        sala.adicionarCartaDoObjetivo(cartaObjetivo);
+//        cartaObjetivo.setCategoria("FISICA");
+//        String categoriaFisica = cartaObjetivo.getCategoria();
+//        Integer cartaObjetivoTipo1 = webSocketServiceImpl.logicaContagemTipoCartaObjetivo1(categoriaFisica);
+//
+//        assertEquals(cartaObjetivoTipo1, anyInt());
+//
+//    }
+
+    @Test
+    void logicaContagemTipoCartaObjetivo2() {
+    }
+
+    @Test
+    void logicaContagemTipoCartaObjetivo3() {
+    }
+
+    @Test
+    void logicaContagemTipoCartaObjetivo4() {
+    }
+
+    @Test
+    void logicaContagemTipoCartaObjetivo5() {
+    }
 }
