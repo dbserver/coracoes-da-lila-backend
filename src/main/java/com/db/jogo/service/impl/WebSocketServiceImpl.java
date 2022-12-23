@@ -1,5 +1,17 @@
 package com.db.jogo.service.impl;
 
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+
+import java.util.Collections;
+import java.util.List;
+
+import com.db.jogo.service.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
@@ -31,7 +43,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 	private CartaDoJogo cartaComprada;
 	private CartaObjetivo cartaCompradaObjetivo;
 
-	@Autowired
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
 								   JogadorService jogadorService,
 								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
@@ -180,17 +191,21 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
+		
 		if (jogador.getNome().isEmpty()) {
 			throw new JogoInvalidoException("dados incorretos");
 		}
+
 		Sala sala = new Sala();
 		SalaResponse salaResp = new SalaResponse();
-		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
-		Baralho baralho = criarBaralho();
-		sala.sorteiaCartaInicial(baralho.getCartasInicio());
+
+		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));		
+		Baralho baralho = criarBaralho();		
+		baralho.sorteiaCartaInicial();
+		sala.setCartaInicioId(baralho.getIdCartaInicio());
+
 		Collections.shuffle(baralho.getCartasDoJogo());
 		sala.cartasObjetivo = criarCartasObjetivo();
-
 		sala.setId(UUID.randomUUID());
 		sala.setJogadores(new ArrayList<>());
 		sala.adicionarJogador(savedJogador);
@@ -202,6 +217,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		salaResp.setJogador(savedJogador);
 		sala.setStatus(StatusEnum.AGUARDANDO);
 		salaResp.setSala(salaService.saveSala(sala));
+		
 		return salaResp;
 	}
 
@@ -506,6 +522,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 		baralhoCopy.setTitulo(baralho.getTitulo());
 		baralhoCopy.setId(UUID.randomUUID());
 		System.out.println(baralhoCopy);
+		System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());		
 		return baralhoService.saveBaralho(baralhoCopy);
 	}
 
@@ -536,8 +553,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 	}
 
 	public CartaDoJogo criarCartaDoJogo() {
-		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria("").fonte("").pontos(0).valorCoracaoGrande(0)
-				.valorCoracaoPequeno(0).tipo("").build();
+		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
+				.valorCoracaoPequeno(0).tipo(null).build();
 		return carta;
 	}
 

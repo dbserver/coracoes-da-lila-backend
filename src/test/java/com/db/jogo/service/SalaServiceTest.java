@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
@@ -53,17 +55,17 @@ public class SalaServiceTest {
         carta.setId(UUID.randomUUID());
         carta.setPontos(2);
         carta.setBonus(true);
-        carta.setCategoria("Visual");
+        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCoracaoGrande(0);
         carta.setValorCoracaoPequeno(0);
-        carta.setTipo("Ação");
+        carta.setTipo(CartaDoJogoEnumTipo.ACAO);
 
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setTexto_tematico("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setTexto_regra("Ganhe pontos");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         baralho.setId(UUID.randomUUID());

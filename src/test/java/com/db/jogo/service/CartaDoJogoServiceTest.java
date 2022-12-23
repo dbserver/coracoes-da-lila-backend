@@ -17,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.repository.CartaDoJogoRepository;
 
@@ -42,9 +44,9 @@ class CartaDoJogoServiceTest {
 			.bonus(true)
 			.valorCoracaoGrande(1)
 			.valorCoracaoPequeno(0)
-			.categoria("Fisica")
+			.categoria(CartaDoJogoEnumCategoria.FISICA)
 			.fonte("Google")
-			.tipo("INFORMACAO")
+			.tipo(CartaDoJogoEnumTipo.INFORMACAO)
 			.pontos(3)
 			.texto("Teste")
 			.build();

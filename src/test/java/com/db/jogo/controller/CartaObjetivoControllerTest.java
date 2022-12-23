@@ -38,11 +38,11 @@ class CartaObjetivoControllerTest {
 	String id = "272f930e-1adc-4405-b4a5-e9b909ce5738";
 	CartaObjetivo newCartaObjetivo = CartaObjetivo.builder()
 			.id(UUID.fromString(id))
-			.tipo_contagem(2)
+			.tipoContagem(2)
 			.tipo("FILME")
 			.categoria("")
-			.texto_regra("Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida")
-			.texto_tematico("Sua sobrinha adolescente se identifica com personagens.")
+			.textoRegra("Ganhe 2 pontos se você tiver alguma carta de filme ao final da partida")
+			.textoTematico("Sua sobrinha adolescente se identifica com personagens.")
 			.pontos(2)
 			.build();
 
@@ -51,11 +51,11 @@ class CartaObjetivoControllerTest {
 	public void testCriacaoCartaObjetivo() throws Exception {
 		CartaObjetivo newCartaObjetivo = CartaObjetivo.builder()
 			.id(UUID.randomUUID())
-			.tipo_contagem(3)
+			.tipoContagem(3)
 			.tipo("")
 			.categoria("")
-			.texto_regra("Granhe 4 pontos")
-			.texto_tematico("Teste de POST do Controller")
+			.textoRegra("Granhe 4 pontos")
+			.textoTematico("Teste de POST do Controller")
 			.pontos(1)
 			.build();
 
