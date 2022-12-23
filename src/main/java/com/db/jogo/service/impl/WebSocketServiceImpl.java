@@ -848,7 +848,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                             }
                             break;
                         case 5:
-                            if (logicaContagemTipoCartaObjetivo5(cartaObjetivo.getCategoria(), jogador.getId(), sala)) {
+                            if (jogadorTemMaiorQauantidadeDeCategoriasIguaisACategoriaObjetivo(cartaObjetivo.getCategoria(), jogador, sala)) {
                                 jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
                             }
                             break;
@@ -924,46 +924,39 @@ public class WebSocketServiceImpl implements WebSocketService {
         return true;
     }
 
-    public Boolean logicaContagemTipoCartaObjetivo5(String categoria, UUID idDoJogadorComCartaObjetivo, Sala sala) {
+    public Integer calculaQuantidadeCategoriasIguaisACategoriaObjetivo(Jogador jogador, String categoriaObjetivo) {
 
-        int cartasIguaisDoJogador = 0;
-        int aux = 0;
-        int j = 0;
-        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            boolean categoriasIguais = jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria);
+        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;        
 
-            if (categoriasIguais)
-                aux++;
+        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
+
+            if(cartaDoJogo.getCategoria().compareTo(categoriaObjetivo) == 0){
+                cartasDeCategoriasIguaisCategoriaObjetivo++;
+            }
         }
-        cartasIguaisDoJogador = aux;
 
-        /*
-        * Se o jogador não possuir nenhuma carta da categoria presente na Carta Objetivo,
-        * então ele nunca será a pessoa com a maior quantidade de cartas de tal categoria,
-        * portanto, não é necessário percorrer a mão dos outros jogadores.
-        */
-        if(cartasIguaisDoJogador == 0)
+        return cartasDeCategoriasIguaisCategoriaObjetivo;
+    }
+
+    public Boolean jogadorTemMaiorQauantidadeDeCategoriasIguaisACategoriaObjetivo(String categoriaObjetivo, Jogador jogador, Sala sala) {
+
+        int quantidadeCategoriasIguaisDoJogadorAtual = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogador, categoriaObjetivo);        
+        int quantidadeCategoriasIguaisAdversario;
+
+        if(quantidadeCategoriasIguaisDoJogadorAtual == 0)
             return false;
 
-        for (Jogador jogador : sala.getJogadores()) {
-            int cartasIguaisDoAdversario = 0;
-            aux = 0;
-            boolean forUmAdversario = sala.getJogadores().get(j).getId() != idDoJogadorComCartaObjetivo;
-            if (forUmAdversario) {
-                for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-                    if (jogador.getCartasDoJogo().get(i).getCategoria().equals(categoria))
-                        cartasIguaisDoAdversario++;
-                }
+        for (Jogador jogadorAdversario : sala.getJogadores()) {
 
-                cartasIguaisDoAdversario = aux;
+            if (jogadorAdversario.getId() != jogador.getId()){                
 
-                if (cartasIguaisDoAdversario >= cartasIguaisDoJogador)
-                    return false;
+                quantidadeCategoriasIguaisAdversario = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogadorAdversario, categoriaObjetivo);                        
+
+                if (quantidadeCategoriasIguaisAdversario >= quantidadeCategoriasIguaisDoJogadorAtual)
+                    return false;                
             }
-            j++;
-
         }
-        // Se nenhum adversário do jogador tem mais cartas de mesma categoria retorna
+
         return true;
     }
 }
