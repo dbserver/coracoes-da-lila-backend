@@ -819,12 +819,18 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public Boolean verificaTodosJogadoresFinalizados(Sala sala){
+        int contador = 0;
         for (int i = 0; i < sala.getJogadores().size(); i++){
-            if (verificaStatusJogadorFinalizado(jogador) == false){
-                return false;
+            if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))){
+                contador++;
             }
         }
-        return true;
+
+        if(contador == sala.getJogadores().size()){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void iniciaRodadaDefinicao(Sala salaFront) {
@@ -835,7 +841,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 modificaStatusJogadorDefinindoOuFinalizado(jog);
             });
 
-            modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());;
+            modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
 
             this.salaService.saveSala(salaParaAtualizar.get());
         }
@@ -852,16 +858,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         try {
             if (salaParaAtualizar.isPresent()) {
-                int cont = 0;
-                for (int i = 0; i < salaParaAtualizar.get().getJogadores().size(); i++){
-                    if(salaParaAtualizar.get().getJogadores().get(i).getStatus()==StatusEnumJogador.FINALIZADO){
-                        cont++;
-                    }
-                }
-                if(cont == salaParaAtualizar.get().getJogadores().size()){
-                    
-                    salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-                }
+                
+                modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
 
                 this.salaService.saveSala(salaParaAtualizar.get());
 
