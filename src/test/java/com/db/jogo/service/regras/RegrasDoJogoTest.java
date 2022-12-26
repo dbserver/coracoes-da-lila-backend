@@ -49,9 +49,9 @@ class RegrasDoJogoTest {
         cartaInicio.setDescricao("Descricao");
 
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setDescricao("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setClassificacao("Ganhe pontos");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         baralho.setId(UUID.randomUUID());
