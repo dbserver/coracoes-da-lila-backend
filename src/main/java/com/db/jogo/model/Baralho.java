@@ -2,7 +2,6 @@ package com.db.jogo.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;

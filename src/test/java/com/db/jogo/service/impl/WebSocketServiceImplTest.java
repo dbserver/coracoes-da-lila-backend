@@ -16,6 +16,7 @@ import com.db.jogo.model.Sala;
 import com.db.jogo.service.JogadorService;
 import com.db.jogo.service.BaralhoService;
 import com.db.jogo.service.CartaDoJogoService;
+import com.db.jogo.service.JogadorCartasDoJogoService;
 import com.db.jogo.service.SalaService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ class WebSocketServiceImplTest {
     private JogadorService jogadorService;
     private SimpMessagingTemplate template;
     private CartaDoJogoService cartaDoJogoService;
+    private JogadorCartasDoJogoService jogadorCartasDoJogoService;
     private CartaObjetivo cartaObjetivo = new CartaObjetivo();
     private CartaObjetivo cartaObjetivoNula;
     private Sala sala = new Sala();
@@ -45,7 +47,7 @@ class WebSocketServiceImplTest {
     private SalaRequest salaRequest = new SalaRequest();
     private SalaResponse salaResponse = new SalaResponse();
 
-    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
+    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService, jogadorCartasDoJogoService);
 
     @BeforeEach
     public void init(){

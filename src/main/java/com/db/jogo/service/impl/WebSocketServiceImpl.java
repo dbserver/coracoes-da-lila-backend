@@ -20,15 +20,9 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.model.*;
-import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -40,17 +34,19 @@ public class WebSocketServiceImpl implements WebSocketService {
     private CartaDoJogoService cartaService;
     private Integer indexDoProximoJogador;
     private Jogador jogador;
+    private JogadorCartasDoJogoService jogadorCartasDoJogoService;
     private CartaDoJogo cartaComprada;
     private CartaObjetivo cartaCompradaObjetivo;
 
 	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
 								   JogadorService jogadorService,
-								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+								   SimpMessagingTemplate template, CartaDoJogoService cartaService, JogadorCartasDoJogoService jogadorCartasDoJogoService) {
 		this.salaService = salaService;
 		this.baralhoService = baralhoService;
 		this.jogadorService = jogadorService;
 		this.template = template;
 		this.cartaService = cartaService;
+        this.jogadorCartasDoJogoService = jogadorCartasDoJogoService;
 		this.jogador = new Jogador();
 		this.cartaComprada = new CartaDoJogo();
 		this.cartaCompradaObjetivo = new CartaObjetivo();
@@ -137,6 +133,8 @@ public class WebSocketServiceImpl implements WebSocketService {
                                     .findById(this.cartaComprada.getId());
 
                             jogadorParaAtualizar.get().adicionaCarta(cartaParaAtualizarNoJogador.get());
+                            JogadorCartasDoJogo jogadorCartasDoJogo = new JogadorCartasDoJogo(jogadorParaAtualizar.get(), cartaParaAtualizarNoJogador.get());
+                            this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
                             jogadorParaAtualizar.get().setStatus(StatusEnumJogador.ESPERANDO);
 
                             this.jogadorService.saveJogador(jogadorParaAtualizar.get());
@@ -784,16 +782,13 @@ public class WebSocketServiceImpl implements WebSocketService {
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             if (jogador.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
                 return true;
-
-	}
-
-
-
+	        }
         }
         return false;
     }
-            		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
-			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+            		
+    public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
+		Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
 			try {
 				if (atualizarJogador.isPresent()) {
 					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
@@ -805,6 +800,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 					}
 					return atualizarJogador;
 	}
+    
     public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) {
         if (verificaJogadorTemCartaGenerica(jog)){
             jog.setStatus(StatusEnumJogador.DEFININDO);
