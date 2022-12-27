@@ -24,15 +24,16 @@ import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.impl.WebSocketServiceImpl;
-
 import lombok.extern.slf4j.Slf4j;
-
-import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
-import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @Slf4j
 @RequestMapping(path = "/api")
 public class WebSocketController {

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,12 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.db.jogo.model.Baralho;
 import com.db.jogo.service.BaralhoService;
-import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
-import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
-
 
 @RestController
-@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/baralho")
 public class BaralhoController {
 

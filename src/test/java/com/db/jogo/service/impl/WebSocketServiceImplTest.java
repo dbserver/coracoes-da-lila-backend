@@ -50,9 +50,9 @@ class WebSocketServiceImplTest {
     @BeforeEach
     public void init(){
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setDescricao("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setClassificacao("Ganhe pontos");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         sala.setId(UUID.randomUUID());
@@ -84,6 +84,7 @@ class WebSocketServiceImplTest {
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
         sala.adicionarJogador(jogador2);
+        sala.setJogadorEscolhido(jogador);
 
         salaRequest.setHash("hashpraentrar");
         salaRequest.setJogador(jogador);

@@ -34,7 +34,6 @@ public class Baralho {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
-        private UUID idCartaInicio;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "baralho_cartadojogo", joinColumns = @JoinColumn(name = "baralho_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "cartadojogo_id", referencedColumnName = "id"))
@@ -93,10 +92,4 @@ public class Baralho {
 		return this.cartasInicio.remove(cartaInicio);
 	}
         
-    public void sorteiaCartaInicial(){
-        Random random = new Random();
-        int seletor = random.nextInt(cartasInicio.size());
-        this.idCartaInicio = cartasInicio.get(seletor).getId();
-    }
-
 }
