@@ -1,5 +1,7 @@
 package com.db.jogo.service.impl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,14 @@ public class JogadorCartasDoJogoServiceImpl implements JogadorCartasDoJogoServic
     @Override
     public JogadorCartasDoJogo saveJogadorCartasDoJogo(JogadorCartasDoJogo jogadorCartasDoJogo)
             throws DataAccessException {
-        return jogadorCartasDoJogoRepository.save(jogadorCartasDoJogo);
+        return this.jogadorCartasDoJogoRepository.save(jogadorCartasDoJogo);
+    }
+
+    // public JogadorCartasDoJogo findByIdCartasDoJogo(UUID id){
+    //     return this.jogadorCartasDoJogoRepository.findByIdCartaDoJogo(id);
+    // }
+
+    public JogadorCartasDoJogo findByJogadorIDAndCartaDoJogoID(UUID jogadorId, UUID cartaId){
+        return this.jogadorCartasDoJogoRepository.findByJogadorIDAndCartaDoJogoID(jogadorId, cartaId);
     }
 }

@@ -27,16 +27,16 @@ public class JogadorCartasDoJogo {
 	private UUID id;
 
     @Column(name = "jogador_id", nullable = false)
-    private UUID idJogador;
+    private UUID jogadorID;
 
     @Column(name = "cartadojogo_id", nullable = false)
-	private UUID idCartaDoJogo;
+	private UUID cartaDoJogoID;
 
     @Column(name = "nova_categoria")
     private String novaCategoria;
 
     public JogadorCartasDoJogo(Jogador jogador, CartaDoJogo cartaDoJogo){
-        this.idJogador = jogador.getId();
-        this.idCartaDoJogo = cartaDoJogo.getId();
+        this.jogadorID = jogador.getId();
+        this.cartaDoJogoID = cartaDoJogo.getId();
     }
 }

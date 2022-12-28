@@ -2,6 +2,8 @@ package com.db.jogo.service.impl;
 
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
@@ -10,6 +12,7 @@ import com.db.jogo.service.JogadorService;
 import com.db.jogo.service.NovaCategoriaDTOService;
 import com.db.jogo.service.SalaService;
 
+@Service
 public class NovaCategoriaDTOServiceImpl implements NovaCategoriaDTOService{
 
     private JogadorService jogadorService;

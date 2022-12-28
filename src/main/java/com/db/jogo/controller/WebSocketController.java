@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.SalaRequest;
+import com.db.jogo.dto.SalaRequestNovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Jogador;
@@ -146,10 +149,7 @@ public class WebSocketController {
     }
 
     @PutMapping("/jogada/finalizastatusjogador")
-    public ResponseEntity<Sala> finalizaStatusJogador (@RequestBody List<String> params , BindingResult bindingResult) throws JogoInvalidoException {
-        
-        String salaHash = params.get(0);
-        UUID jogadorID = UUID.fromString(params.get(1));
+    public ResponseEntity<Sala> finalizaStatusJogador (@RequestBody SalaRequestNovaCategoriaDTO salaRequestNovaCategoriaDTO , BindingResult bindingResult) throws JogoInvalidoException {
 
         //TODO: FAZER VERIFICAÇÕES DE BAD REQUEST AQUI COM SALA/JOGADOR NULOS AQUI
 
@@ -158,10 +158,10 @@ public class WebSocketController {
         }
         
         try {
-            Optional<Sala> salaParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(salaHash, jogadorID);
+            Sala salaParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(salaRequestNovaCategoriaDTO);
 
-            if (salaParaAtualizar.isPresent()) {
-                return new ResponseEntity<>(salaParaAtualizar.get(), HttpStatus.OK);
+            if (salaParaAtualizar != null) {
+                return new ResponseEntity<>(salaParaAtualizar, HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 

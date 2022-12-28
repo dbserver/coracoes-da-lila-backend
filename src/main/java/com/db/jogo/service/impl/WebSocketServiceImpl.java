@@ -9,9 +9,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.db.jogo.service.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.db.jogo.dto.NovaCategoriaDTO;
+import com.db.jogo.dto.SalaRequestNovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.StatusEnum;
@@ -28,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
 
+    @Autowired
+    private NovaCategoriaDTOService novaCategoriaDTOService;
     private SimpMessagingTemplate template;
     private SalaService salaService;
     private BaralhoService baralhoService;
@@ -907,9 +913,25 @@ public class WebSocketServiceImpl implements WebSocketService {
         return salaParaAtualizar;
     }
 
-    public Optional<Sala> finalizaStatusJogador(String salaHash, UUID jogadorID) throws JogoInvalidoException {
-        Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(jogadorID);
-        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaHash);
+    // public void adicionaNovaCategoriaCartaDoJogo(NovaCategoriaDTO novaCategoriaDTO){
+    //     this.jogadorCartasDoJogoService.findByIdCartasDoJogo(novaCategoriaDTO.getCartaModificadaID());
+    // }
+
+    public Sala finalizaStatusJogador(SalaRequestNovaCategoriaDTO salaRequestNovaCategoriaDTO) throws JogoInvalidoException {
+        
+        Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getHashDaSala());
+
+        for (NovaCategoriaDTO novaCategoriaDTO : salaRequestNovaCategoriaDTO.getNovaCategoriaDTO()) {
+            JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaModificadaID());
+            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria().toString());
+            System.out.println(jogadorCartasDoJogo.toString());
+        }
+        
+
+        //Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());
+        //Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getHashDaSala());
+
         try {
             if (salaParaAtualizar.isPresent()) {
                 if (jogadorParaAtualizar.isPresent()) {
@@ -923,12 +945,12 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (salaParaAtualizar.isPresent()) {
                 this.template.convertAndSend(
                         "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
-                        salaParaAtualizar.get());
+                        salaParaAtualizar);
 
-                return salaParaAtualizar;
+                return salaParaAtualizar.get();
             }
 
-            return salaParaAtualizar;
+            return salaParaAtualizar.get();
 
         } catch (Exception e) {
             throw new JogoInvalidoException("Sala não encontrada");
