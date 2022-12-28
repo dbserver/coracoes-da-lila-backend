@@ -921,12 +921,15 @@ public class WebSocketServiceImpl implements WebSocketService {
         
         Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getHashDaSala());
-
-        for (NovaCategoriaDTO novaCategoriaDTO : salaRequestNovaCategoriaDTO.getNovaCategoriaDTO()) {
+        System.out.println("------------------- LISTA DO DTO");
+        System.out.println(salaRequestNovaCategoriaDTO.getListaCartasParaAtualizar());
+        for (NovaCategoriaDTO novaCategoriaDTO : salaRequestNovaCategoriaDTO.getListaCartasParaAtualizar()) {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaModificadaID());
+            System.out.println("------------------- CHEGOU AQUi 2.0");
             jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria().toString());
             System.out.println(jogadorCartasDoJogo.toString());
         }
+        System.out.println("------------------- CHEGOU AQUi 3.0");
         
 
         //Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());

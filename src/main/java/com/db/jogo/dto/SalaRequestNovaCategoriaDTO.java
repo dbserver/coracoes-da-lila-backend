@@ -16,6 +16,6 @@ public class SalaRequestNovaCategoriaDTO {
 
     private UUID jogadorID;
     private String hashDaSala;
-    private List<NovaCategoriaDTO> novaCategoriaDTO = new ArrayList<>();
+    private List<NovaCategoriaDTO> listaCartasParaAtualizar = new ArrayList<>();
 
 }
