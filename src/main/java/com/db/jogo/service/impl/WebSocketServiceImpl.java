@@ -917,20 +917,36 @@ public class WebSocketServiceImpl implements WebSocketService {
     //     this.jogadorCartasDoJogoService.findByIdCartasDoJogo(novaCategoriaDTO.getCartaModificadaID());
     // }
 
+    public CartaDoJogoEnumCategoria transformaStringEnumCategoria(String string){
+        if (string == "AUDITIVA"){
+            return CartaDoJogoEnumCategoria.AUDITIVA;
+        }
+        if (string == "FISICA"){
+            return CartaDoJogoEnumCategoria.FISICA;
+        }
+        if (string == "INTELECTUAL"){
+            return CartaDoJogoEnumCategoria.INTELECTUAL;
+        }
+        if (string == "TEA"){
+            return CartaDoJogoEnumCategoria.TEA;
+        }
+        if (string == "VISUAL"){
+            return CartaDoJogoEnumCategoria.VISUAL;
+        }
+
+        return CartaDoJogoEnumCategoria.GENERICA;
+    }
+
     public Sala finalizaStatusJogador(SalaRequestNovaCategoriaDTO salaRequestNovaCategoriaDTO) throws JogoInvalidoException {
         
         Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());
-        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getHashDaSala());
-        System.out.println("------------------- LISTA DO DTO");
-        System.out.println(salaRequestNovaCategoriaDTO.getListaCartasParaAtualizar());
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getSalaHash());
+       
         for (NovaCategoriaDTO novaCategoriaDTO : salaRequestNovaCategoriaDTO.getListaCartasParaAtualizar()) {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaModificadaID());
-            System.out.println("------------------- CHEGOU AQUi 2.0");
-            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria().toString());
-            System.out.println(jogadorCartasDoJogo.toString());
+            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria());
+            this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
-        System.out.println("------------------- CHEGOU AQUi 3.0");
-        
 
         //Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(salaRequestNovaCategoriaDTO.getJogadorID());
         //Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaRequestNovaCategoriaDTO.getHashDaSala());

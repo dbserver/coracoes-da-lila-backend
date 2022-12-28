@@ -1,8 +1,6 @@
 package com.db.jogo.controller;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -16,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaRequestNovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
-import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.model.Jogador;
@@ -156,7 +152,7 @@ public class WebSocketController {
         if (bindingResult.hasErrors()) {
              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        
+
         try {
             Sala salaParaAtualizar = this.webSocketServiceImpl.finalizaStatusJogador(salaRequestNovaCategoriaDTO);
 

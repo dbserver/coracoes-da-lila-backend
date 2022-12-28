@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.db.jogo.model.Jogador;
-import com.db.jogo.model.Sala;
-import com.db.jogo.service.JogadorService;
-import com.db.jogo.service.SalaService;
 
 import lombok.Data;
 
@@ -15,7 +11,7 @@ import lombok.Data;
 public class SalaRequestNovaCategoriaDTO {
 
     private UUID jogadorID;
-    private String hashDaSala;
+    private String salaHash;
     private List<NovaCategoriaDTO> listaCartasParaAtualizar = new ArrayList<>();
 
 }
