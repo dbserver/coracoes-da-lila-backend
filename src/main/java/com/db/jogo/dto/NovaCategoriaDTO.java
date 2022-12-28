@@ -8,8 +8,8 @@ import lombok.Data;
 
 @Data
 public class NovaCategoriaDTO {
-    public UUID jogadorID;
-    public UUID cartaModificadaID;
-    public CartaDoJogoEnumCategoria novaCategoria;
-    public String hashDaSala;
+    private UUID jogadorID;
+    private UUID cartaModificadaID;
+    private CartaDoJogoEnumCategoria novaCategoria;
+    private String hashDaSala;
 }
