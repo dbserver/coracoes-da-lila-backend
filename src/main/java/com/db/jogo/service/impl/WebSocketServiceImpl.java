@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
@@ -20,15 +21,9 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.model.*;
-import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -43,18 +38,18 @@ public class WebSocketServiceImpl implements WebSocketService {
     private CartaDoJogo cartaComprada;
     private CartaObjetivo cartaCompradaObjetivo;
 
-	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
-								   JogadorService jogadorService,
-								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
-		this.salaService = salaService;
-		this.baralhoService = baralhoService;
-		this.jogadorService = jogadorService;
-		this.template = template;
-		this.cartaService = cartaService;
-		this.jogador = new Jogador();
-		this.cartaComprada = new CartaDoJogo();
-		this.cartaCompradaObjetivo = new CartaObjetivo();
-	}
+    protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
+            JogadorService jogadorService,
+            SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+        this.salaService = salaService;
+        this.baralhoService = baralhoService;
+        this.jogadorService = jogadorService;
+        this.template = template;
+        this.cartaService = cartaService;
+        this.jogador = new Jogador();
+        this.cartaComprada = new CartaDoJogo();
+        this.cartaCompradaObjetivo = new CartaObjetivo();
+    }
 
     public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
@@ -148,19 +143,21 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                             // Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
                             iniciaRodadaDefinicao(salaFront);
-                            /* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									modificaStatusJogador(jog);
-		
-									if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-										if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-											salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-											break;
-										}
-									}
-								}
-							} */
+                            /*
+                             * if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+                             * 
+                             * for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
+                             * modificaStatusJogador(jog);
+                             * 
+                             * if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+                             * if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+                             * salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+                             * break;
+                             * }
+                             * }
+                             * }
+                             * }
+                             */
                         }
                         /*---*Fim da Lógica para Adicionar a Carta*----*/
                     }
@@ -197,35 +194,35 @@ public class WebSocketServiceImpl implements WebSocketService {
         return null;
     }
 
-	public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
-		
-		if (jogador.getNome().isEmpty()) {
-			throw new JogoInvalidoException("dados incorretos");
-		}
+    public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
 
-		Sala sala = new Sala();
-		SalaResponse salaResp = new SalaResponse();
+        if (jogador.getNome().isEmpty()) {
+            throw new JogoInvalidoException("dados incorretos");
+        }
 
-		Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));		
-		Baralho baralho = criarBaralho();		
-		sala.sorteiaCartaInicial(baralho.getCartasInicio());
+        Sala sala = new Sala();
+        SalaResponse salaResp = new SalaResponse();
 
-		Collections.shuffle(baralho.getCartasDoJogo());
-		sala.cartasObjetivo = criarCartasObjetivo();
-		sala.setId(UUID.randomUUID());
-		sala.setJogadores(new ArrayList<>());
-		sala.adicionarJogador(savedJogador);
-		sala.setHash(sala.generateHash());
-		baralho.setCodigo(sala.getHash());
-		sala.setBaralho(baralho);
-		sala.setDado(0);
-		sala.setJogadorEscolhido(jogador);
-		salaResp.setJogador(savedJogador);
-		sala.setStatus(StatusEnum.AGUARDANDO);
-		salaResp.setSala(salaService.saveSala(sala));
-		
-		return salaResp;
-	}
+        Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
+        Baralho baralho = criarBaralho();
+        sala.sorteiaCartaInicial(baralho.getCartasInicio());
+
+        Collections.shuffle(baralho.getCartasDoJogo());
+        sala.cartasObjetivo = criarCartasObjetivo();
+        sala.setId(UUID.randomUUID());
+        sala.setJogadores(new ArrayList<>());
+        sala.adicionarJogador(savedJogador);
+        sala.setHash(sala.generateHash());
+        baralho.setCodigo(sala.getHash());
+        sala.setBaralho(baralho);
+        sala.setDado(0);
+        sala.setJogadorEscolhido(jogador);
+        salaResp.setJogador(savedJogador);
+        sala.setStatus(StatusEnum.AGUARDANDO);
+        salaResp.setSala(salaService.saveSala(sala));
+
+        return salaResp;
+    }
 
     // Sortear carta objetivo para ser comprada
     public CartaObjetivo sorteiaCartaObjetivo(Sala sala) {
@@ -253,11 +250,13 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    // Passa o status jogando para o próximo jogador seguindo o indexDoProximoJogador
+    // Passa o status jogando para o próximo jogador seguindo o
+    // indexDoProximoJogador
     public void passaAVezDoJogador(Sala sala) {
         for (Jogador jog : sala.getJogadores()) {
             if (StatusEnum.JOGANDO.equals(sala.getStatus()) || StatusEnum.ULTIMA_RODADA.equals(sala.getStatus())) {
-                if (jog.getPosicao() == getIndexDoProximoJogador() && StatusEnumJogador.ESPERANDO.equals(jog.getStatus())) {
+                if (jog.getPosicao() == getIndexDoProximoJogador()
+                        && StatusEnumJogador.ESPERANDO.equals(jog.getStatus())) {
                     jog.setStatus(StatusEnumJogador.JOGANDO);
                 }
             }
@@ -280,15 +279,16 @@ public class WebSocketServiceImpl implements WebSocketService {
         return false;
     }
 
-	// Método para verificar se está na última jogada do turno
-	public boolean verificaUltimaJogadaDoTurno(Sala sala) {
-		for (Jogador jog : sala.getJogadores()) {
-			if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    // Método para verificar se está na última jogada do turno
+    public boolean verificaUltimaJogadaDoTurno(Sala sala) {
+        for (Jogador jog : sala.getJogadores()) {
+            if (jog.getPosicao() == getIndexDoProximoJogador()
+                    && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void finalizaJogo(Sala sala) {
         sala.setStatus(StatusEnum.FINALIZADO);
@@ -456,9 +456,9 @@ public class WebSocketServiceImpl implements WebSocketService {
                 iniciaRodadaDefinicao(salaParaAtualizar.get());
 
                 // if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-                //     if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-                //         finalizaJogo(salaParaAtualizar.get());
-                //     }
+                // if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+                // finalizaJogo(salaParaAtualizar.get());
+                // }
                 // }
 
                 passaAVezDoJogador(salaParaAtualizar.get());
@@ -512,32 +512,32 @@ public class WebSocketServiceImpl implements WebSocketService {
         return cartasObjetivo;
     }
 
-	private Baralho criarBaralho() {
-		Baralho baralho = baralhoService.findByCodigo("Clila").get();
-		Baralho baralhoCopy = new Baralho();
-		baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
-		baralhoCopy.setCartasInicio(baralho.getCartasInicio());
-		baralhoCopy.setCodigo("Copy");
-		baralhoCopy.setDescricao(baralho.getDescricao());
-		baralhoCopy.setTitulo(baralho.getTitulo());
-		baralhoCopy.setId(UUID.randomUUID());
-		System.out.println(baralhoCopy);
-		System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());		
-		return baralhoService.saveBaralho(baralhoCopy);
-	}
+    private Baralho criarBaralho() {
+        Baralho baralho = baralhoService.findByCodigo("Clila").get();
+        Baralho baralhoCopy = new Baralho();
+        baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
+        baralhoCopy.setCartasInicio(baralho.getCartasInicio());
+        baralhoCopy.setCodigo("Copy");
+        baralhoCopy.setDescricao(baralho.getDescricao());
+        baralhoCopy.setTitulo(baralho.getTitulo());
+        baralhoCopy.setId(UUID.randomUUID());
+        System.out.println(baralhoCopy);
+        System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());
+        return baralhoService.saveBaralho(baralhoCopy);
+    }
 
-	public Jogador criarPrimeiroJogador(Jogador jogador) {
-		jogador.setBonusCoracaoPequeno(0);
-		jogador.setBonusCoracaoGrande(0);
-		jogador.setCoracaoPequeno(2);
-		jogador.setCoracaoGrande(0);
-		jogador.setPontos(0);
-		jogador.setPosicao(1);
-		jogador.setIsHost(true);
-		jogador.setNome(jogador.getNome());
-		jogador.setStatus(StatusEnumJogador.ESPERANDO);
-		return jogador;
-	}
+    public Jogador criarPrimeiroJogador(Jogador jogador) {
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setCoracaoPequeno(2);
+        jogador.setCoracaoGrande(0);
+        jogador.setPontos(0);
+        jogador.setPosicao(1);
+        jogador.setIsHost(true);
+        jogador.setNome(jogador.getNome());
+        jogador.setStatus(StatusEnumJogador.ESPERANDO);
+        return jogador;
+    }
 
     public Jogador criarJogador(Jogador jogador, Integer num) {
         jogador.setBonusCoracaoPequeno(0);
@@ -552,11 +552,11 @@ public class WebSocketServiceImpl implements WebSocketService {
         return jogador;
     }
 
-	public CartaDoJogo criarCartaDoJogo() {
-		CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
-				.valorCoracaoPequeno(0).tipo(null).build();
-		return carta;
-	}
+    public CartaDoJogo criarCartaDoJogo() {
+        CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
+                .valorCoracaoPequeno(0).tipo(null).build();
+        return carta;
+    }
 
     public Optional<Sala> compraCoracoesPequenos(Sala salaFront) throws IllegalArgumentException {
 
@@ -600,19 +600,21 @@ public class WebSocketServiceImpl implements WebSocketService {
                     }
 
                     iniciaRodadaDefinicao(salaFront);
-                    /* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							modificaStatusJogador(jog);
-
-							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-									break;
-								}
-							}
-						}
-					} */
+                    /*
+                     * if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+                     * 
+                     * for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
+                     * modificaStatusJogador(jog);
+                     * 
+                     * if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+                     * if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+                     * salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+                     * break;
+                     * }
+                     * }
+                     * }
+                     * }
+                     */
                 }
             }
 
@@ -675,19 +677,21 @@ public class WebSocketServiceImpl implements WebSocketService {
                     }
 
                     iniciaRodadaDefinicao(salaFront);
-                    /* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							modificaStatusJogador(jog);
-
-							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-									break;
-								}
-							}
-						}
-					} */
+                    /*
+                     * if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
+                     * 
+                     * for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
+                     * modificaStatusJogador(jog);
+                     * 
+                     * if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
+                     * if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
+                     * salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
+                     * break;
+                     * }
+                     * }
+                     * }
+                     * }
+                     */
                 }
             }
 
@@ -756,13 +760,13 @@ public class WebSocketServiceImpl implements WebSocketService {
         template.convertAndSend(url, salaAsJSON);
     }
 
-	public Optional<Sala> iniciarPartida(Sala sala) throws JogoInvalidoException {
-		Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
-		try {
-			if (salaParaAtualizar.isPresent()) {
-				salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
-				salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
-				this.salaService.saveSala(salaParaAtualizar.get());
+    public Optional<Sala> iniciarPartida(Sala sala) throws JogoInvalidoException {
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
+        try {
+            if (salaParaAtualizar.isPresent()) {
+                salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
+                salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
+                this.salaService.saveSala(salaParaAtualizar.get());
 
                 return salaParaAtualizar;
             }
@@ -780,75 +784,75 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.indexDoProximoJogador = index;
     }
 
-    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador){
+    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) {
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            if (jogador.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+            if (jogador.getCartasDoJogo().get(i).getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)) {
                 return true;
 
-	}
-
-
+            }
 
         }
         return false;
     }
-            		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
-			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
-			try {
-				if (atualizarJogador.isPresent()) {
-					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
-					this.jogadorService.saveJogador(atualizarJogador.get());
-						return atualizarJogador;
-						}
-					} catch (Exception e) {
-						throw new JogoInvalidoException("Jogador não encontrado");
-					}
-					return atualizarJogador;
-	}
+
+    public Optional<Jogador> pegaJogadorEscolhido(Jogador jogador) throws JogoInvalidoException {
+        Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+        try {
+            if (atualizarJogador.isPresent()) {
+                atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
+                this.jogadorService.saveJogador(atualizarJogador.get());
+                return atualizarJogador;
+            }
+        } catch (Exception e) {
+            throw new JogoInvalidoException("Jogador não encontrado");
+        }
+        return atualizarJogador;
+    }
+
     public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) {
-        if (verificaJogadorTemCartaGenerica(jog)){
+        if (verificaJogadorTemCartaGenerica(jog)) {
             jog.setStatus(StatusEnumJogador.DEFININDO);
-        }else{
+        } else {
             jog.setStatus(StatusEnumJogador.FINALIZADO);
         }
-        
+
         // boolean achouGenerica = false;
         // for (int i = 0; i < jog.getCartasDoJogo().size(); i++) {
-        //     if (jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
-                
-        //         achouGenerica = true;
-        //     }
+        // if (jog.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+
+        // achouGenerica = true;
+        // }
         // }
         // if (!achouGenerica) {
-        //     jog.setStatus(StatusEnumJogador.FINALIZADO);
+        // jog.setStatus(StatusEnumJogador.FINALIZADO);
         // }
 
     }
 
-    public Boolean verificaStatusJogadorFinalizado(Jogador jogador){
-        if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)){
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) {
+        if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
             return true;
         }
         return false;
     }
 
-    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala){
-        if (verificaTodosJogadoresFinalizados(sala)){
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) {
+        if (verificaTodosJogadoresFinalizados(sala)) {
             finalizaJogo(sala);
-        }else{
+        } else {
             sala.setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
         }
     }
 
-    public Boolean verificaTodosJogadoresFinalizados(Sala sala){
+    public Boolean verificaTodosJogadoresFinalizados(Sala sala) {
         int contador = 0;
-        for (int i = 0; i < sala.getJogadores().size(); i++){
-            if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))){
+        for (int i = 0; i < sala.getJogadores().size(); i++) {
+            if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))) {
                 contador++;
             }
         }
 
-        if(contador == sala.getJogadores().size()){
+        if (contador == sala.getJogadores().size()) {
             return true;
         } else {
             return false;
@@ -875,12 +879,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
 
     }
-    
-    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException{
+
+    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         try {
             if (salaParaAtualizar.isPresent()) {
-                
+
                 modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
 
                 this.salaService.saveSala(salaParaAtualizar.get());
@@ -904,9 +908,9 @@ public class WebSocketServiceImpl implements WebSocketService {
     public Optional<Sala> finalizaStatusJogador(String salaHash, UUID jogadorID) throws JogoInvalidoException {
         Optional<Jogador> jogadorParaAtualizar = this.jogadorService.findById(jogadorID);
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaHash);
-        try{
-            if (salaParaAtualizar.isPresent()){
-                if(jogadorParaAtualizar.isPresent()){
+        try {
+            if (salaParaAtualizar.isPresent()) {
+                if (jogadorParaAtualizar.isPresent()) {
                     jogadorParaAtualizar.get().setStatus(StatusEnumJogador.FINALIZADO);
                     jogadorService.saveJogador(jogadorParaAtualizar.get());
                 }
@@ -923,7 +927,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
 
             return salaParaAtualizar;
-            
+
         } catch (Exception e) {
             throw new JogoInvalidoException("Sala não encontrada");
         }
