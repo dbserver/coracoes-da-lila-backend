@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
@@ -780,7 +781,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public Boolean verificaJogadorTemCartaGenerica(Jogador jogador){
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            if (jogador.getCartasDoJogo().get(i).getCategoria().equals("Genérica")) {
+            if (jogador.getCartasDoJogo().get(i).getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)) {
                 return true;
 	        }
         }
