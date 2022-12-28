@@ -1,5 +1,6 @@
 package com.db.jogo.service.impl;
 
+import static com.db.jogo.enums.StatusEnumJogador.ESPERANDO;
 import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,7 +53,7 @@ class WebSocketServiceImplTest {
     private SalaResponse salaResponse = new SalaResponse();
 
     private Jogador jogadorMock;
-
+    private Jogador jogador2Mock;
     private CartaDoJogo cartasdoJogoMock;
     private Sala salaMock;
     private List<CartaObjetivo> listaCartasObjetivoMock;
@@ -85,7 +86,7 @@ class WebSocketServiceImplTest {
         jogador.setCoracaoPequeno(0);
         jogador.setPosicao(1);
         jogador.adicionaObjetivo(cartaObjetivo);
-        jogador.setStatus(JOGANDO);
+        jogador.setStatus(ESPERANDO);
         jogador.setIsHost(true);
 
 
@@ -96,6 +97,7 @@ class WebSocketServiceImplTest {
         jogador2.setBonusCoracaoPequeno(2);
         jogador2.setCoracaoGrande(5);
         jogador2.setCoracaoPequeno(3);
+        jogador2.setStatus(JOGANDO);
 
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
@@ -108,7 +110,6 @@ class WebSocketServiceImplTest {
         salaResponse.setSala(sala);
         salaResponse.setJogador(jogador);
 
-        salaMock = mock(Sala.class);
         startCartasObjetivoMock();
 
     }
@@ -130,9 +131,9 @@ class WebSocketServiceImplTest {
         assertEquals(webSocketServiceImpl.verificaJogoFinalizado(sala), false);
     }
 
-    
 
-   @Test
+
+    @Test
     @DisplayName("Teste para verificar o método definePosicaoDoProximoJogador")
     void testDefinePosicaoDoProximoJogador() {
         webSocketServiceImpl.definePosicaoDoProximoJogador(sala, jogador);
@@ -145,7 +146,7 @@ class WebSocketServiceImplTest {
     void testPassaAVezDoJogador() {
 
         webSocketServiceImpl.passaAVezDoJogador(sala);
-        assertEquals(jogador2.getStatus(), StatusEnumJogador.JOGANDO);
+        assertEquals(jogador2.getStatus(), JOGANDO);
 
 
     }
@@ -160,7 +161,7 @@ class WebSocketServiceImplTest {
     @Test
     @DisplayName("Teste do método de validar carta objetivo com a carta inexistente")
     void testValidaCartaObjetivoFalse(){
-        
+
         assertEquals(webSocketServiceImpl.validaCartaObjetivo(cartaObjetivoNula), false);
     }
 
@@ -174,7 +175,7 @@ class WebSocketServiceImplTest {
     @Test
     @DisplayName("Teste para verificar o método verificaUltimaJogadaDoTurno")
     void testVerificaUltimaJogadaDoTurno() {
-        
+
         webSocketServiceImpl.setIndexDoProximoJogador(1);
         assertEquals( webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala), true);
     }
@@ -182,11 +183,11 @@ class WebSocketServiceImplTest {
     @Test
     @DisplayName("Teste para verificar o método verificaUltimaJogadaDoTurno False")
     void testVerificaUltimaJogadaDoTurnoFalse() {
-        
+
         webSocketServiceImpl.setIndexDoProximoJogador(2);
         assertEquals( webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala), false);
     }
-    
+
     @Test
     @DisplayName("Teste para verificar o método de atualizar status do jogador para ESPERANDO")
     void testAtualizaStatusDoJogadorEsperando() {
@@ -202,27 +203,74 @@ class WebSocketServiceImplTest {
     void testBuscaJogadorJogando() {
 
         Jogador jogadorJogando = webSocketServiceImpl.buscaJogadorJogando(sala);
-        
-        assertEquals(jogadorJogando.getStatus(), StatusEnumJogador.JOGANDO);
+
+        assertEquals(jogadorJogando.getStatus(), JOGANDO);
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
 
 
     @Test
+    @DisplayName("Testa que o jogador tem alguma carta do tipo igual da categoria da carta objetivo e retorna a soma.")
     void calculaCartasMesmaCategoria() {
+        int resultado = webSocketServiceImpl.calculaCartasMesmaCategoria("FISICA", jogadorMock);
+        assertEquals(1, resultado);
     }
 
     @Test
+    @DisplayName("Testa que o jogador NÃO tem alguma carta do tipo igual da categoria da carta objetivo e retorna a soma ZERO.")
+    void calculaCartasMesmaCategoriaRetornaZero() {
+        int resultado = webSocketServiceImpl.calculaCartasMesmaCategoria("FISICA", jogador2Mock);
+        assertEquals(0, resultado);
+    }
+
+    @Test
+    @DisplayName("Testa que jogador tem pelo menos uma carta de tipo igual da carta objetivo")
     void testeVerificaTiposIguais() {
+        boolean resultado = webSocketServiceImpl.verificaTiposIguais("FILME", jogadorMock);
+        assertTrue(resultado);
+    }
+    @Test
+    @DisplayName("Testa que jogador NÃO TEM tem pelo menos uma carta de tipo igual da carta objetivo")
+    void testeVerificaQueNaoTemTiposIguais() {
+        boolean resultado = webSocketServiceImpl.verificaTiposIguais("ERRADO", jogadorMock);
+        assertFalse(resultado);
+    }
+
+    @Test
+    void calculaCartasCategoriasDistintasFisica() {
+        int resultadoFisica = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(1, resultadoFisica);
+
+        jogadorMock.getCartasObjetivo().get(0).setCategoria("VISUAL");
+        jogadorMock.getCartasDoJogo().get(0).setCategoria("VISUAL");
+        int resultadoVisual = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(1, resultadoVisual);
+
+        jogadorMock.getCartasObjetivo().get(0).setCategoria("INTELECTUAL");
+        jogadorMock.getCartasDoJogo().get(0).setCategoria("INTELECTUAL");
+        int resultadoIntelectual = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(1, resultadoIntelectual);
+
+        jogadorMock.getCartasObjetivo().get(0).setCategoria("TEA");
+        jogadorMock.getCartasDoJogo().get(0).setCategoria("TEA");
+        int resultadoTEA = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(1, resultadoTEA);
+
+        jogadorMock.getCartasObjetivo().get(0).setCategoria("AUDITIVA");
+        jogadorMock.getCartasDoJogo().get(0).setCategoria("AUDITIVA");
+        int resultadoAuditiva = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(1, resultadoAuditiva);
+
+        jogadorMock.getCartasObjetivo().get(0).setCategoria("GENERICA");
+        jogadorMock.getCartasDoJogo().get(0).setCategoria("GENERICA");
+        int resultadoGenerica = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(jogadorMock);
+        assertEquals(0, resultadoGenerica);
 
     }
 
     @Test
-    void calculaCartasCategoriasDistintas() {
-    }
+    void jogadorTemMaiorVariedadeDeCategorias() {
 
-    @Test
-    void logicaContagemTipoCartaObjetivo4() {
     }
 
     @Test
@@ -257,7 +305,35 @@ class WebSocketServiceImplTest {
                 true,
                 0,
                 JOGANDO
-                );
+        );
+        jogador2Mock = new Jogador(UUID.fromString("af0193df-60e2-49c6-a6b1-c58e7e95a493"),
+                2,
+                List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
+                        "FILME",
+                        "TEA",
+                        true,
+                        "Transtorno do Espectro Autista (TEA) é uma condição do desenvolvimento neurológico, caracterizado por alteração da comunicação, interação social e presença de comportamentos repetitivos e estereotipados.",
+                        2,
+                        1,
+                        "autismo.institutopensi.org.br",
+                        3)),
+                List.of(new CartaObjetivo(UUID.fromString("870c4cbe-c00e-4533-abe8-af7e9a053681"),
+                        "Ganhe 3 pontos se você tiver a maior quantidade de cartas da categoria Transtorno do Espectro Autista (TEA) ao final da partida",
+                        2,
+                        "TEA",
+                        "Sua sobrinha adolescente se identifica com personagens.",
+                        2,
+                        "FILME")),
+                "Pedro",
+                5,
+                2,
+                1,
+                0,
+                0,
+                false,
+                0,
+                JOGANDO
+        );
 
         cartasdoJogoMock = new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
                 "FILME",

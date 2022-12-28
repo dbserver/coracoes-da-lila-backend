@@ -824,6 +824,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     public void contagemPontosObjetivo(Sala sala) {
         for (Jogador jogador : sala.getJogadores()) {
             boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
+
             if (jogadorSemCartaObjetivo) {
                 jogador.setPontosObjetivo(0);
             } else {
