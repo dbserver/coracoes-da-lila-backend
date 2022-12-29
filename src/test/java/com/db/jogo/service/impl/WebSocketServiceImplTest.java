@@ -203,7 +203,10 @@ class WebSocketServiceImplTest {
         assertEquals(jogadorJogando.getStatus(), JOGANDO);
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
+    @Test
+    void quandoContagemPontosObjetivo() {
 
+    }
 
     @Test
     @DisplayName("Testa que o jogador tem alguma carta do tipo igual da categoria da carta objetivo e retorna a soma.")
@@ -399,4 +402,5 @@ class WebSocketServiceImplTest {
                 2,
                 "FILME"));
     }
+
 }
