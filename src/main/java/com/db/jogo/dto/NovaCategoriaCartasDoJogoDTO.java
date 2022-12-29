@@ -8,10 +8,9 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class SalaRequestNovaCategoriaDTO {
+public class NovaCategoriaCartasDoJogoDTO {
 
     private UUID jogadorID;
     private String salaHash;
-    private List<NovaCategoriaDTO> listaCartasParaAtualizar = new ArrayList<>();
-
+    private List<NovaCategoriaDTO> CartasNovaCategoriaDTOs = new ArrayList<>();
 }
