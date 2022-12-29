@@ -27,6 +27,7 @@ import java.util.UUID;
 import static com.db.jogo.enums.StatusEnumJogador.ESPERANDO;
 import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +58,8 @@ class WebSocketServiceImplTest {
 
     private CartaObjetivo cartaObjetivoMock;
     private List<CartaDoJogo> listaCartasDoJogoMock;
+    @Mock
+    private WebSocketServiceImpl webSocketServiceImplMock  = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
 
     private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
 
@@ -204,7 +207,10 @@ class WebSocketServiceImplTest {
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
     @Test
-    void quandoContagemPontosObjetivo() {
+    void quandoContagemPontosObjetivoForChamada() {
+        sala.setJogadores(List.of(jogadorMock, jogador2Mock));
+        webSocketServiceImplMock.contagemPontosObjetivo(sala);
+        verify(webSocketServiceImplMock, times(1)).contagemPontosObjetivo(sala);
 
     }
 
