@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 public class NovaCategoriaDTO {
 
-    private UUID cartaModificadaID;
+    private UUID cartaID;
     private CartaDoJogoEnumCategoria novaCategoria;
 }

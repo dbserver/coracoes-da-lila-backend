@@ -450,12 +450,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                 iniciaRodadaDefinicao(salaParaAtualizar.get());
 
-                // if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
-                // if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-                // finalizaJogo(salaParaAtualizar.get());
-                // }
-                // }
-
                 passaAVezDoJogador(salaParaAtualizar.get());
 
                 // Salva o resultado da compra no banco
@@ -750,7 +744,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.indexDoProximoJogador = index;
     }
 
-    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) {
+    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) { // TODO: TEST
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             if (jogador.getCartasDoJogo().get(i).getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)) {
                 return true;
@@ -773,7 +767,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         return atualizarJogador;
     }
 
-    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) {
+    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { // TODO: TEST
         
         if (verificaJogadorTemCartaGenerica(jog)) {
             jog.setStatus(StatusEnumJogador.DEFININDO);
@@ -782,14 +776,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) {
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { // TODO: TEST
         if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
             return true;
         }
         return false;
     }
 
-    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) {
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { // TODO: TEST
         if (verificaTodosJogadoresFinalizados(sala)) {
             finalizaJogo(sala);
         } else {
@@ -797,7 +791,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaTodosJogadoresFinalizados(Sala sala) {
+    public Boolean verificaTodosJogadoresFinalizados(Sala sala) { // TODO: TEST
         int contador = 0;
         for (int i = 0; i < sala.getJogadores().size(); i++) {
             if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))) {
@@ -812,7 +806,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public void iniciaRodadaDefinicao(Sala salaFront) {
+    public void iniciaRodadaDefinicao(Sala salaFront) { //TODO: TEST
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         if (verificaJogoUltimaRodada(salaFront) && verificaUltimaJogadaDoTurno(salaFront)) {
 
@@ -833,7 +827,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     }
 
-    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException {
+    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException { // TODO: TEST
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         try {
             if (salaParaAtualizar.isPresent()) {
@@ -859,19 +853,22 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
     
 
-    public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO)
+    public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO) // TODO: TEST 
             throws JogoInvalidoException {
 
         Optional<Jogador> jogadorParaAtualizar = this.jogadorService
                 .findById(novaCategoriaCartasDoJogoDTO.getJogadorID());
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(novaCategoriaCartasDoJogoDTO.getSalaHash());
 
-        for (NovaCategoriaDTO novaCategoriaDTO : novaCategoriaCartasDoJogoDTO.getCartasNovaCategoriaDTOs()) {
+        for (NovaCategoriaDTO novaCategoriaDTO : novaCategoriaCartasDoJogoDTO.getListaDeCartas()) {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(
-                    jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaModificadaID());
-            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria());
+                    jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());          
+            
+            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria()); // DUVIDA ENTRE MODIFICAR OU NAO
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
+
+        System.out.println("\n FINALIZA STATUS JOGADOR 2 \n\n");
 
         try {
             if (salaParaAtualizar.isPresent()) {

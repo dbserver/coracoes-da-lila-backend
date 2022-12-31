@@ -12,5 +12,5 @@ public class NovaCategoriaCartasDoJogoDTO {
 
     private UUID jogadorID;
     private String salaHash;
-    private List<NovaCategoriaDTO> CartasNovaCategoriaDTOs = new ArrayList<>();
+    private List<NovaCategoriaDTO> listaDeCartas = new ArrayList<>();
 }
