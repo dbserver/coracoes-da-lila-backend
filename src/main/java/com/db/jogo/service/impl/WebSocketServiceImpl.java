@@ -260,25 +260,18 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     // Método para validar carta de objetivo
     public boolean validaCartaObjetivo(CartaObjetivo cartaObjetivo) {
-        if (cartaObjetivo == null) {
-            return false;
-        }
-        return true;
+        return cartaObjetivo != null;
     }
 
     // Método para verificar se status da sala é de última rodada
     public boolean verificaJogoUltimaRodada(Sala sala) {
-        if (StatusEnum.ULTIMA_RODADA.equals(sala.getStatus())) {
-            return true;
-        }
-        return false;
+        return StatusEnum.ULTIMA_RODADA.equals(sala.getStatus());
     }
 
     // Método para verificar se está na última jogada do turno
     public boolean verificaUltimaJogadaDoTurno(Sala sala) {
         for (Jogador jog : sala.getJogadores()) {
-            if (jog.getPosicao() == getIndexDoProximoJogador()
-                    && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
+            if (jog.getPosicao().equals(sala.getJogadorEscolhido().getPosicao()) && jog.getPosicao().equals(getIndexDoProximoJogador())) {
                 return true;
             }
         }
@@ -744,7 +737,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.indexDoProximoJogador = index;
     }
 
-    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) { // TODO: TEST
+    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) { // TODO: TEST OK
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             if (jogador.getCartasDoJogo().get(i).getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)) {
                 return true;
@@ -767,7 +760,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         return atualizarJogador;
     }
 
-    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { // TODO: TEST
+    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { // TODO: TEST - ok
         
         if (verificaJogadorTemCartaGenerica(jog)) {
             jog.setStatus(StatusEnumJogador.DEFININDO);
@@ -776,14 +769,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { // TODO: TEST
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { // TODO: TEST - ok
         if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
             return true;
         }
         return false;
     }
 
-    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { // TODO: TEST
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { // TODO: TEST - ok
         if (verificaTodosJogadoresFinalizados(sala)) {
             finalizaJogo(sala);
         } else {
@@ -791,7 +784,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaTodosJogadoresFinalizados(Sala sala) { // TODO: TEST
+    public Boolean verificaTodosJogadoresFinalizados(Sala sala) { // TODO: TEST - ok
         int contador = 0;
         for (int i = 0; i < sala.getJogadores().size(); i++) {
             if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))) {
@@ -799,11 +792,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
         }
 
-        if (contador == sala.getJogadores().size()) {
-            return true;
-        } else {
-            return false;
-        }
+        return contador == sala.getJogadores().size();
     }
 
     public void iniciaRodadaDefinicao(Sala salaFront) { //TODO: TEST
@@ -827,7 +816,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     }
 
-    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException { // TODO: TEST
+    public Optional<Sala> recebeAtualizacaoSala(Sala salaFront) throws JogoInvalidoException {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(salaFront.getHash());
         try {
             if (salaParaAtualizar.isPresent()) {
