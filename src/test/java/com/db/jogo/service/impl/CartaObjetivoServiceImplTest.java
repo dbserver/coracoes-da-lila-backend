@@ -24,11 +24,11 @@ class CartaObjetivoServiceImplTest {
 
 	CartaObjetivo cartaObjetivo = CartaObjetivo.builder()
 		.id(UUID.randomUUID())
-		.tipo_contagem(2)
+		.tipoContagem(2)
 		.tipo("FILME")
 		.categoria("")
-		.texto_regra("Ganhe 2 pontos")
-		.texto_tematico("Lorem ipsum")
+		.textoRegra("Ganhe 2 pontos")
+		.textoTematico("Lorem ipsum")
 		.pontos(3)
 		.build();
 
@@ -52,11 +52,11 @@ class CartaObjetivoServiceImplTest {
 	void findCartaObjetivoById() {
 		Optional<CartaObjetivo> cartaObje = Optional.ofNullable(CartaObjetivo.builder()
 			.id(UUID.randomUUID())
-			.tipo_contagem(2)
+			.tipoContagem(2)
 			.tipo("FILME")
 			.categoria("")
-			.texto_regra("Ganhe 3 pontos")
-			.texto_tematico("Lorem ipsum")
+			.textoRegra("Ganhe 3 pontos")
+			.textoTematico("Lorem ipsum")
 			.pontos(3)
 			.build());
 

@@ -1,5 +1,17 @@
 package com.db.jogo.service.impl;
 
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+
+import java.util.Collections;
+import java.util.List;
+
+import com.db.jogo.service.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
@@ -44,6 +56,18 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.cartaComprada = new CartaDoJogo();
         this.cartaCompradaObjetivo = new CartaObjetivo();
     }
+	protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
+								   JogadorService jogadorService,
+								   SimpMessagingTemplate template, CartaDoJogoService cartaService) {
+		this.salaService = salaService;
+		this.baralhoService = baralhoService;
+		this.jogadorService = jogadorService;
+		this.template = template;
+		this.cartaService = cartaService;
+		this.jogador = new Jogador();
+		this.cartaComprada = new CartaDoJogo();
+		this.cartaCompradaObjetivo = new CartaObjetivo();
+	}
 
     public Optional<Sala> comprarCartaDoJogo(Sala salaFront) throws IllegalArgumentException {
 
@@ -136,25 +160,16 @@ public class WebSocketServiceImpl implements WebSocketService {
                             salaParaAtualizar.get().getBaralho().getCartasDoJogo()
                                     .remove(cartaParaAtualizarNoJogador.get());
 
-                            // Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
-                            iniciaRodadaDefinicao(salaFront);
-							/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-								for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-									modificaStatusJogador(jog);
-		
-									if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-										if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-											salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-											break;
-										}
-									}
+							// Verifica se o próximo jogador é o que iniciou a partida e encerra a partida
+							if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+								if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+									finalizaJogo(salaParaAtualizar.get());
 								}
-							} */
-                        }
-                        /*---*Fim da Lógica para Adicionar a Carta*----*/
-                    }
-                }
+							}
+						}
+						/*---*Fim da Lógica para Adicionar a Carta*----*/
+					}
+				}
 
                 passaAVezDoJogador(salaParaAtualizar.get());
 
@@ -196,9 +211,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         SalaResponse salaResp = new SalaResponse();
         Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
         Baralho baralho = criarBaralho();
-        baralho.sorteiaCartaInicial();
+        sala.sorteiaCartaInicial(baralho.getCartasInicio());
         Collections.shuffle(baralho.getCartasDoJogo());
-        Collections.shuffle(baralho.getCartasInicio());
         sala.cartasObjetivo = criarCartasObjetivo();
         sala.setId(UUID.randomUUID());
         sala.setJogadores(new ArrayList<>());
@@ -207,7 +221,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         baralho.setCodigo(sala.getHash());
         sala.setBaralho(baralho);
         sala.setDado(0);
-        salaResp.setJogador(savedJogador);
+        sala.setJogadorEscolhido(jogador);salaResp.setJogador(savedJogador);
         sala.setStatus(StatusEnum.AGUARDANDO);
         salaResp.setSala(salaService.saveSala(sala));
         return salaResp;
@@ -270,7 +284,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     // Método para verificar se está na última jogada do turno
     public boolean verificaUltimaJogadaDoTurno(Sala sala) {
         for (Jogador jog : sala.getJogadores()) {
-            if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getIsHost()) {
+            if (jog.getPosicao() == getIndexDoProximoJogador() && jog.getPosicao() == sala.getJogadorEscolhido().getPosicao()) {
                 return true;
             }
         }
@@ -516,7 +530,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         baralhoCopy.setTitulo(baralho.getTitulo());
         baralhoCopy.setId(UUID.randomUUID());
         System.out.println(baralhoCopy);
-        return baralhoService.saveBaralho(baralhoCopy);
+        System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());return baralhoService.saveBaralho(baralhoCopy);
     }
 
     public Jogador criarPrimeiroJogador(Jogador jogador) {
@@ -529,7 +543,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         jogador.setPosicao(1);
         jogador.setIsHost(true);
         jogador.setNome(jogador.getNome());
-        jogador.setStatus(StatusEnumJogador.JOGANDO);
+        jogador.setStatus(StatusEnumJogador.ESPERANDO);
         return jogador;
     }
 
@@ -548,8 +562,8 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public CartaDoJogo criarCartaDoJogo() {
-        CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria("").fonte("").pontos(0).valorCoracaoGrande(0)
-                .valorCoracaoPequeno(0).tipo("").build();
+        CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
+                .valorCoracaoPequeno(0).tipo(null).build();
         return carta;
     }
 
@@ -594,24 +608,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                     }
 
-                    iniciaRodadaDefinicao(salaFront);
-
-
-					/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							modificaStatusJogador(jog);
-
-							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-									break;
-								}
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
-					} */
-                }
-            }
+					}
+				}
+			}
 
             for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
                 if (jog.getPosicao() == this.indexDoProximoJogador) {
@@ -675,22 +678,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                     }
 
-                    iniciaRodadaDefinicao(salaFront);
-					/* if (StatusEnum.ULTIMA_RODADA.equals(salaParaAtualizar.get().getStatus())) {
-
-						for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
-							modificaStatusJogador(jog);
-
-							if (jog.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
-								if (jog.getPosicao() == this.indexDoProximoJogador && jog.getIsHost()) {
-									salaParaAtualizar.get().setStatus(StatusEnum.FINALIZADO);
-									break;
-								}
-							}
+					if (verificaJogoUltimaRodada(salaParaAtualizar.get())) {
+						if (verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+							finalizaJogo(salaParaAtualizar.get());
 						}
-					} */
-                }
-            }
+					}
+				}
+			}
 
             for (Jogador jog : salaParaAtualizar.get().getJogadores()) {
                 if (jog.getPosicao() == this.indexDoProximoJogador) {
@@ -766,7 +760,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         try {
             if (salaParaAtualizar.isPresent()) {
                 salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
-                this.salaService.saveSala(salaParaAtualizar.get());
+                salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
+				this.salaService.saveSala(salaParaAtualizar.get());
 
                 return salaParaAtualizar;
             }
@@ -780,6 +775,23 @@ public class WebSocketServiceImpl implements WebSocketService {
         return this.indexDoProximoJogador;
     }
 
+	public void setIndexDoProximoJogador(Integer index) {
+		this.indexDoProximoJogador = index;
+	}
+		public Optional<Jogador> pegaJogadorEscolhido (Jogador jogador) throws JogoInvalidoException {
+			Optional<Jogador> atualizarJogador = this.jogadorService.findById(jogador.getId());
+			try {
+				if (atualizarJogador.isPresent()) {
+					atualizarJogador.get().setStatus(StatusEnumJogador.JOGANDO);
+					this.jogadorService.saveJogador(atualizarJogador.get());
+						return atualizarJogador;
+						}
+					} catch (Exception e) {
+						throw new JogoInvalidoException("Jogador não encontrado");
+					}
+					return atualizarJogador;
+	}
+	}
     public void setIndexDoProximoJogador(Integer index) {
         this.indexDoProximoJogador = index;
     }
@@ -891,7 +903,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 case "TEA" -> contadorDeCategorias[2]++;
                 case "AUDITIVA" -> contadorDeCategorias[3]++;
                 case "FISICA" -> contadorDeCategorias[4]++;
-            }            
+            }
         }
 
         cartasDeCategoriasDistintas = (int) Arrays.stream(contadorDeCategorias)
@@ -901,7 +913,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     public Boolean jogadorTemMaiorVariedadeDeCategorias(Sala sala, Jogador jogador) {
-        
+
         int quantidadeCategoriasDistintasJogadorAtual = calculaCartasCategoriasDistintasDoJogador(jogador);
         int quantidadeCategoriasDistintasAdversario;
 
@@ -909,10 +921,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 
             if (jogadorAdversario.getId() != jogador.getId()){
 
-                quantidadeCategoriasDistintasAdversario = calculaCartasCategoriasDistintasDoJogador(jogadorAdversario);        
+                quantidadeCategoriasDistintasAdversario = calculaCartasCategoriasDistintasDoJogador(jogadorAdversario);
 
                 if (quantidadeCategoriasDistintasAdversario >= quantidadeCategoriasDistintasJogadorAtual)
-                    return false;                
+                    return false;
             }
         }
 
@@ -921,7 +933,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public Integer calculaQuantidadeCategoriasIguaisACategoriaObjetivo(Jogador jogador, String categoriaObjetivo) {
 
-        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;        
+        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;
 
         for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
 
@@ -935,7 +947,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public Boolean jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo(String categoriaObjetivo, Jogador jogador, Sala sala) {
 
-        int quantidadeCategoriasIguaisDoJogadorAtual = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogador, categoriaObjetivo);        
+        int quantidadeCategoriasIguaisDoJogadorAtual = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogador, categoriaObjetivo);
         int quantidadeCategoriasIguaisAdversario;
 
         if(quantidadeCategoriasIguaisDoJogadorAtual == 0)
@@ -943,12 +955,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         for (Jogador jogadorAdversario : sala.getJogadores()) {
 
-            if (jogadorAdversario.getId() != jogador.getId()){                
+            if (jogadorAdversario.getId() != jogador.getId()){
 
-                quantidadeCategoriasIguaisAdversario = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogadorAdversario, categoriaObjetivo);                        
+                quantidadeCategoriasIguaisAdversario = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogadorAdversario, categoriaObjetivo);
 
                 if (quantidadeCategoriasIguaisAdversario >= quantidadeCategoriasIguaisDoJogadorAtual)
-                    return false;                
+                    return false;
             }
         }
 

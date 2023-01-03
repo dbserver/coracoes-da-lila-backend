@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.db.jogo.dto.SalaRequest;
 import com.db.jogo.dto.SalaResponse;
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
@@ -68,17 +70,17 @@ public class WebSocketControllerTest {
         carta.setId(UUID.randomUUID());
         carta.setPontos(2);
         carta.setBonus(true);
-        carta.setCategoria("Visual");
+        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCoracaoGrande(2);
         carta.setValorCoracaoPequeno(2);
-        carta.setTipo("Ação");
+        carta.setTipo(CartaDoJogoEnumTipo.ACAO);
 
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setTexto_tematico("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setTexto_regra("Ganhe pontos");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
         cartaObjetivo.setCategoria("Física");
 
         baralho.setCodigo("qwerty");

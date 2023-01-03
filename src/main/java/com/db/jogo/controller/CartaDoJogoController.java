@@ -4,32 +4,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.service.CartaDoJogoService;
-import static com.db.jogo.config.WebSocketConfiguration.DEV_FRONTEND_RENDER;
-import static com.db.jogo.config.WebSocketConfiguration.HTTP_LOCALHOST_4200;
-
 
 @RestController
-@CrossOrigin(origins = {HTTP_LOCALHOST_4200, DEV_FRONTEND_RENDER})
 @RequestMapping("/cartadojogo")
 public class CartaDoJogoController {
 
 	private CartaDoJogoService cartaDoJogoService;
 
-	@Autowired
 	public CartaDoJogoController(CartaDoJogoService cartaInicioService) {
 		this.cartaDoJogoService = cartaInicioService;
 	}

@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +38,16 @@ public class CartaDoJogoControllerTest {
 	CartaDoJogoServiceImpl cartaDoJogoService;
 
 	String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
-	CartaDoJogo newCartaDoJogo = CartaDoJogo.builder().id(UUID.fromString(id)).bonus(true).valorCoracaoGrande(1)
-			.valorCoracaoPequeno(0).categoria("FISICA").fonte("Google").tipo("INFORMACAO").pontos(3).texto("Teste").build();
+	CartaDoJogo newCartaDoJogo = CartaDoJogo.builder()
+							.id(UUID.fromString(id))
+							.bonus(true)
+							.valorCoracaoGrande(1)
+							.valorCoracaoPequeno(0)
+							.categoria(CartaDoJogoEnumCategoria.FISICA)
+							.fonte("Google").tipo(CartaDoJogoEnumTipo.INFORMACAO)
+							.pontos(3)
+							.texto("Teste")
+							.build();
 
 	@Test
 	@DisplayName("Teste do POST/Sucesso do Controller Carta do Jogo")

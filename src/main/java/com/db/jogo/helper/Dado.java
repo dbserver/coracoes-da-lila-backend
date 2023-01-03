@@ -2,6 +2,7 @@ package com.db.jogo.helper;
 
 import java.util.Random;
 
+import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
@@ -58,10 +59,10 @@ public class Dado {
 		}
 	}
 
-	public static Jogador resultadoDoDado(String tipo, Integer dado, Jogador jogador) {
+	public static Jogador resultadoDoDado(CartaDoJogoEnumTipo tipo, Integer dado, Jogador jogador) {
 
 		switch (tipo) {
-			case "Ação": {
+			case ACAO: {
 				 if(dado==1){
 					 descontaCoracao(jogador, -1);
 					return jogador;
@@ -78,7 +79,7 @@ public class Dado {
 				}
 			}
 			
-			case "Informação":{
+			case INFORMACAO:{
 				if(dado<=4){
 				return jogador;
 				}

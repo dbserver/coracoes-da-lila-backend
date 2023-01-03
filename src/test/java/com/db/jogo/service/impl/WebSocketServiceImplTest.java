@@ -81,11 +81,10 @@ class WebSocketServiceImplTest {
     @BeforeEach
     public void init() {
         cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setTexto_tematico("Texto da carta");
+        cartaObjetivo.setTextoTematico("Texto da carta");
         cartaObjetivo.setPontos(0);
-        cartaObjetivo.setTexto_regra("Ganhe pontos");
-        cartaObjetivo.setCategoria("FISICA");
-        cartaObjetivo.setTipo("FILME");
+        cartaObjetivo.setTextoRegra("Ganhe pontos");
+        cartaObjetivo.setCategoria("Física");
 
         sala.setId(UUID.randomUUID());
         sala.setCartasObjetivo(new ArrayList<>());
@@ -101,7 +100,7 @@ class WebSocketServiceImplTest {
         jogador.setCoracaoPequeno(0);
         jogador.setPosicao(1);
         jogador.adicionaObjetivo(cartaObjetivo);
-        jogador.setStatus(ESPERANDO);
+        jogador.setStatus(StatusEnumJogador.JOGANDO);
         jogador.setIsHost(true);
 
 
@@ -112,11 +111,11 @@ class WebSocketServiceImplTest {
         jogador2.setBonusCoracaoPequeno(2);
         jogador2.setCoracaoGrande(5);
         jogador2.setCoracaoPequeno(3);
-        jogador2.setStatus(JOGANDO);
 
         sala.setJogadores(new ArrayList<>());
         sala.adicionarJogador(jogador);
         sala.adicionarJogador(jogador2);
+        sala.setJogadorEscolhido(jogador);
 
         salaRequest.setHash("hashpraentrar");
         salaRequest.setJogador(jogador);
@@ -131,7 +130,7 @@ class WebSocketServiceImplTest {
 
     @Test
     @DisplayName("Teste do método sorteia carta objetivo, se retorna uma carta contida no arrayList Cartas Objetivo da sala")
-    void testSorteiaCartaObjetivo() {
+    void testSorteiaCartaObjetivo(){
         sala.adicionarCartaDoObjetivo(cartaObjetivo);
         sala.adicionarCartaDoObjetivo(cartaObjetivoNula);
         CartaObjetivo cartaSorteada = webSocketServiceImpl.sorteiaCartaObjetivo(sala);
@@ -160,22 +159,22 @@ class WebSocketServiceImplTest {
     void testPassaAVezDoJogador() {
 
         webSocketServiceImpl.passaAVezDoJogador(sala);
-        assertEquals(jogador2.getStatus(), JOGANDO);
+        assertEquals(jogador2.getStatus(), StatusEnumJogador.JOGANDO);
 
 
     }
 
     @Test
     @DisplayName("Teste do método de validar carta objetivo com a carta existente")
-    void testValidaCartaObjetivoTrue() {
+    void testValidaCartaObjetivoTrue(){
 
         assertEquals(webSocketServiceImpl.validaCartaObjetivo(cartaObjetivo), true);
     }
 
     @Test
     @DisplayName("Teste do método de validar carta objetivo com a carta inexistente")
-    void testValidaCartaObjetivoFalse() {
-
+    void testValidaCartaObjetivoFalse(){
+        
         assertEquals(webSocketServiceImpl.validaCartaObjetivo(cartaObjetivoNula), false);
     }
 

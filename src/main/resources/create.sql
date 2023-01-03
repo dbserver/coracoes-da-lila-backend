@@ -29,7 +29,6 @@ create table admin (
 
 create table baralho (
   id uuid not null,
-  id_carta_inicio uuid,
   codigo varchar(20) not null,
   descricao varchar(255) not null, 
   titulo varchar(20) not null, 
@@ -59,9 +58,9 @@ create table carta_inicio (
 
 create table carta_objetivo (
     id uuid not null, 
-    categoria varchar(100) not null,
+    categoria varchar(100),
     texto_regra varchar(255) not null,
-    texto_tematico varchar(255) not null, 
+    texto_tematico varchar(255) not null,
     pontos int4 not null,
     tipo_contagem int4 not null,
     tipo varchar(20),
@@ -111,7 +110,6 @@ create table jogador (
 create table jogador_cartadojogo (
   jogador_id uuid not null ,
   cartadojogo_id uuid not null ,
-  nova_categoria varchar(80),
     CONSTRAINT FK_cartadojogo_id FOREIGN KEY (cartadojogo_id)
      REFERENCES carta_do_jogo (id),
      CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)
@@ -128,9 +126,11 @@ create table jogador_cartaobjetivo (
 create table sala (
      id uuid not null, 
      hash varchar(255) not null,
+     carta_inicio_id uuid,
      status int4 not null,
      baralho_id uuid, 
      dado int4 not null,
+     jogador_escolhido uuid,
      dth_fim timestamp,
      dth_inicio timestamp not null,
      primary key (id)
