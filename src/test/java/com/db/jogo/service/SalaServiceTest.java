@@ -1,6 +1,8 @@
 package com.db.jogo.service;
 
 
+import static com.db.jogo.enums.CartaDoJogoEnumCategoria.VISUAL;
+import static com.db.jogo.enums.CartaDoJogoEnumTipo.ACAO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -53,12 +55,12 @@ public class SalaServiceTest {
         carta.setId(UUID.randomUUID());
         carta.setPontos(2);
         carta.setBonus(true);
-        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
+        carta.setCategoria(VISUAL);
         carta.setTexto("Deficiencia visual");
         carta.setFonte("Wikipedia");
         carta.setValorCoracaoGrande(0);
         carta.setValorCoracaoPequeno(0);
-        carta.setTipo(CartaDoJogoEnumTipo.ACAO);
+        carta.setTipo(ACAO);
 
         cartaObjetivo.setId(UUID.randomUUID());
         cartaObjetivo.setTextoTematico("Texto da carta");

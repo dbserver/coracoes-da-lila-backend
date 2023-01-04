@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.db.jogo.enums.StatusEnumJogador.ESPERANDO;
+import static com.db.jogo.enums.CartaDoJogoEnumCategoria.*;
+import static com.db.jogo.enums.CartaDoJogoEnumTipo.FILME;
 import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -221,14 +222,90 @@ class WebSocketServiceImplTest {
         assertNotEquals(jogadorJogando.getStatus(), StatusEnumJogador.ESPERANDO);
     }
     @Test
-    void quandoContagemPontosObjetivoForChamada() {
+    void testaContagemPontosObjetivoQuandoJogadorNaoComprouCartasObjetivo() {
+        primeiroJogador.setCartasObjetivo(List.of());
+        sala.setJogadores(List.of(primeiroJogador));
+
+        webSocketServiceImplement.contagemPontosObjetivo(sala);
+
+        int quantidadePontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo();
+        boolean pontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo().equals(0);
+
+        assertEquals(0, quantidadePontosObjetivoJogador);
+        assertTrue(pontosObjetivoJogador);
+    }
+    @Test
+    void testaContagemPontosObjetivoCase1() {
+        primeiroJogador.getCartasObjetivo().get(0).setTextoRegra("Ganhe 1 ponto por cada carta que você tiver " +
+                "da categoria Física ao final da partida");
+        primeiroJogador.getCartasObjetivo().get(0).setTipoContagem(1);
+        primeiroJogador.getCartasObjetivo().get(0).setPontos(1);
+
+        sala.setJogadores(List.of(primeiroJogador));
+
+        webSocketServiceImplement.contagemPontosObjetivo(sala);
+        int quantidadePontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo();
+        boolean pontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo().equals(1);
+        assertEquals(1, quantidadePontosObjetivoJogador);
+        assertTrue(pontosObjetivoJogador);
+    }
+    @Test
+    void testaContagemPontosObjetivoCase2() {
         sala.setJogadores(List.of(primeiroJogador, segundoJogador));
         webSocketServiceImplement.contagemPontosObjetivo(sala);
-        boolean quantidadeDePontosObjetivoDoPrimeiroJogadorCase2 = sala.getJogadores().get(0).getPontosObjetivo().equals(2);
+        boolean pontosObjetivoDoJogado = sala.getJogadores().get(0).getPontosObjetivo().equals(2);
+
+        assertTrue(pontosObjetivoDoJogado);
+
+    }
+    @Test
+    void testaContagemPontosObjetivoCase3() {
+        primeiroJogador.getCartasObjetivo().get(0).setTextoRegra("Ganhe 1 ponto por cada " +
+                "categoria que você tiver ao final da partida");
+        primeiroJogador.getCartasObjetivo().get(0).setTipoContagem(3);
+        primeiroJogador.getCartasObjetivo().get(0).setPontos(1);
+
+        sala.setJogadores(List.of(primeiroJogador));
+
+        webSocketServiceImplement.contagemPontosObjetivo(sala);
+        int quantidadePontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo();
+        boolean pontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo().equals(2);
+        assertEquals(2, quantidadePontosObjetivoJogador);
+        assertTrue(pontosObjetivoJogador);
+    }
+    @Test
+    void testaContagemPontosObjetivoCase4() {
+        primeiroJogador.getCartasObjetivo().get(0).setTextoRegra("Ganhe 3 pontos se você tiver " +
+                "a maior variedade de categorias ao final da partida");
+        primeiroJogador.getCartasObjetivo().get(0).setTipoContagem(4);
+        primeiroJogador.getCartasObjetivo().get(0).setPontos(3);
+
+        sala.setJogadores(List.of(primeiroJogador, segundoJogador));
+
+        webSocketServiceImplement.contagemPontosObjetivo(sala);
+
+        int quantidadePontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo();
+        boolean pontosObjetivoJogador = sala.getJogadores().get(0).getPontosObjetivo().equals(3);
+
+        assertEquals(3, quantidadePontosObjetivoJogador);
+        assertTrue(pontosObjetivoJogador);
+    }
+    @Test
+    void testaContagemPontosObjetivoCase5() {
+        sala.setJogadores(List.of(primeiroJogador, segundoJogador));
+        webSocketServiceImplement.contagemPontosObjetivo(sala);
         boolean quantidadeDePontosObjetivoDoSegundoJogadorCase5 = sala.getJogadores().get(1).getPontosObjetivo().equals(3);
 
         assertTrue(quantidadeDePontosObjetivoDoSegundoJogadorCase5);
-        assertTrue(quantidadeDePontosObjetivoDoPrimeiroJogadorCase2);
+
+    }@Test
+    void testaContagemPontosObjetivoChamouIllegalArgumentException() {
+        primeiroJogador.getCartasObjetivo().get(0).setTipoContagem(100);
+        sala.setJogadores(List.of(primeiroJogador));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> webSocketServiceImplement.contagemPontosObjetivo(sala),
+                "\nCategoria da Carta Objetivo não corresponde a nenhuma lógica de contagem\n");
 
     }
 
@@ -265,15 +342,15 @@ class WebSocketServiceImplTest {
         int resultadoFisicaVisual = webSocketServiceImplement.calculaCartasCategoriasDistintasDoJogador(primeiroJogador);
         assertEquals(2, resultadoFisicaVisual);
 
-        primeiroJogador.getCartasDoJogo().get(0).setCategoria("INTELECTUAL");
+        primeiroJogador.getCartasDoJogo().get(0).setCategoria(INTELECTUAL);
         int resultadoIntelectual = webSocketServiceImplement.calculaCartasCategoriasDistintasDoJogador(primeiroJogador);
         assertEquals(2, resultadoIntelectual);
 
-        primeiroJogador.getCartasDoJogo().get(0).setCategoria("TEA");
+        primeiroJogador.getCartasDoJogo().get(0).setCategoria(TEA);
         int resultadoTEA = webSocketServiceImplement.calculaCartasCategoriasDistintasDoJogador(primeiroJogador);
         assertEquals(2, resultadoTEA);
 
-        primeiroJogador.getCartasDoJogo().get(0).setCategoria("AUDITIVA");
+        primeiroJogador.getCartasDoJogo().get(0).setCategoria(AUDITIVA);
         int resultadoAuditiva = webSocketServiceImplement.calculaCartasCategoriasDistintasDoJogador(primeiroJogador);
         assertEquals(2, resultadoAuditiva);
     }
@@ -316,8 +393,8 @@ class WebSocketServiceImplTest {
     @Test
     void testaQueJogadorNaoTenhaMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo() {
         sala.setJogadores(List.of(primeiroJogador, segundoJogador));
-        primeiroJogador.getCartasDoJogo().get(1).setCategoria("FISICA");
-        segundoJogador.getCartasDoJogo().get(0).setCategoria("FISICA");
+        primeiroJogador.getCartasDoJogo().get(1).setCategoria(FISICA);
+        segundoJogador.getCartasDoJogo().get(0).setCategoria(FISICA);
         boolean resultado = webSocketServiceImplement
                 .jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo("FISICA", segundoJogador, sala);
         assertFalse(resultado);
@@ -328,16 +405,16 @@ class WebSocketServiceImplTest {
         primeiroJogador = new Jogador(UUID.fromString("01fa2624-bc16-4d3b-a1d6-6e797b47e04d"),
                 1,
                 List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
-                        "FILME",
-                        "FISICA",
+                        FILME,
+                        FISICA,
                         true,
                         "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
                         2,
                         1,
                         "deficienteonline.com.br",
                         3), new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
-                        "FILME",
-                        "VISUAL",
+                        FILME,
+                        VISUAL,
                         true,
                         "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
                         2,
@@ -364,8 +441,8 @@ class WebSocketServiceImplTest {
         segundoJogador = new Jogador(UUID.fromString("af0193df-60e2-49c6-a6b1-c58e7e95a493"),
                 2,
                 List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
-                        "FILME",
-                        "TEA",
+                        FILME,
+                        TEA,
                         true,
                         "Transtorno do Espectro Autista (TEA) é uma condição do desenvolvimento neurológico, caracterizado por alteração da comunicação, interação social e presença de comportamentos repetitivos e estereotipados.",
                         2,
@@ -391,8 +468,8 @@ class WebSocketServiceImplTest {
         );
 
         cartasdoJogoMock = new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
-                "FILME",
-                "FISICA",
+                FILME,
+                FISICA,
                 true,
                 "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
                 2,
@@ -401,8 +478,8 @@ class WebSocketServiceImplTest {
                 3);
 
         listaCartasDoJogoMock = List.of(new CartaDoJogo(UUID.fromString("7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0"),
-                "FILME",
-                "FISICA",
+                FILME,
+                FISICA,
                 true,
                 "Nunca movimente a cadeira de rodas sem antes pedir permissão para a pessoa.",
                 2,
