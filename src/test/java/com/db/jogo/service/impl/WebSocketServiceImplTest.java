@@ -6,6 +6,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.db.jogo.enums.CartaDoJogoEnumCategoria;
@@ -234,7 +235,7 @@ class WebSocketServiceImplTest {
 
         sala.setStatus(StatusEnum.ULTIMA_RODADA);
 
-        boolean salaEstaNaUltimaRodada = webSocketServiceImpl.verificaJogoUltimaRodada(sala);
+        boolean salaEstaNaUltimaRodada = webSocketServiceImpl.verificaJogoUltimaRodada(Optional.of(sala).get());
 
         assertTrue(salaEstaNaUltimaRodada);
     }
@@ -244,7 +245,7 @@ class WebSocketServiceImplTest {
 
         sala.setStatus(StatusEnum.JOGANDO);
 
-        boolean salaEstaNaUltimaRodada = webSocketServiceImpl.verificaJogoUltimaRodada(sala);
+        boolean salaEstaNaUltimaRodada = webSocketServiceImpl.verificaJogoUltimaRodada(Optional.of(sala).get());
 
         assertFalse(salaEstaNaUltimaRodada);
     }
@@ -274,7 +275,7 @@ class WebSocketServiceImplTest {
 
         webSocketServiceImpl.setIndexDoProximoJogador(1);
 
-        boolean estaNaUltimaJogada = webSocketServiceImpl.verificaUltimaJogadaDoTurno(sala);
+        boolean estaNaUltimaJogada = webSocketServiceImpl.verificaUltimaJogadaDoTurno(Optional.of(sala).get());
 
         assertFalse(estaNaUltimaJogada);
     }
@@ -287,12 +288,10 @@ class WebSocketServiceImplTest {
         sala.setJogadores(List.of(jogador1, jogador2));
         sala.setJogadorEscolhido(jogador1);
 
-
-        jogador1.getCartasDoJogo().get(0).setCategoria(CartaDoJogoEnumCategoria.FISICA);
-//        jogador2.getCartasDoJogo().get(0).setCategoria(CartaDoJogoEnumCategoria.GENERICA);
-
+        jogador1.getCartasDoJogo().get(0).setCategoria(CartaDoJogoEnumCategoria.INTELECTUAL);
         jogador1.setStatus(StatusEnumJogador.JOGANDO);
-//        jogador2.setStatus(StatusEnumJogador.JOGANDO);
+        jogador2.getCartasDoJogo().get(0).setCategoria(CartaDoJogoEnumCategoria.GENERICA);
+        jogador2.setStatus(StatusEnumJogador.JOGANDO);
 
         webSocketServiceImpl.setIndexDoProximoJogador(jogador1.getPosicao());
 
