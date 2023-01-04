@@ -837,8 +837,6 @@ public class WebSocketServiceImpl implements WebSocketService {
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
 
-        System.out.println("\n FINALIZA STATUS JOGADOR 2 \n\n");
-
         try {
             if (salaParaAtualizar.isPresent()) {
                 if (jogadorParaAtualizar.isPresent()) {
