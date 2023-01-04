@@ -744,7 +744,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         this.indexDoProximoJogador = index;
     }
 
-    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) { // TODO: TEST OK
+    public Boolean verificaJogadorTemCartaGenerica(Jogador jogador) {
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
             if (jogador.getCartasDoJogo().get(i).getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)) {
                 return true;
@@ -767,7 +767,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         return atualizarJogador;
     }
 
-    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { // TODO: TEST - ok
+    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { 
         
         if (verificaJogadorTemCartaGenerica(jog)) {
             jog.setStatus(StatusEnumJogador.DEFININDO);
@@ -776,14 +776,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { // TODO: TEST - ok
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { 
         if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
             return true;
         }
         return false;
     }
 
-    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { // TODO: TEST - ok
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { 
         if (verificaTodosJogadoresFinalizados(sala)) {
             finalizaJogo(sala);
         } else {
@@ -791,7 +791,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaTodosJogadoresFinalizados(Sala sala) { // TODO: TEST - ok
+    public Boolean verificaTodosJogadoresFinalizados(Sala sala) {
         int contador = 0;
         for (int i = 0; i < sala.getJogadores().size(); i++) {
             if (verificaStatusJogadorFinalizado(sala.getJogadores().get(i))) {
@@ -802,12 +802,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         return contador == sala.getJogadores().size();
     }
 
-    public void iniciaRodadaDefinicao(Sala sala) { //TODO: TEST
+    public void iniciaRodadaDefinicao(Sala sala) { 
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
         if (verificaJogoUltimaRodada(salaParaAtualizar.get()) && verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-            sala.getJogadores().forEach(jog -> {
-                modificaStatusJogadorDefinindoOuFinalizado(jog);
-            });
+            for (Jogador jogador: sala.getJogadores()) {
+                modificaStatusJogadorDefinindoOuFinalizado(jogador);                
+            }
 
             modificaStatusSalaDefinindoOuFinalizado(sala);
 
@@ -822,7 +822,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     }
 
-    public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO) // TODO: TEST 
+    public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO)
             throws JogoInvalidoException {
 
         Optional<Jogador> jogadorParaAtualizar = this.jogadorService
@@ -833,7 +833,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(
                     jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());          
             
-            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria()); // DUVIDA ENTRE MODIFICAR OU NAO
+            // DUVIDA ENTRE MODIFICAR OU NAO A CATEGORIA ORIGINAL
+            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria()); 
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
 
