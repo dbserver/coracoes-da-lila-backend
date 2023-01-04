@@ -124,9 +124,7 @@ public class WebSocketController {
             @RequestBody NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO, BindingResult bindingResult)
             throws JogoInvalidoException {
 
-        // TODO: FAZER VERIFICAÇÕES DE BAD REQUEST AQUI COM SALA/JOGADOR NULOS AQUI
-
-        if (bindingResult.hasErrors()) {
+        if (novaCategoriaCartasDoJogoDTO == null || bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
