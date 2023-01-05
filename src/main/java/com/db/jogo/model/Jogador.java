@@ -74,8 +74,8 @@ public class Jogador {
 	@Column(name="is_host", nullable = false)
      private Boolean isHost;
 
-	@Column(name="pontos_objetivo", length = 10)
-	private Integer pontosObjetivo;
+	// @Column(name="pontos_objetivo", length = 10)
+	// private Integer pontosObjetivo;
 
 	@Column(name = "status")
 	@Builder.Default
