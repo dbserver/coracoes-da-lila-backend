@@ -779,6 +779,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) {
         if (verificaTodosJogadoresFinalizados(sala)) {
+            contagemPontosObjetivo(sala);
             finalizaJogo(sala);
         } else {
             sala.setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
@@ -806,9 +807,11 @@ public class WebSocketServiceImpl implements WebSocketService {
                 modificaStatusJogadorDefinindoOuFinalizado(jogador);
             }
 
+            this.salaService.saveSala(sala);
+
             modificaStatusSalaDefinindoOuFinalizado(sala);
 
-            this.salaService.saveSala(sala);
+            
         }
 
         if (salaParaAtualizar.isPresent()) {
@@ -830,7 +833,6 @@ public class WebSocketServiceImpl implements WebSocketService {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(
                     jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());
 
-            // DUVIDA ENTRE MODIFICAR OU NAO A CATEGORIA ORIGINAL
             jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria());
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
@@ -842,7 +844,6 @@ public class WebSocketServiceImpl implements WebSocketService {
                     jogadorService.saveJogador(jogadorParaAtualizar.get());
                 }
             }
-
             modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
 
             if (salaParaAtualizar.isPresent()) {
@@ -862,6 +863,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public void contagemPontosObjetivo(Sala sala) {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
+
         for (Jogador jogador : sala.getJogadores()) {
             boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
 
@@ -896,23 +898,38 @@ public class WebSocketServiceImpl implements WebSocketService {
                         default:
                             throw new IllegalArgumentException("\nCategoria da Carta Objetivo não corresponde a nenhuma lógica de contagem\n");
                     }
-
-                    this.jogadorService.saveJogador(jogador);
-
                 }
+
+                this.jogadorService.saveJogador(jogador);
             }
         }
     }
 
+    public Boolean verificaCartaGenerica(CartaDoJogo cartaDoJogo){
+        if (cartaDoJogo.getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)){
+            return true;
+        }
+        return false;
+    }
+
     public Integer calculaCartasMesmaCategoria(String categoria, Jogador jogador) {
         int cartasDeMesmaCategoria = 0;
+        boolean categoriasIguais;
 
         for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
-            boolean categoriasIguais = jogador.getCartasDoJogo().get(i).getCategoria().toString().equals(categoria);
+            CartaDoJogo cartaAtual = jogador.getCartasDoJogo().get(i);
+
+            if (verificaCartaGenerica(cartaAtual)){
+                CartaDoJogoEnumCategoria novaCategoria = jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaAtual.getId()).getNovaCategoria();
+                categoriasIguais = novaCategoria.toString().equals(categoria);
+            }else{
+                categoriasIguais = cartaAtual.getCategoria().toString().equals(categoria);
+            }
 
             if (categoriasIguais)
                 cartasDeMesmaCategoria++;
         }
+
         return cartasDeMesmaCategoria;
     }
 
@@ -930,9 +947,16 @@ public class WebSocketServiceImpl implements WebSocketService {
         Integer[] contadorDeCategorias = {0, 0, 0, 0, 0};
 
         int cartasDeCategoriasDistintas;
+        CartaDoJogoEnumCategoria categoria;
 
         for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
-            switch (cartaDoJogo.getCategoria()) {
+            if(verificaCartaGenerica(cartaDoJogo)){
+                categoria = jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaDoJogo.getId()).getNovaCategoria();
+            }else {
+                categoria = cartaDoJogo.getCategoria();
+            }
+
+            switch (categoria) {
                 case VISUAL -> contadorDeCategorias[0]++;
                 case INTELECTUAL -> contadorDeCategorias[1]++;
                 case TEA -> contadorDeCategorias[2]++;
@@ -966,23 +990,23 @@ public class WebSocketServiceImpl implements WebSocketService {
         return true;
     }
 
-    public Integer calculaQuantidadeCategoriasIguaisACategoriaObjetivo(Jogador jogador, String categoriaObjetivo) {
-
-        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;
-
-        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
-
-            if (cartaDoJogo.getCategoria().toString().compareTo(categoriaObjetivo) == 0) {
-                cartasDeCategoriasIguaisCategoriaObjetivo++;
-            }
-        }
-
-        return cartasDeCategoriasIguaisCategoriaObjetivo;
-    }
+//    public Integer calculaQuantidadeCategoriasIguaisACategoriaObjetivo(Jogador jogador, String categoriaObjetivo) {
+//
+//        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;
+//
+//        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
+//
+//            if (cartaDoJogo.getCategoria().toString().compareTo(categoriaObjetivo) == 0) {
+//                cartasDeCategoriasIguaisCategoriaObjetivo++;
+//            }
+//        }
+//
+//        return cartasDeCategoriasIguaisCategoriaObjetivo;
+//    }
 
     public Boolean jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo(String categoriaObjetivo, Jogador jogador, Sala sala) {
 
-        int quantidadeCategoriasIguaisDoJogadorAtual = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogador, categoriaObjetivo);
+        int quantidadeCategoriasIguaisDoJogadorAtual = calculaCartasMesmaCategoria(categoriaObjetivo, jogador);
         int quantidadeCategoriasIguaisAdversario;
 
         if (quantidadeCategoriasIguaisDoJogadorAtual == 0)
@@ -992,7 +1016,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
             if (jogadorAdversario.getId() != jogador.getId()) {
 
-                quantidadeCategoriasIguaisAdversario = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogadorAdversario, categoriaObjetivo);
+                quantidadeCategoriasIguaisAdversario = calculaCartasMesmaCategoria(categoriaObjetivo, jogadorAdversario);
 
                 if (quantidadeCategoriasIguaisAdversario >= quantidadeCategoriasIguaisDoJogadorAtual)
                     return false;
