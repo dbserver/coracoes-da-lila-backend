@@ -1,21 +1,7 @@
 package com.db.jogo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.db.jogo.service.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.NovaCategoriaCartasDoJogoDTO;
+import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.StatusEnum;
@@ -25,9 +11,15 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.model.*;
+import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -45,9 +37,9 @@ public class WebSocketServiceImpl implements WebSocketService {
     private CartaObjetivo cartaCompradaObjetivo;
 
     protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
-            JogadorService jogadorService,
-            SimpMessagingTemplate template, CartaDoJogoService cartaService,
-            JogadorCartasDoJogoService jogadorCartasDoJogoService) {
+                                   JogadorService jogadorService,
+                                   SimpMessagingTemplate template, CartaDoJogoService cartaService,
+                                   JogadorCartasDoJogoService jogadorCartasDoJogoService) {
         this.salaService = salaService;
         this.baralhoService = baralhoService;
         this.jogadorService = jogadorService;
@@ -522,6 +514,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         jogador.setPosicao(1);
         jogador.setIsHost(true);
         jogador.setNome(jogador.getNome());
+        jogador.setPontosObjetivo(0);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
         return jogador;
     }
@@ -535,6 +528,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         jogador.setPosicao(num);
         jogador.setIsHost(false);
         jogador.setNome(jogador.getNome());
+        jogador.setPontosObjetivo(0);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
         return jogador;
     }
@@ -799,13 +793,16 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
         }
 
-        return contador == sala.getJogadores().size();
+        boolean jogadoresEstaoFinalizados = contador == sala.getJogadores().size();
+
+
+        return jogadoresEstaoFinalizados;
     }
 
     public void iniciaRodadaDefinicao(Sala sala) {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
         if (verificaJogoUltimaRodada(salaParaAtualizar.get()) && verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
-            for (Jogador jogador: sala.getJogadores()) {
+            for (Jogador jogador : sala.getJogadores()) {
                 modificaStatusJogadorDefinindoOuFinalizado(jogador);
             }
 
@@ -863,7 +860,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-   public void contagemPontosObjetivo(Sala sala) {
+    public void contagemPontosObjetivo(Sala sala) {
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
         for (Jogador jogador : sala.getJogadores()) {
             boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
 
@@ -898,6 +896,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         default:
                             throw new IllegalArgumentException("\nCategoria da Carta Objetivo não corresponde a nenhuma lógica de contagem\n");
                     }
+
                     this.jogadorService.saveJogador(jogador);
 
                 }
@@ -955,7 +954,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         for (Jogador jogadorAdversario : sala.getJogadores()) {
 
-            if (jogadorAdversario.getId() != jogador.getId()){
+            if (jogadorAdversario.getId() != jogador.getId()) {
 
                 quantidadeCategoriasDistintasAdversario = calculaCartasCategoriasDistintasDoJogador(jogadorAdversario);
 
@@ -973,7 +972,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
 
-            if(cartaDoJogo.getCategoria().toString().compareTo(categoriaObjetivo) == 0){
+            if (cartaDoJogo.getCategoria().toString().compareTo(categoriaObjetivo) == 0) {
                 cartasDeCategoriasIguaisCategoriaObjetivo++;
             }
         }
@@ -986,12 +985,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         int quantidadeCategoriasIguaisDoJogadorAtual = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogador, categoriaObjetivo);
         int quantidadeCategoriasIguaisAdversario;
 
-        if(quantidadeCategoriasIguaisDoJogadorAtual == 0)
+        if (quantidadeCategoriasIguaisDoJogadorAtual == 0)
             return false;
 
         for (Jogador jogadorAdversario : sala.getJogadores()) {
 
-            if (jogadorAdversario.getId() != jogador.getId()){
+            if (jogadorAdversario.getId() != jogador.getId()) {
 
                 quantidadeCategoriasIguaisAdversario = calculaQuantidadeCategoriasIguaisACategoriaObjetivo(jogadorAdversario, categoriaObjetivo);
 
