@@ -812,13 +812,6 @@ public class WebSocketServiceImpl implements WebSocketService {
             modificaStatusSalaDefinindoOuFinalizado(sala);
             this.salaService.saveSala(sala);
         }
-
-//        if (salaParaAtualizar.isPresent()) {
-//            this.template.convertAndSend(
-//                    "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
-//                    salaParaAtualizar.get());
-//        }
-
     }
 
     public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO)
