@@ -920,7 +920,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             CartaDoJogo cartaAtual = jogador.getCartasDoJogo().get(i);
 
             if (verificaCartaGenerica(cartaAtual)){
-                CartaDoJogoEnumCategoria novaCategoria = jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaAtual.getId()).getNovaCategoria();
+                CartaDoJogoEnumCategoria novaCategoria = jogadorCartasDoJogoService
+                        .findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaAtual.getId()).getNovaCategoria();
                 categoriasIguais = novaCategoria.toString().equals(categoria);
             }else{
                 categoriasIguais = cartaAtual.getCategoria().toString().equals(categoria);
@@ -989,20 +990,6 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         return true;
     }
-
-//    public Integer calculaQuantidadeCategoriasIguaisACategoriaObjetivo(Jogador jogador, String categoriaObjetivo) {
-//
-//        int cartasDeCategoriasIguaisCategoriaObjetivo = 0;
-//
-//        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
-//
-//            if (cartaDoJogo.getCategoria().toString().compareTo(categoriaObjetivo) == 0) {
-//                cartasDeCategoriasIguaisCategoriaObjetivo++;
-//            }
-//        }
-//
-//        return cartasDeCategoriasIguaisCategoriaObjetivo;
-//    }
 
     public Boolean jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo(String categoriaObjetivo, Jogador jogador, Sala sala) {
 
