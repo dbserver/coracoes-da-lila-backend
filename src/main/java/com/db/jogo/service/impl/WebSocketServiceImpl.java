@@ -1,21 +1,7 @@
 package com.db.jogo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.db.jogo.service.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.NovaCategoriaCartasDoJogoDTO;
+import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import com.db.jogo.enums.StatusEnum;
@@ -25,9 +11,15 @@ import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.model.*;
+import com.db.jogo.service.*;
 import com.db.jogo.service.regras.RegrasDoJogo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -45,9 +37,9 @@ public class WebSocketServiceImpl implements WebSocketService {
     private CartaObjetivo cartaCompradaObjetivo;
 
     protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
-            JogadorService jogadorService,
-            SimpMessagingTemplate template, CartaDoJogoService cartaService,
-            JogadorCartasDoJogoService jogadorCartasDoJogoService) {
+                                   JogadorService jogadorService,
+                                   SimpMessagingTemplate template, CartaDoJogoService cartaService,
+                                   JogadorCartasDoJogoService jogadorCartasDoJogoService) {
         this.salaService = salaService;
         this.baralhoService = baralhoService;
         this.jogadorService = jogadorService;
@@ -522,6 +514,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         jogador.setPosicao(1);
         jogador.setIsHost(true);
         jogador.setNome(jogador.getNome());
+        jogador.setPontosObjetivo(0);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
         return jogador;
     }
@@ -535,6 +528,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         jogador.setPosicao(num);
         jogador.setIsHost(false);
         jogador.setNome(jogador.getNome());
+        jogador.setPontosObjetivo(0);
         jogador.setStatus(StatusEnumJogador.ESPERANDO);
         return jogador;
     }
@@ -767,8 +761,8 @@ public class WebSocketServiceImpl implements WebSocketService {
         return atualizarJogador;
     }
 
-    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) { 
-        
+    public void modificaStatusJogadorDefinindoOuFinalizado(Jogador jog) {
+
         if (verificaJogadorTemCartaGenerica(jog)) {
             jog.setStatus(StatusEnumJogador.DEFININDO);
         } else {
@@ -776,15 +770,16 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
-    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) { 
+    public Boolean verificaStatusJogadorFinalizado(Jogador jogador) {
         if (jogador.getStatus().equals(StatusEnumJogador.FINALIZADO)) {
             return true;
         }
         return false;
     }
 
-    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) { 
+    public void modificaStatusSalaDefinindoOuFinalizado(Sala sala) {
         if (verificaTodosJogadoresFinalizados(sala)) {
+            contagemPontosObjetivo(sala);
             finalizaJogo(sala);
         } else {
             sala.setStatus(StatusEnum.AGUARDANDO_DEFINICAO);
@@ -799,13 +794,18 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
         }
 
-        return contador == sala.getJogadores().size();
+        boolean jogadoresEstaoFinalizados = contador == sala.getJogadores().size();
+
+
+        return jogadoresEstaoFinalizados;
     }
 
-    public void iniciaRodadaDefinicao(Sala sala) { 
+    public void iniciaRodadaDefinicao(Sala sala) {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
         if (verificaJogoUltimaRodada(salaParaAtualizar.get()) && verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
+
             for (Jogador jogador: sala.getJogadores()) {
+
                 modificaStatusJogadorDefinindoOuFinalizado(jogador);
             }
 
@@ -823,10 +823,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         for (NovaCategoriaDTO novaCategoriaDTO : novaCategoriaCartasDoJogoDTO.getListaDeCartas()) {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(
-                    jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());          
-            
-            // DUVIDA ENTRE MODIFICAR OU NAO A CATEGORIA ORIGINAL
-            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria()); 
+                    jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());
+
+            jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria());
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
 
@@ -837,7 +836,6 @@ public class WebSocketServiceImpl implements WebSocketService {
                     jogadorService.saveJogador(jogadorParaAtualizar.get());
                 }
             }
-
             modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
 
             if (salaParaAtualizar.isPresent()) {
@@ -853,5 +851,157 @@ public class WebSocketServiceImpl implements WebSocketService {
         } catch (Exception e) {
             throw new JogoInvalidoException("Sala não encontrada");
         }
+    }
+
+    public void contagemPontosObjetivo(Sala sala) {
+        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
+
+        for (Jogador jogador : sala.getJogadores()) {
+            boolean jogadorSemCartaObjetivo = jogador.getCartasObjetivo().isEmpty();
+
+            if (jogadorSemCartaObjetivo) {
+                jogador.setPontosObjetivo(0);
+            } else {
+                for (CartaObjetivo cartaObjetivo : jogador.getCartasObjetivo()) {
+                    switch (cartaObjetivo.getTipoContagem()) {
+                        case 1:
+                            int quantidadeCartasMesmaCategoria = calculaCartasMesmaCategoria(cartaObjetivo.getCategoria(), jogador);
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (quantidadeCartasMesmaCategoria * cartaObjetivo.getPontos()));
+                            break;
+                        case 2:
+                            if (verificaTiposIguais(cartaObjetivo.getTipo(), jogador)) {
+                                jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
+                            }
+                            break;
+                        case 3:
+                            int quantidadeCartasCategoriasDistintas = calculaCartasCategoriasDistintasDoJogador(jogador);
+                            jogador.setPontosObjetivo(jogador.getPontosObjetivo() + (quantidadeCartasCategoriasDistintas * cartaObjetivo.getPontos()));
+                            break;
+                        case 4:
+                            if (jogadorTemMaiorVariedadeDeCategorias(sala, jogador)) {
+                                jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
+                            }
+                            break;
+                        case 5:
+                            if (jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo(cartaObjetivo.getCategoria(), jogador, sala)) {
+                                jogador.setPontosObjetivo(jogador.getPontosObjetivo() + cartaObjetivo.getPontos());
+                            }
+                            break;
+                        default:
+                            throw new IllegalArgumentException("\nCategoria da Carta Objetivo não corresponde a nenhuma lógica de contagem\n");
+                    }
+                }
+
+                this.jogadorService.saveJogador(jogador);
+            }
+        }
+    }
+
+    public Boolean verificaCartaGenerica(CartaDoJogo cartaDoJogo){
+        if (cartaDoJogo.getCategoria().equals(CartaDoJogoEnumCategoria.GENERICA)){
+            return true;
+        }
+        return false;
+    }
+
+    public Integer calculaCartasMesmaCategoria(String categoria, Jogador jogador) {
+        int cartasDeMesmaCategoria = 0;
+        boolean categoriasIguais;
+
+        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+            CartaDoJogo cartaAtual = jogador.getCartasDoJogo().get(i);
+
+            if (verificaCartaGenerica(cartaAtual)){
+                CartaDoJogoEnumCategoria novaCategoria = jogadorCartasDoJogoService
+                        .findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaAtual.getId()).getNovaCategoria();
+                categoriasIguais = novaCategoria.toString().equals(categoria);
+            }else{
+                categoriasIguais = cartaAtual.getCategoria().toString().equals(categoria);
+            }
+
+            if (categoriasIguais)
+                cartasDeMesmaCategoria++;
+        }
+
+        return cartasDeMesmaCategoria;
+    }
+
+    public Boolean verificaTiposIguais(String tipo, Jogador jogador) {
+        for (int i = 0; i < jogador.getCartasDoJogo().size(); i++) {
+            boolean tiposIguais = jogador.getCartasDoJogo().get(i).getTipo().toString().equals(tipo);
+            if (tiposIguais)
+                return true;
+        }
+        return false;
+    }
+
+    public Integer calculaCartasCategoriasDistintasDoJogador(Jogador jogador) {
+
+        Integer[] contadorDeCategorias = {0, 0, 0, 0, 0};
+
+        int cartasDeCategoriasDistintas;
+        CartaDoJogoEnumCategoria categoria;
+
+        for (CartaDoJogo cartaDoJogo : jogador.getCartasDoJogo()) {
+            if(verificaCartaGenerica(cartaDoJogo)){
+                categoria = jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(jogador.getId(), cartaDoJogo.getId()).getNovaCategoria();
+            }else {
+                categoria = cartaDoJogo.getCategoria();
+            }
+
+            switch (categoria) {
+                case VISUAL -> contadorDeCategorias[0]++;
+                case INTELECTUAL -> contadorDeCategorias[1]++;
+                case TEA -> contadorDeCategorias[2]++;
+                case AUDITIVA -> contadorDeCategorias[3]++;
+                case FISICA -> contadorDeCategorias[4]++;
+            }
+        }
+
+        cartasDeCategoriasDistintas = (int) Arrays.stream(contadorDeCategorias)
+                .filter(contadorDeCategoria -> contadorDeCategoria != 0).count();
+
+        return cartasDeCategoriasDistintas;
+    }
+
+    public Boolean jogadorTemMaiorVariedadeDeCategorias(Sala sala, Jogador jogador) {
+
+        int quantidadeCategoriasDistintasJogadorAtual = calculaCartasCategoriasDistintasDoJogador(jogador);
+        int quantidadeCategoriasDistintasAdversario;
+
+        for (Jogador jogadorAdversario : sala.getJogadores()) {
+
+            if (jogadorAdversario.getId() != jogador.getId()) {
+
+                quantidadeCategoriasDistintasAdversario = calculaCartasCategoriasDistintasDoJogador(jogadorAdversario);
+
+                if (quantidadeCategoriasDistintasAdversario >= quantidadeCategoriasDistintasJogadorAtual)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public Boolean jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo(String categoriaObjetivo, Jogador jogador, Sala sala) {
+
+        int quantidadeCategoriasIguaisDoJogadorAtual = calculaCartasMesmaCategoria(categoriaObjetivo, jogador);
+        int quantidadeCategoriasIguaisAdversario;
+
+        if (quantidadeCategoriasIguaisDoJogadorAtual == 0)
+            return false;
+
+        for (Jogador jogadorAdversario : sala.getJogadores()) {
+
+            if (jogadorAdversario.getId() != jogador.getId()) {
+
+                quantidadeCategoriasIguaisAdversario = calculaCartasMesmaCategoria(categoriaObjetivo, jogadorAdversario);
+
+                if (quantidadeCategoriasIguaisAdversario >= quantidadeCategoriasIguaisDoJogadorAtual)
+                    return false;
+            }
+        }
+
+        return true;
     }
 }

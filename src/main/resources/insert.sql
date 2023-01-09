@@ -49,7 +49,7 @@ INSERT INTO baralho(
  ('b1efd9c4-36ac-4354-b42e-211c5302936d','true', 'TEA','abc.net.au', 'Crie espaços onde a pessoa com autismo possa ficar em silêncio e com iluminação diminuída quando estiver sobrecarregada pelo ambiente.', 'ACAO', '1', '2', '3'),
  ('2f1eb2ad-e6ac-4d1d-bef0-3c5c2bf77fce','false', 'TEA', 'IMDB','Temple Grandin (2010) Baseado no livro “Uma menina estranha”, da própria Temple, uma mulher com autismo que se tornou uma das maiores especialistas do mundo em manejo de gado.', 'FILME', '0', '1', '1' ),
  ('7cbd73e3-fcc8-4d54-8d04-d0ef86a6aef0','false', 'TEA', ' Wikipedia', 'Deficiência é o termo usado para definir a ausência ou a disfunção de uma estrutura psíquica, fisiológica ou anatômica.', 'INFORMACAO', '0', '2', '1'),
- ('532c5bc9-9516-4bd4-9eb1-9565ec20ee12','false', 'GENERICA', 'novaescola.org.br', 'Síndrome é um conjunto de sintomas ou sinais que,  juntos, evidenciam uma condição particular.', 'INFORMACAO', '0', '2', '1'),
+ ('532c5bc9-9516-4bd4-9eb1-9565ec20ee12','false', 'GENERICA', 'novaescola.org.br', 'Síndrome é um conjunto de sintomas ou sinais que, juntos, evidenciam uma condição particular.', 'INFORMACAO', '0', '2', '1'),
  ('f1c63293-62bf-4b33-85aa-a3109b69f56d','false', 'GENERICA', 'assistiva.com.br', 'As tecnologias assistivas têm como objetivo proporcionar maior qualidade de vida, independência e inclusão social, através da ampliação da comunicação e mobilidade, por exemplo.', 'INFORMACAO', '0', '2', '1' ),
  ('e9100e2c-5e4b-42d4-951e-fdf1f52ddf81','false', 'GENERICA', 'deficienteonline.com.br', 'Empresa com 100 ou mais funcionários está obrigada a preencher 2-5% dos seus cargos com pessoas com deficiência.', 'INFORMACAO', '1', '0', '1'),
  ('dcfb3ae5-6ebe-44ce-bd62-30780203024d','false', 'GENERICA', ' Wikipedia', 'Capacitismo é o termo designado para definir quando há discriminação e preconceito contra pessoas com qualquer tipo de deficiência. ', 'INFORMACAO', '1', '0', '1'),
@@ -196,9 +196,9 @@ INSERT INTO baralho_cartadojogo(
 INSERT INTO sala(id, hash, status, dado,baralho_id, dth_inicio) values
        ('7d487fb2-6fe2-4413-b7f7-1f7a2f9694ab', '6g-Rg8V5', 0,2, 'a28ebdb0-d3bc-4220-9814-9a743a4d829e', '2022-11-11 14:00:10.123872' );
 
-INSERT INTO jogador(id, posicao, bonus_coracao_gra, bonus_coracao_peq, coracao_gra, coracao_peq, nome, pontos,status,is_host  ) values
-        ('01fa2624-bc16-4d3b-a1d6-6e797b47e04d', 1, 0, 0, 2, 3, 'João', 5,0,'true'),
-        ('0accbbfb-075a-4e55-8fb5-3debe5813c0a', 2, 0, 0, 1, 2, 'Pedro', 5, 1 ,'false');
+INSERT INTO jogador(id, posicao, bonus_coracao_gra, bonus_coracao_peq, coracao_gra, coracao_peq, nome, pontos,status,is_host, pontos_objetivo) values
+        ('01fa2624-bc16-4d3b-a1d6-6e797b47e04d', 1, 0, 0, 2, 3, 'João', 5,0,'true', 0),
+        ('0accbbfb-075a-4e55-8fb5-3debe5813c0a', 2, 0, 0, 1, 2, 'Pedro', 5, 1 ,'false', 0);
         
      
 INSERT INTO sala_jogadores(sala_id, jogadores_id) values
