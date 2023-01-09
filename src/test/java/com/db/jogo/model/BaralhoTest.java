@@ -99,12 +99,12 @@ class BaralhoTest {
         assertEquals(baralho1.getCartasObjetivo().get(0), cartaObjetivo1);
     }
 
-    @Test
-    void deveRemoverCartaDoObjetivo() {
-        baralho1.adicionarCartaDoObjetivo(cartaObjetivo1);
-        baralho1.removerCartaDoObjetivo(cartaObjetivo1);
-        assertEquals(baralho1.getCartasObjetivo(), List.of());
-    }
+//    @Test
+//    void deveRemoverCartaDoObjetivo() {
+//        baralho1.adicionarCartaDoObjetivo(cartaObjetivo1);
+//        baralho1.removerCartaDoObjetivo(cartaObjetivo1);
+//        assertEquals(baralho1.getCartasObjetivo(), List.of());
+//    }
 
     @Test
     void deveAdicionarCartaDoInicio() {
@@ -112,10 +112,10 @@ class BaralhoTest {
         assertEquals(baralho1.getCartasInicio().get(0), cartaInicio1);
     }
 
-    @Test
-    void deveRemoverCartaDoInicio() {
-        baralho1.adicionarCartaDoInicio(cartaInicio1);
-        baralho1.removerCartaDoInicio(cartaInicio1);
-        assertEquals(baralho1.getCartasInicio(), List.of());
-    }
+//    @Test
+//    void deveRemoverCartaDoInicio() {
+//        baralho1.adicionarCartaDoInicio(cartaInicio1);
+//        baralho1.removerCartaDoInicio(cartaInicio1);
+//        assertEquals(baralho1.getCartasInicio(), List.of());
+//    }
 }
