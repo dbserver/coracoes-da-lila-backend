@@ -2,7 +2,7 @@ package com.db.jogo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,12 @@ import java.util.UUID;
 
 import com.db.jogo.model.Jogador;
 
+import com.db.jogo.repository.JogadorRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,104 +25,45 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("Jogador Service Teste")
 class JogadorServiceImplTest {
 
-	private final Iterable<Jogador> jogadorArrayList = new ArrayList<>();
-
 	@Mock
-    private JogadorServiceImpl jogadorService;
-	
-	Jogador jogador= Jogador.builder()
-			.id(UUID.randomUUID())
-			.nome("joão")
-			.bonusCoracaoGrande(1)
-			.bonusCoracaoPequeno(1)
-			.coracaoGrande(1)
-			.pontos(1)
-			.coracaoPequeno(2)
-			.build();
+	private JogadorRepository jogadorRepositoryMock;
 
-    Optional<Jogador> jogadorOpt= 
-    		Optional.ofNullable(Jogador.builder()
-	.id(UUID.randomUUID())
-	.nome("joão")
-	.bonusCoracaoGrande(1)
-	.bonusCoracaoPequeno(1)
-	.coracaoGrande(1)
-	.pontos(1)
-	.coracaoPequeno(2)
-	.build());
+	@InjectMocks
+    private JogadorServiceImpl jogadorServiceImpl;
+
+	Jogador jogador;
+	@BeforeEach
+	public void init() {
+		jogador = Jogador.builder()
+		.id(UUID.randomUUID())
+		.nome("teste")
+		.bonusCoracaoGrande(1)
+		.bonusCoracaoPequeno(1)
+		.coracaoGrande(1)
+		.pontos(1)
+		.coracaoPequeno(2)
+		.build();
+	}
+
 
 	@Test
-	@DisplayName("Teste do GET do ServiceImpl do Jogador")
-	public void testBuscaJogador() throws Exception {
-	
-	    	UUID id = UUID.fromString("fd7b6723-77e2-4846-bd22-88df15ca150a"); 
-
-	        when(jogadorService.findById(id)).thenReturn(jogadorOpt);
-
-	        assertEquals(jogadorOpt, jogadorService.findById(id));
-
-	    }
-	
-	@Test
-	@DisplayName("Teste do SAVE/Successo do ServiceImpl do Jogador")
-	public void testPostJogador() throws Exception {
-		
-	        when(jogadorService.saveJogador(jogador)).thenReturn(jogador);
-
-	        assertEquals(jogador, jogadorService.saveJogador(jogador));
-
-	    }
-	@Test
-	@DisplayName("Teste do SAVE/Error do ServiceImpl do Jogador")
-	public void testPostErrorJogador() throws Exception {
-		
-	        when(jogadorService.saveJogador(null)).thenReturn(null);
-
-		    assertNull(jogadorService.saveJogador(null));
-
-	    }
-	
-	@Test
-	@DisplayName("Teste do PUT/Sucesso do ServiceImpl do Jogador")
-	public void testPutSucessoJogador() throws Exception {
-				
-	        when(jogadorService.atualizarJogador(jogador)).thenReturn(Optional.of(jogador));
-
-	        assertEquals(Optional.of(jogador), jogadorService.atualizarJogador(jogador));
-
-	    }
-	
-	@Test
-	@DisplayName("Teste do PUT/Error do ServiceImpl do Jogador")
-	public void testPutErrorJogador() throws Exception {
-		
-		jogador.setId(null);
-		
-	        when(jogadorService.atualizarJogador(jogador)).thenReturn(Optional.of(jogador));
-
-	        assertEquals(Optional.of(jogador), jogadorService.atualizarJogador(jogador));
-
-	    }
-
-	    @Test
-	@DisplayName("Teste do FindAll do ServiceImpl do Jogador")
-	public void testFindAll() throws Exception {
-
-		when(jogadorService.findAll()).thenReturn(jogadorArrayList);
-
-		assertEquals(jogadorArrayList, jogadorService.findAll());
-
+	void deveVerificarSeEncontraJogadorIdSucesso() {
+		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.of(jogador));
+		Optional<Jogador> jogadorRetornado = jogadorServiceImpl.findById(jogador.getId());
+		assertEquals(Optional.of(jogador), jogadorRetornado);
 	}
 
 	@Test
-	@DisplayName("Teste do TotalJogadores do ServiceImpl do Jogador")
-	public void testTotalJogadores() throws Exception {
-
-		List<Jogador> lista = (List<Jogador>) jogadorService.findAll();
-
-		when(jogadorService.totalJogadores()).thenReturn(lista.size());
-
-		assertEquals(lista.size(), jogadorService.totalJogadores());
+	void deveVerificarSeEncontraJogadorIdFalha() {
+		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(null);
+		Optional<Jogador> jogadorRetornado = jogadorServiceImpl.findById(jogador.getId());
+		assertEquals(null, jogadorRetornado);
 	}
-	
+
+	@Test
+	void deveVerificarSeSalvaJogador() {
+		when(jogadorRepositoryMock.save(jogador)).thenReturn(jogador);
+		jogadorServiceImpl.saveJogador(jogador);
+		verify(jogadorRepositoryMock, times(1)).save(jogador);
+	}
 }

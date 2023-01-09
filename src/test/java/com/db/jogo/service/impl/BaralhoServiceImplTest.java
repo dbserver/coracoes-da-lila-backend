@@ -64,11 +64,8 @@ class BaralhoServiceImplTest {
 
 	@Test
 	void deveVerificarSeBaralhoSalvaTesteSucesso() {
-
 		when(baralhoRepositoryMock.save(baralho)).thenReturn(baralho);
-
 		baralhoServiceImpl.saveBaralho(baralho);
-
 		verify(baralhoRepositoryMock, times(1)).save(baralho);
 	}
 

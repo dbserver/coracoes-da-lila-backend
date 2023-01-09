@@ -1,13 +1,17 @@
 package com.db.jogo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.db.jogo.model.CartaObjetivo;
 
+import com.db.jogo.repository.BaralhoRepository;
+import com.db.jogo.repository.CartaObjetivoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -20,9 +24,15 @@ import java.util.UUID;
 class CartaObjetivoServiceImplTest {
 
 	@Mock
-	private CartaObjetivoServiceImpl cartaObjetivoService;
+	private CartaObjetivoRepository cartaObjetivoRepositoryMock;
+	@InjectMocks
+	private CartaObjetivoServiceImpl cartaObjetivoServiceImpl;
 
-	CartaObjetivo cartaObjetivo = CartaObjetivo.builder()
+	CartaObjetivo cartaObjetivo;
+
+	@BeforeEach
+	public void init() {
+		cartaObjetivo = CartaObjetivo.builder()
 		.id(UUID.randomUUID())
 		.tipoContagem(2)
 		.tipo("FILME")
@@ -31,39 +41,27 @@ class CartaObjetivoServiceImplTest {
 		.textoTematico("Lorem ipsum")
 		.pontos(3)
 		.build();
-
-	private final ArrayList<CartaObjetivo> cartaObjetivoArraylist = new ArrayList<>();
-
-	@Test
-	@DisplayName("Teste do SAVE do Service de todas as cartas de objetivo")
-	void saveCartaObjetivo() {
-		when(cartaObjetivoService.saveCartaObjetivo(cartaObjetivo)).thenReturn(cartaObjetivo);
-		assertEquals(cartaObjetivo, cartaObjetivoService.saveCartaObjetivo(cartaObjetivo));
 	}
 
 	@Test
-	void findCartaObjetivo() {
-		when(cartaObjetivoService.findAll()).thenReturn(cartaObjetivoArraylist);
-		assertEquals(cartaObjetivoArraylist, cartaObjetivoService.findAll());
-
+	void deveVerificarSeEncontraCartaIdSucesso() {
+		when(cartaObjetivoRepositoryMock.findById(cartaObjetivo.getId())).thenReturn(Optional.of(cartaObjetivo));
+		Optional<CartaObjetivo> cartaObjetivoRetornada = cartaObjetivoServiceImpl.findById(cartaObjetivo.getId());
+		assertEquals(Optional.of(cartaObjetivo), cartaObjetivoRetornada);
 	}
 
 	@Test
-	void findCartaObjetivoById() {
-		Optional<CartaObjetivo> cartaObje = Optional.ofNullable(CartaObjetivo.builder()
-			.id(UUID.randomUUID())
-			.tipoContagem(2)
-			.tipo("FILME")
-			.categoria("")
-			.textoRegra("Ganhe 3 pontos")
-			.textoTematico("Lorem ipsum")
-			.pontos(3)
-			.build());
+	void deveVerificarSeEncontraCartaIdFalha() {
+		when(cartaObjetivoRepositoryMock.findById(cartaObjetivo.getId())).thenReturn(null);
+		Optional<CartaObjetivo> cartaObjetivoRetornada = cartaObjetivoServiceImpl.findById(cartaObjetivo.getId());
+		assertEquals(null, cartaObjetivoRetornada);
+	}
 
-		String id = UUID.randomUUID().toString();
-
-		when(cartaObjetivoService.findById(UUID.fromString(id))).thenReturn(cartaObje);
-		assertEquals(cartaObje, cartaObjetivoService.findById(UUID.fromString(id)));
+	@Test
+	void deveVerificarSeSalvaCartaObjetivo() {
+		when(cartaObjetivoRepositoryMock.save(cartaObjetivo)).thenReturn(cartaObjetivo);
+		cartaObjetivoServiceImpl.saveCartaObjetivo(cartaObjetivo);
+		verify(cartaObjetivoRepositoryMock, times(1)).save(cartaObjetivo);
 	}
 
 }
