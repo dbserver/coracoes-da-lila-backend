@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -45,7 +46,9 @@ class WebSocketServiceImplTest {
     private SalaRequest salaRequest = new SalaRequest();
     private SalaResponse salaResponse = new SalaResponse();
 
-    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService, baralhoService, jogadorService, template, cartaDoJogoService);
+    @InjectMocks
+    private final WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaService,
+            baralhoService, jogadorService, template, cartaDoJogoService);
 
     @BeforeEach
     public void init(){

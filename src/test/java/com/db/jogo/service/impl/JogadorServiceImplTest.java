@@ -32,6 +32,7 @@ class JogadorServiceImplTest {
     private JogadorServiceImpl jogadorServiceImpl;
 
 	Jogador jogador;
+	Jogador jogador2;
 	@BeforeEach
 	public void init() {
 		jogador = Jogador.builder()
@@ -64,6 +65,13 @@ class JogadorServiceImplTest {
 	void deveVerificarSeSalvaJogador() {
 		when(jogadorRepositoryMock.save(jogador)).thenReturn(jogador);
 		jogadorServiceImpl.saveJogador(jogador);
+		verify(jogadorRepositoryMock, times(1)).save(jogador);
+	}
+
+	@Test
+	void deveVerificarSeAtualizaJogadorSucesso() {
+		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.of(jogador));
+		jogadorServiceImpl.atualizarJogador(jogador);
 		verify(jogadorRepositoryMock, times(1)).save(jogador);
 	}
 }
