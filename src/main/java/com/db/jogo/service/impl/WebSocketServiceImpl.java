@@ -806,20 +806,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
         if (verificaJogoUltimaRodada(salaParaAtualizar.get()) && verificaUltimaJogadaDoTurno(salaParaAtualizar.get())) {
             for (Jogador jogador: sala.getJogadores()) {
-                modificaStatusJogadorDefinindoOuFinalizado(jogador);                
+                modificaStatusJogadorDefinindoOuFinalizado(jogador);
             }
 
             modificaStatusSalaDefinindoOuFinalizado(sala);
-
             this.salaService.saveSala(sala);
         }
-
-        if (salaParaAtualizar.isPresent()) {
-            this.template.convertAndSend(
-                    "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
-                    salaParaAtualizar.get());
-        }
-
     }
 
     public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO)
