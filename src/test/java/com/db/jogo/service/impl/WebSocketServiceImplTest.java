@@ -248,7 +248,6 @@ class WebSocketServiceImplTest {
     }
 
     @Test
-    @Disabled
     void deveVerificarSeNaoEstaNaUltimaJogadaDoTurno(){
 
         sala.setJogadores(List.of(primeiroJogador, segundoJogador));
@@ -294,7 +293,6 @@ class WebSocketServiceImplTest {
      }
 
     @Test
-    @Disabled
     void deveFinalizarOStatusDoJogadorTeste() throws JogoInvalidoException{
         primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoGenerica));
         primeiroJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
@@ -316,7 +314,7 @@ class WebSocketServiceImplTest {
         webSocketServiceImpl.finalizaStatusJogador(novaCategoriaCartasDoJogoDTO);
 
         verify(jogadorServiceMock, times(1)).findById(primeiroJogador.getId());
-        verify(salaServiceMock, times(1)).findSalaByHash(hash);
+        verify(salaServiceMock, atLeast(2)).findSalaByHash(hash);
         verify(jogadorCartasDoJogoServiceMock, times(1)).saveJogadorCartasDoJogo(jogadorCartasDoJogo);
     }
 
