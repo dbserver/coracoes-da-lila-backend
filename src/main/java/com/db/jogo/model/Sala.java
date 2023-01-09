@@ -98,9 +98,9 @@ public class Sala {
 		this.jogadores.add(jogador);
 	}
 
-	public boolean removerJogador(Jogador jogador) {
-		return this.jogadores.remove(jogador);
-	}
+//	public boolean removerJogador(Jogador jogador) {
+//		return this.jogadores.remove(jogador);
+//	}
 
 	@NonNull
 	public StatusEnum getStatus() {
