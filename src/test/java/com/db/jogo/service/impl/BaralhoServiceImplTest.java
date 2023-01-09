@@ -40,6 +40,7 @@ class BaralhoServiceImplTest {
 		.build();
 	}
 
+//	Falta teste do findAll()
 	@Test
 	void deveVerificarSeEncontraBaralhoCodigoSucesso() {
 		when(baralhoRepositoryMock.findByCodigo(baralho.getCodigo())).thenReturn((Optional.of(baralho)));

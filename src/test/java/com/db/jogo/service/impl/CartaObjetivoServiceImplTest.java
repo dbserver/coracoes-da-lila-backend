@@ -43,6 +43,8 @@ class CartaObjetivoServiceImplTest {
 		.build();
 	}
 
+	//	Falta teste do findAll()
+
 	@Test
 	void deveVerificarSeEncontraCartaIdSucesso() {
 		when(cartaObjetivoRepositoryMock.findById(cartaObjetivo.getId())).thenReturn(Optional.of(cartaObjetivo));

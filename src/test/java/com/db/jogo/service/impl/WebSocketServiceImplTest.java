@@ -98,6 +98,8 @@ class WebSocketServiceImplTest {
 
     }
 
+    // falta a maior parte dos testes
+
     @Test
     @DisplayName("Teste do método sorteia carta objetivo, se retorna uma carta contida no arrayList Cartas Objetivo da sala")
     void testSorteiaCartaObjetivo(){

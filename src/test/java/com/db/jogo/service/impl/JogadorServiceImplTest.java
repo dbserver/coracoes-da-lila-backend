@@ -46,6 +46,7 @@ class JogadorServiceImplTest {
 		.build();
 	}
 
+//	Falta teste do totalJogadores(), findAll() e podeJogar()
 
 	@Test
 	void deveVerificarSeEncontraJogadorIdSucesso() {

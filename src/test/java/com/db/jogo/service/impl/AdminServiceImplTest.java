@@ -20,10 +20,11 @@ class AdminServiceImplTest {
 
     Admin admin = Admin.builder().senha("123").build();
 
-    @DisplayName("Teste do SAVE do Service de um Admin")
-    @Test
-    void saveAdmin() {
-       when(adminServiceImpl.saveAdmin(admin)).thenReturn(admin);
-       assertEquals(admin, adminServiceImpl.saveAdmin(admin));
-    }
+// Teste roda, porém não da cobertura no código
+//    @DisplayName("Teste do SAVE do Service de um Admin")
+//    @Test
+//    void saveAdmin() {
+//       when(adminServiceImpl.saveAdmin(admin)).thenReturn(admin);
+//       assertEquals(admin, adminServiceImpl.saveAdmin(admin));
+//    }
 }
