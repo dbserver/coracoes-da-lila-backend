@@ -49,8 +49,8 @@ class WebSocketServiceImplTest {
     private JogadorCartasDoJogoService jogadorCartasDoJogoServiceMock;
 
     @InjectMocks
-    
     private WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaServiceMock, baralhoServiceMock, jogadorServiceMock, simpMessagingTemplateMock, cartaDoJogoServiceMock, jogadorCartasDoJogoServiceMock);
+    
     Sala sala = new Sala();
     Jogador primeiroJogador;
     Jogador segundoJogador;
@@ -787,3 +787,4 @@ class WebSocketServiceImplTest {
         listaCartasObjetivo.add(cartaObjetivo3PontosPorMaisCategoriasDistintas);
         listaCartasObjetivo.add(cartaObjetivoTea3PontosPorMaisCategoriasIguais);
     }
+}
