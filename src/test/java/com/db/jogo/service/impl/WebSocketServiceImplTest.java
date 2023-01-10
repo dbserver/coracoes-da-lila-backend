@@ -145,6 +145,16 @@ class WebSocketServiceImplTest {
         assertTrue(statusDoJogadorEstaFinalizado);
 
     }
+    
+    @Test
+    void deveVerificarSeStatusDoJogadorNaoEstaFinalizadoTeste() {
+        primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoIntelectual));
+        primeiroJogador.setStatus(StatusEnumJogador.DEFININDO);
+
+        boolean statusDoJogadorEstaFinalizado = webSocketServiceImpl.verificaStatusJogadorFinalizado(primeiroJogador);
+
+        assertFalse(statusDoJogadorEstaFinalizado);
+    }
 
     @Test
     void deveAlterarStatusDaSalaParaFinalizadoTeste(){
