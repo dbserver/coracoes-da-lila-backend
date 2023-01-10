@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS baralho_cartaobjetivo CASCADE;
 DROP TABLE IF EXISTS baralho_cartadojogo CASCADE;
 DROP TABLE IF EXISTS baralho_cartainicio CASCADE;
 DROP TABLE IF EXISTS sala_jogadores CASCADE;
+DROP TABLE IF EXISTS jogador_cartasdojogo CASCADE;
 DROP TABLE IF EXISTS sala_cartaobjetivo CASCADE;
 
 DROP TABLE IF EXISTS admin CASCADE;
@@ -39,6 +40,7 @@ create table carta_do_jogo (
      id uuid primary key  not null,
      bonus boolean not null, 
      categoria varchar(80) not null,
+     nova_categoria varchar(80),
      fonte varchar(80) not null, 
      pontos int4 not null,
      texto varchar(255) not null, 
@@ -60,7 +62,7 @@ create table carta_objetivo (
     id uuid not null, 
     categoria varchar(100),
     texto_regra varchar(255) not null,
-    texto_tematico varchar(255) not null, 
+    texto_tematico varchar(255) not null,
     pontos int4 not null,
     tipo_contagem int4 not null,
     tipo varchar(20),
@@ -102,17 +104,29 @@ create table jogador (
      nome varchar(30) not null,
      pontos int4 not null,
      status int4 not null,
-     is_host boolean not null, 
+     is_host boolean not null,
+     pontos_objetivo int4,
      primary key (id)
      );
 
 create table jogador_cartadojogo (
   jogador_id uuid not null ,
-  cartadojogo_id uuid not null ,
-    CONSTRAINT FK_cartadojogo_id FOREIGN KEY (cartadojogo_id)
+  cartadojogo_id uuid not null,
+     CONSTRAINT FK_cartadojogo_id FOREIGN KEY (cartadojogo_id)
      REFERENCES carta_do_jogo (id),
      CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)
      REFERENCES jogador (id));
+
+create table jogador_cartasdojogo (
+  id uuid not null,
+  jogador_id uuid not null ,
+  cartadojogo_id uuid not null,
+  nova_categoria varchar(30),
+     CONSTRAINT FK_cartadojogo_id FOREIGN KEY (cartadojogo_id)
+     REFERENCES carta_do_jogo (id),
+     CONSTRAINT FK_jogador_id FOREIGN KEY (jogador_id)
+     REFERENCES jogador (id),
+     primary key (id));
 
 create table jogador_cartaobjetivo (
   jogador_id uuid not null ,
