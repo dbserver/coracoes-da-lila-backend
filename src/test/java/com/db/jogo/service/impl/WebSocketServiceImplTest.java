@@ -49,8 +49,8 @@ class WebSocketServiceImplTest {
     private JogadorCartasDoJogoService jogadorCartasDoJogoServiceMock;
 
     @InjectMocks
+    
     private WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaServiceMock, baralhoServiceMock, jogadorServiceMock, simpMessagingTemplateMock, cartaDoJogoServiceMock, jogadorCartasDoJogoServiceMock);
-    @InjectMocks
     Sala sala = new Sala();
     Jogador primeiroJogador;
     Jogador segundoJogador;
@@ -71,6 +71,7 @@ class WebSocketServiceImplTest {
     NovaCategoriaDTO novaCategoriaDTO;
     NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO;
     JogadorCartasDoJogo jogadorCartasDoJogo;
+    
 
     @BeforeEach
     public void init() {
