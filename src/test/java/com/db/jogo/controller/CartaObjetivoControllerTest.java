@@ -60,7 +60,7 @@ class CartaObjetivoControllerTest {
 			.build();
 
 		ObjectMapper mapper = new ObjectMapper();
-		
+
 		String newCartaObjetivoAsJSON = mapper.writeValueAsString(newCartaObjetivo);
 
 		this.mockMvc.perform(post("/cartaobjetivo")

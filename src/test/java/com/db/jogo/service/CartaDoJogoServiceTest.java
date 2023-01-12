@@ -35,7 +35,7 @@ class CartaDoJogoServiceTest {
 
 	@BeforeEach
 	void setup() {
-		
+
 		MockitoAnnotations.openMocks(this);
 		cartaDoJogoService = new CartaDoJogoServiceImpl(cartaDoJogoRepository);
 
