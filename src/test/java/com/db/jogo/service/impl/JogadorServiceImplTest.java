@@ -1,11 +1,9 @@
 package com.db.jogo.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.text.html.Option;
+
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Jogador Service Teste")
@@ -31,8 +31,8 @@ class JogadorServiceImplTest {
 	@InjectMocks
     private JogadorServiceImpl jogadorServiceImpl;
 
-	Jogador jogador;
-	Jogador jogador2;
+	private Jogador jogador;
+	private Jogador jogador2;
 	@BeforeEach
 	public void init() {
 		jogador = Jogador.builder()
@@ -45,9 +45,6 @@ class JogadorServiceImplTest {
 		.coracaoPequeno(2)
 		.build();
 	}
-
-//	Falta teste do totalJogadores(), findAll() e podeJogar()
-
 	@Test
 	void deveVerificarSeEncontraJogadorIdSucesso() {
 		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.of(jogador));
@@ -72,7 +69,21 @@ class JogadorServiceImplTest {
 	@Test
 	void deveVerificarSeAtualizaJogadorSucesso() {
 		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.of(jogador));
-		jogadorServiceImpl.atualizarJogador(jogador);
+		when(jogadorRepositoryMock.save(jogador)).thenReturn(jogador);
+		Optional<Jogador> jogadorEncontradoParaAtualizar = jogadorServiceImpl.atualizarJogador(jogador);
 		verify(jogadorRepositoryMock, times(1)).save(jogador);
+		assertEquals(Optional.of(jogador),jogadorEncontradoParaAtualizar);
+	}
+	@Test
+	void naoDeveVerificarSeAtualizaJogador() {
+		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(null);
+		assertThrows(IllegalArgumentException.class, () -> jogadorServiceImpl.atualizarJogador(jogador),
+				"Impossível fazer atualização do objeto passado! ");
+	}
+	@Test
+	void DeveRetornarOptionalEmpty() {
+		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.empty());
+		Optional<Jogador> jogadorOptionalEmpty = jogadorServiceImpl.atualizarJogador(jogador);
+		assertEquals(Optional.empty(), jogadorOptionalEmpty);
 	}
 }

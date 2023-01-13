@@ -7,6 +7,7 @@ import com.db.jogo.model.CartaObjetivo;
 
 import com.db.jogo.repository.BaralhoRepository;
 import com.db.jogo.repository.CartaObjetivoRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +29,9 @@ class CartaObjetivoServiceImplTest {
 	private CartaObjetivoRepository cartaObjetivoRepositoryMock;
 	@InjectMocks
 	private CartaObjetivoServiceImpl cartaObjetivoServiceImpl;
+
+	private Iterable<CartaObjetivo> cartaObjetivoIterable;
+	private List<CartaObjetivo> cartaObjetivoList;
 
 	CartaObjetivo cartaObjetivo;
 
@@ -41,9 +46,11 @@ class CartaObjetivoServiceImplTest {
 		.textoTematico("Lorem ipsum")
 		.pontos(3)
 		.build();
-	}
 
-	//	Falta teste do findAll()
+		cartaObjetivoList = new ArrayList<>();
+		cartaObjetivoList.add(cartaObjetivo);
+		cartaObjetivoIterable = cartaObjetivoList;
+	}
 
 	@Test
 	void deveVerificarSeEncontraCartaIdSucesso() {
@@ -66,4 +73,10 @@ class CartaObjetivoServiceImplTest {
 		verify(cartaObjetivoRepositoryMock, times(1)).save(cartaObjetivo);
 	}
 
+    @Test
+    void findAll() {
+		when(cartaObjetivoRepositoryMock.findAll()).thenReturn(cartaObjetivoIterable);
+		Iterable<CartaObjetivo> cartaObjetivoBuscaTodas = cartaObjetivoServiceImpl.findAll();
+		assertEquals(cartaObjetivoIterable, cartaObjetivoBuscaTodas);
+	}
 }

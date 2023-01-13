@@ -335,9 +335,12 @@ class WebSocketServiceImplTest {
         String hash = "qrGd7sOA";
         when(jogadorServiceMock.findById(primeiroJogador.getId())).thenReturn(Optional.of(primeiroJogador));
         when(salaServiceMock.findSalaByHash(hash)).thenReturn(null);
-        when(jogadorCartasDoJogoServiceMock.findByJogadorIDAndCartaDoJogoID(primeiroJogador.getId(), novaCategoriaDTO.getCartaID())).thenReturn(jogadorCartasDoJogo);
+        when(jogadorCartasDoJogoServiceMock
+                .findByJogadorIDAndCartaDoJogoID(primeiroJogador.getId(), novaCategoriaDTO.getCartaID()))
+                .thenReturn(jogadorCartasDoJogo);
 
-        assertThrows(JogoInvalidoException.class, () -> webSocketServiceImpl.finalizaStatusJogador(novaCategoriaCartasDoJogoDTO), "Sala não encontrada");
+        assertThrows(JogoInvalidoException.class,
+                () -> webSocketServiceImpl.finalizaStatusJogador(novaCategoriaCartasDoJogoDTO), "Sala não encontrada");
     }
 
     @Test
