@@ -16,8 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Baralho Service Teste")
@@ -28,10 +27,13 @@ class BaralhoServiceImplTest {
 	@InjectMocks
 	private BaralhoServiceImpl baralhoServiceImpl;
 
+	List<Baralho> listaDoBaralho;
 	Baralho baralho;
+	Iterable<Baralho> baralhoIterable;
 
 	@BeforeEach
 	public void init() {
+		listaDoBaralho = new ArrayList<>();
 		baralho = Baralho.builder()
 		.id(UUID.fromString("fd7b6723-77e2-4846-bd22-88df15ca150a"))
 		.codigo("LILA1")
@@ -39,8 +41,6 @@ class BaralhoServiceImplTest {
 		.descricao("Jogo de cartas")
 		.build();
 	}
-
-//	Falta teste do findAll()
 	@Test
 	void deveVerificarSeEncontraBaralhoCodigoSucesso() {
 		when(baralhoRepositoryMock.findByCodigo(baralho.getCodigo())).thenReturn((Optional.of(baralho)));
@@ -70,4 +70,13 @@ class BaralhoServiceImplTest {
 		verify(baralhoRepositoryMock, times(1)).save(baralho);
 	}
 
+	@Test
+	void findAll() {
+		listaDoBaralho.add(baralho);
+		baralhoIterable = listaDoBaralho;
+		when(baralhoRepositoryMock.findAll()).thenReturn(baralhoIterable);
+
+		Iterable<Baralho> todosOsValoresEncontrados = baralhoServiceImpl.findAll();
+		assertEquals(baralhoIterable, todosOsValoresEncontrados);
+	}
 }

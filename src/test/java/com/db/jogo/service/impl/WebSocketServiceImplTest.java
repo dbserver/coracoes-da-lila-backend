@@ -97,7 +97,17 @@ class WebSocketServiceImplTest {
         jogadoresFakes();
     }
 
+    @Test
+    void retornaQuantidadeDeJogadoresNaSalaPeloHash() {
+        String hash = "qrGd7sOA";
+        sala.setHash(hash);
+        when(salaServiceMock.totalJogadores(hash)).thenReturn(1);
 
+        Integer quantidadeJogadores = webSocketServiceImpl.getQuantidadeJogadores(hash);
+
+        verify(salaServiceMock).totalJogadores(hash);
+        assertEquals(1, quantidadeJogadores);
+    }
     @Test
     void deveVerificarSeJogadorTemCartaGenericaTesteSucesso() {
 
@@ -263,38 +273,38 @@ class WebSocketServiceImplTest {
     }
 
 
-     @Test
-     void deveIniciarARodadaDefinicaoTeste(){
+    @Test
+    void deveIniciarARodadaDefinicaoTeste() {
 
-         primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoIntelectual));
-         primeiroJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
+        primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoIntelectual));
+        primeiroJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
 
-         segundoJogador.setCartasDoJogo(List.of(cartaDoJogoGenerica));
-         segundoJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
+        segundoJogador.setCartasDoJogo(List.of(cartaDoJogoGenerica));
+        segundoJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
 
-         jogadorCartasDoJogo.setJogadorID(segundoJogador.getId());
-         jogadorCartasDoJogo.setCartaDoJogoID(cartaDoJogoGenerica.getId());
-         jogadorCartasDoJogo.setNovaCategoria(VISUAL);
+        jogadorCartasDoJogo.setJogadorID(segundoJogador.getId());
+        jogadorCartasDoJogo.setCartaDoJogoID(cartaDoJogoGenerica.getId());
+        jogadorCartasDoJogo.setNovaCategoria(VISUAL);
 
-         String hash = "qrGd7sOA";
-         sala.setHash(hash);
-         sala.setJogadores(List.of(primeiroJogador, segundoJogador));
-         sala.setStatus(StatusEnum.ULTIMA_RODADA);
-         sala.setJogadorEscolhido(sala.getJogadores().get(1));
+        String hash = "qrGd7sOA";
+        sala.setHash(hash);
+        sala.setJogadores(List.of(primeiroJogador, segundoJogador));
+        sala.setStatus(StatusEnum.ULTIMA_RODADA);
+        sala.setJogadorEscolhido(sala.getJogadores().get(1));
 
-         webSocketServiceImpl.setIndexDoProximoJogador(sala.getJogadores().get(1).getPosicao());
+        webSocketServiceImpl.setIndexDoProximoJogador(sala.getJogadores().get(1).getPosicao());
 
-         when(salaServiceMock.findSalaByHash(hash)).thenReturn(Optional.of(sala));
+        when(salaServiceMock.findSalaByHash(hash)).thenReturn(Optional.of(sala));
 
-         webSocketServiceImpl.iniciaRodadaDefinicao(sala);
+        webSocketServiceImpl.iniciaRodadaDefinicao(sala);
 
-         assertEquals(FINALIZADO, sala.getJogadores().get(0).getStatus());
-         assertEquals(DEFININDO, sala.getJogadores().get(1).getStatus());
-         assertEquals(StatusEnum.AGUARDANDO_DEFINICAO, sala.getStatus());
-     }
+        assertEquals(FINALIZADO, sala.getJogadores().get(0).getStatus());
+        assertEquals(DEFININDO, sala.getJogadores().get(1).getStatus());
+        assertEquals(StatusEnum.AGUARDANDO_DEFINICAO, sala.getStatus());
+    }
 
     @Test
-    void deveFinalizarOStatusDoJogadorTeste() throws JogoInvalidoException{
+    void deveFinalizarOStatusDoJogadorTeste() throws JogoInvalidoException {
         primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoGenerica));
         primeiroJogador.setCartasObjetivo(List.of(cartaObjetivoVisual1Ponto));
 
@@ -320,7 +330,7 @@ class WebSocketServiceImplTest {
     }
 
     @Test
-    void deveFinalizarOStatusDoJogadorTesteException() throws JogoInvalidoException{
+    void deveFinalizarOStatusDoJogadorTesteException() throws JogoInvalidoException {
 
         String hash = "qrGd7sOA";
         when(jogadorServiceMock.findById(primeiroJogador.getId())).thenReturn(Optional.of(primeiroJogador));
@@ -343,6 +353,7 @@ class WebSocketServiceImplTest {
         assertEquals(0, quantidadePontosObjetivoJogador);
         assertTrue(pontosObjetivoJogador);
     }
+
     @Test
     void testaContagemPontosObjetivoCase1() {
         when(jogadorServiceMock.saveJogador(primeiroJogador)).thenReturn(primeiroJogador);
@@ -430,7 +441,7 @@ class WebSocketServiceImplTest {
     @Test
     void testaContagemPontosObjetivoChamouIllegalArgumentException() {
         primeiroJogador.setCartasDoJogo(listaCartasDoJogo);
-        primeiroJogador.setCartasObjetivo(List.of(new CartaObjetivo(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"),"",1,"", "", 100, "")));
+        primeiroJogador.setCartasObjetivo(List.of(new CartaObjetivo(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"), "", 1, "", "", 100, "")));
 
         sala.setJogadores(List.of(primeiroJogador));
 
@@ -451,6 +462,7 @@ class WebSocketServiceImplTest {
         Boolean existeCartaGenerica = webSocketServiceImpl.verificaCartaGenerica(cartaDoJogoFisica);
         assertFalse(existeCartaGenerica);
     }
+
     @Test
     @DisplayName("Testa que o jogador tem alguma carta do tipo igual da categoria da carta objetivo e retorna a soma.")
     void calculaCartasComMesmaCategoriaQueCartaObjetivoTeste() {
@@ -560,6 +572,7 @@ class WebSocketServiceImplTest {
         int resultado = webSocketServiceImpl.calculaCartasCategoriasDistintasDoJogador(primeiroJogador);
         assertEquals(1, resultado);
     }
+
     @Test
     void jogadorTemMaiorVariedadeDeCategorias() {
         primeiroJogador.setCartasDoJogo(listaCartasDoJogo);
@@ -572,6 +585,7 @@ class WebSocketServiceImplTest {
 
         assertTrue(primeiroJogadorTemMaiorVariedade);
     }
+
     @Test
     void jogadorNaoTemMaiorVariedadeDeCategorias() {
         primeiroJogador.setCartasDoJogo(listaCartasDoJogo);
@@ -596,6 +610,7 @@ class WebSocketServiceImplTest {
                 .jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo("FISICA", primeiroJogador, sala);
         assertTrue(primeiroJogadorTemMaisCartasDaCategoria);
     }
+
     @Test
     @DisplayName("Testa se o Jogador não tem nenhuma carta do jogo com a categoria igual da carta objetivo")
     void testaQueJogadorNaoTenhaNenhumaCartaDoJogoIgualCartaObjetivo() {
@@ -608,6 +623,7 @@ class WebSocketServiceImplTest {
                 .jogadorTemMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo("FISICA", primeiroJogador, sala);
         assertFalse(segundoJogadorNaoTemMaisCartasDaCategoria);
     }
+
     @Test
     void testaQueJogadorNaoTenhaMaiorQuantidadeDeCategoriasIguaisACategoriaObjetivo() {
         primeiroJogador.setCartasDoJogo(List.of(cartaDoJogoFisica, cartaDoJogoFisica, cartaDoJogoFisica));
@@ -652,7 +668,7 @@ class WebSocketServiceImplTest {
         segundoJogador.setStatus(JOGANDO);
     }
 
-    private void cartasDoJogoFake(){
+    private void cartasDoJogoFake() {
         cartaDoJogoAuditiva = new CartaDoJogo();
         cartaDoJogoAuditiva.setId(UUID.fromString("775c7b9f-6ce2-4919-8696-c751dd322ac3"));
         cartaDoJogoAuditiva.setTipo(INFORMACAO);
@@ -732,7 +748,7 @@ class WebSocketServiceImplTest {
         listaCartasDoJogo.add(cartaDoJogoVisual);
     }
 
-    private void cartasObjetivoFake(){
+    private void cartasObjetivoFake() {
         cartaObjetivoVisual1Ponto = new CartaObjetivo();
         cartaObjetivoVisual1Ponto
                 .setId(UUID.fromString("55d5947b-f491-4fe2-8c65-4d1e61ef8561"));
@@ -782,7 +798,7 @@ class WebSocketServiceImplTest {
                 .setId(UUID.fromString("272f930e-1adc-4405-b4a5-e9b909ce5738"));
         cartaObjetivoTea3PontosPorMaisCategoriasIguais
                 .setTextoRegra("Ganhe 3 pontos se você tiver a maior quantidade de cartas da categoria " +
-                "Transtorno do Espectro Autista (TEA) ao final da partida");
+                        "Transtorno do Espectro Autista (TEA) ao final da partida");
         cartaObjetivoTea3PontosPorMaisCategoriasIguais.setPontos(3);
         cartaObjetivoTea3PontosPorMaisCategoriasIguais.setCategoria("TEA");
         cartaObjetivoTea3PontosPorMaisCategoriasIguais
@@ -790,7 +806,7 @@ class WebSocketServiceImplTest {
         cartaObjetivoTea3PontosPorMaisCategoriasIguais.setTipoContagem(5);
         cartaObjetivoTea3PontosPorMaisCategoriasIguais.setTipo("");
 
-        listaCartasObjetivo =  new ArrayList<>();
+        listaCartasObjetivo = new ArrayList<>();
         listaCartasObjetivo.add(cartaObjetivoVisual1Ponto);
         listaCartasObjetivo.add(cartaObjetivoFilme2Pontos);
         listaCartasObjetivo.add(cartaObjetivo1PontoPorCategoriasDistintas);

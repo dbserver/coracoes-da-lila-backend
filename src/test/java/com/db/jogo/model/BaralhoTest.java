@@ -5,14 +5,13 @@ import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BaralhoTest {
 
-    private Baralho baralho1;
+    private Baralho baralho;
     private CartaDoJogo cartaDoJogo1;
     private CartaDoJogo cartaDoJogo2;
     private CartaObjetivo cartaObjetivo1;
@@ -33,7 +32,7 @@ class BaralhoTest {
                 .build();
 
         cartaDoJogo2 = CartaDoJogo.builder()
-                .id(UUID.fromString("e4813862-1a8a-4e0d-94e1-59bbe2465ea0"))
+                .id(UUID.fromString("88eec20e-24d5-45e5-ae61-517b3beb35ca"))
                 .tipo(CartaDoJogoEnumTipo.INFORMACAO)
                 .categoria(CartaDoJogoEnumCategoria.VISUAL)
                 .bonus(false)
@@ -58,64 +57,84 @@ class BaralhoTest {
                 .descricao("descricao")
                 .build();
 
-        baralho1 = Baralho.builder()
+        baralho = Baralho.builder()
                 .id(UUID.randomUUID())
                 .codigo("codigo")
                 .descricao("descricao")
                 .titulo("titulo")
                 .build();
 
-        baralho1.adicionarCartaDoInicio(cartaInicio1);
-        baralho1.adicionarCartaDoObjetivo(cartaObjetivo1);
-        baralho1.adicionarCartadoJogo(cartaDoJogo1);
-    }
-
-    @Test
-    void construtor() {
-        assertNotNull(baralho1.getId());
-        assertNotNull(baralho1.getCodigo());
-        assertNotNull(baralho1.getTitulo());
-        assertNotNull(baralho1.getDescricao());
-        assertNotNull(baralho1.getCartasObjetivo());
-        assertNotNull(baralho1.getCartasDoJogo());
-        assertNotNull(baralho1.getCartasInicio());
+        baralho.adicionarCartaDoInicio(cartaInicio1);
+        baralho.adicionarCartaDoObjetivo(cartaObjetivo1);
+        baralho.adicionarCartadoJogo(cartaDoJogo1);
     }
 
     @Test
     void deveAdicionarCartaDoJogo() {
-        baralho1.adicionarCartadoJogo(cartaDoJogo2);
-        assertEquals(baralho1.getCartasDoJogo().get(1), cartaDoJogo2);
+        baralho.adicionarCartadoJogo(cartaDoJogo2);
+        CartaDoJogo cartaDoJogorRetornada = baralho.getCartasDoJogo().get(1);
+        int quantidadeDeCartasDoJogoNoBaralho = baralho.getCartasDoJogo().size();
+        assertEquals(cartaDoJogo2, cartaDoJogorRetornada);
+        assertEquals(2, quantidadeDeCartasDoJogoNoBaralho);
+
     }
 
     @Test
-    void deveRemoverCartaDoJogo() {
-        baralho1.removerCartaDoJogo(cartaDoJogo1);
-        assertEquals(baralho1.getCartasDoJogo(), List.of());
+    void testaQueConseguiuRemoverCartaDoJogo() {
+        boolean removeuCartaDoJogo = baralho.removerCartaDoJogo(cartaDoJogo1);
+        assertTrue(removeuCartaDoJogo);
     }
 
     @Test
-    void deveAdicionarCartaDoObjetivo() {
-        baralho1.adicionarCartaDoObjetivo(cartaObjetivo1);
-        assertEquals(baralho1.getCartasObjetivo().get(0), cartaObjetivo1);
+    void testaQueNaoConseguiuRemoverCartaDoJogo() {
+        CartaDoJogo cartaInexistenteNoBaralho = new CartaDoJogo();
+        boolean removeuCartaDoJogo = baralho.removerCartaDoJogo(cartaInexistenteNoBaralho);
+        assertFalse(removeuCartaDoJogo);
     }
 
-//    @Test
-//    void deveRemoverCartaDoObjetivo() {
-//        baralho1.adicionarCartaDoObjetivo(cartaObjetivo1);
-//        baralho1.removerCartaDoObjetivo(cartaObjetivo1);
-//        assertEquals(baralho1.getCartasObjetivo(), List.of());
-//    }
+    @Test
+    void testaQueCartaCartaDoObjetivoFoiAdicionada() {
+        baralho.adicionarCartaDoObjetivo(cartaObjetivo1);
+        CartaObjetivo cartaAdicionada = baralho.getCartasObjetivo().get(1);
+        int quantidadeDasCartasObjetivo = baralho.getCartasObjetivo().size();
+        assertEquals(cartaObjetivo1, cartaAdicionada);
+        assertEquals(2, quantidadeDasCartasObjetivo);
+    }
+
+    @Test
+    void testaQueConseguiuRemoverCartaDoObjetivo() {
+        boolean conseguiuRemover = baralho.removerCartaDoObjetivo(cartaObjetivo1);
+        assertTrue(conseguiuRemover);
+    }
+    @Test
+    void testaQueNaoConseguiuRemoverCartaDoObjetivo() {
+        CartaObjetivo cartaObjetivo2 = new CartaObjetivo();
+        boolean conseguiuRemover = baralho.removerCartaDoObjetivo(cartaObjetivo2);
+        assertFalse(conseguiuRemover);
+    }
 
     @Test
     void deveAdicionarCartaDoInicio() {
-        baralho1.adicionarCartaDoInicio(cartaInicio1);
-        assertEquals(baralho1.getCartasInicio().get(0), cartaInicio1);
+
+        baralho.adicionarCartaDoInicio(cartaInicio1);
+
+        CartaInicio cartaInicioAdicionadaAoBaralho = baralho.getCartasInicio().get(1);
+        assertEquals(cartaInicio1, cartaInicioAdicionadaAoBaralho);
     }
 
-//    @Test
-//    void deveRemoverCartaDoInicio() {
-//        baralho1.adicionarCartaDoInicio(cartaInicio1);
-//        baralho1.removerCartaDoInicio(cartaInicio1);
-//        assertEquals(baralho1.getCartasInicio(), List.of());
-//    }
+    @Test
+    void testaQueConseguiuRemoverCartaDoInicio() {
+        boolean conseguiuRemoverCartaDoInicio = baralho
+                .removerCartaDoInicio(cartaInicio1);
+
+        assertTrue(conseguiuRemoverCartaDoInicio);
+    }
+    @Test
+    void testaQueNaoConseguiuRemoverCartaDoInicio() {
+        CartaInicio cartaInicioNaoExistenteNoBaralho = new CartaInicio();
+        boolean conseguiuRemoverCartaDoInicio = baralho
+                .removerCartaDoInicio(cartaInicioNaoExistenteNoBaralho);
+
+        assertFalse(conseguiuRemoverCartaDoInicio);
+    }
 }

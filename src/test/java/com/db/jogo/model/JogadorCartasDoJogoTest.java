@@ -1,18 +1,19 @@
 package com.db.jogo.model;
 
+import static com.db.jogo.enums.CartaDoJogoEnumCategoria.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.UUID;
 
+import com.db.jogo.enums.CartaDoJogoEnumCategoria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 
 public class JogadorCartasDoJogoTest {
-    
     private JogadorCartasDoJogo jogadorCartasDoJogo;
     private Jogador jogador;
     private CartaDoJogo cartaDoJogo;
@@ -42,5 +43,14 @@ public class JogadorCartasDoJogoTest {
             () -> assertEquals(cartaDoJogo.getId(), jogadorCartasDoJogo.getCartaDoJogoID()),
             () -> assertNull(jogadorCartasDoJogo.getNovaCategoria())
         );
+    }
+
+    @Test
+    void testaJogadorCartasDoJogoOverflow() {
+        jogadorCartasDoJogo = new JogadorCartasDoJogo(jogador, cartaDoJogo);
+
+        assertEquals(jogador.getId(), jogadorCartasDoJogo.getJogadorID());
+
+        assertEquals(cartaDoJogo.getId(), jogadorCartasDoJogo.getCartaDoJogoID());
     }
 }

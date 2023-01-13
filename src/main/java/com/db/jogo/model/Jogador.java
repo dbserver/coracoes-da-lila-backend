@@ -85,17 +85,17 @@ public class Jogador {
 		this.cartasDoJogo.add(carta);
 	}
 
-//	public void removeCarta(CartaDoJogo carta) {
-//		this.cartasDoJogo.remove(carta);
-//	}
+	public void removeCarta(CartaDoJogo carta) {
+		this.cartasDoJogo.remove(carta);
+	}
 
 	public void adicionaObjetivo(CartaObjetivo carta) {
 		this.cartasObjetivo.add(carta);
 	}
 
-//	public void removeObjetivo(CartaObjetivo carta) {
-//		this.cartasObjetivo.remove(carta);
-//	}
+	public void removeObjetivo(CartaObjetivo carta) {
+		this.cartasObjetivo.remove(carta);
+	}
 
 	@NonNull
 	public StatusEnumJogador getStatus() {

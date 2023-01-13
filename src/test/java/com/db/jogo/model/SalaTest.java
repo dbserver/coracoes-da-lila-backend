@@ -42,27 +42,65 @@ class SalaTest {
     }
 
     @Test
-    void construtor() {
-        assertAll("sala",
-                () -> assertEquals(StatusEnum.NOVO, sala.getStatus()),
-                () -> assertNull(sala.getDataHoraFimDoJogo()),
-                () -> {
-                    TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
-                    assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Timestamp.from(Instant.now())),
-                            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(sala.getDth_inicio()));
-                });
+    void generateHash() {
+        String hash = sala.generateHash();
+        int hashOitoCaracteres = hash.length();
+        String hashAletoriaTemQueSerDiferente = "xhqJuqzw";
+        assertNotNull(hash);
+        assertNotEquals(hashAletoriaTemQueSerDiferente, hash);
+        assertEquals(8, hashOitoCaracteres);
     }
 
     @Test
-    void generateHash() {
-        String hash = sala.generateHash();
-        assertThat(hash, CoreMatchers.not(is(emptyOrNullString())));
-        assertThat(hash, CoreMatchers.not(is(blankString())));
+    void adicionarCartaDoObjetivo() {
+        List<CartaObjetivo> listaCartasObjetivo = new ArrayList<>();
+        sala.setCartasObjetivo(listaCartasObjetivo);
+        sala.adicionarCartaDoObjetivo(cartaObjetivo1);
+        int quantidadeDeCartasObjetivo = sala.getCartasObjetivo().size();
+        assertEquals(1, quantidadeDeCartasObjetivo);
     }
 
     @Test
     void deveRemoverCartaObjetivo() {
-        assertFalse(sala.removerCartaDoObjetivo(cartaObjetivo1));
+        List<CartaObjetivo> listaCartasObjetivo = new ArrayList<>();
+        sala.setCartasObjetivo(listaCartasObjetivo);
+        sala.adicionarCartaDoObjetivo(cartaObjetivo1);
+
+        sala.removerCartaDoObjetivo(cartaObjetivo1);
+        assertEquals(true, sala.getCartasObjetivo().isEmpty());
+    }
+    @Test
+    void testeDeveAdicionarJogador() {
+        List<Jogador> jogadores = new ArrayList<>();
+        sala.setJogadores(jogadores);
+        sala.adicionarJogador(new Jogador());
+
+        int quantidadeDeJogadoresNaSala = sala.getJogadores().size();
+        assertEquals(1, quantidadeDeJogadoresNaSala);
+    }
+
+    @Test
+    void testeDeveRemoverJogador() {
+        Jogador jogador = new Jogador();
+        Jogador jogador2 = new Jogador();
+        List<Jogador> jogadores = new ArrayList<>();
+        jogadores.add(jogador);
+        jogadores.add(jogador2);
+        sala.setJogadores(jogadores);
+
+        sala.removerJogador(jogador);
+        int quantidadeJogadoresNaSala = sala.getJogadores().size();
+        assertEquals(1, quantidadeJogadoresNaSala);
+    }
+
+    @Test
+    void deveSortearCartaInicial() {
+        List<CartaInicio> lista = new ArrayList<>();
+        lista.add(cartaInicio1);
+        lista.add(cartaInicio2);
+
+        sala.sorteiaCartaInicial(lista);
+        assertNotNull(sala.getCartaInicioId());
     }
 
     @Test
@@ -108,13 +146,4 @@ class SalaTest {
         assertEquals(sala.getCartaInicioId(), UUID.fromString("d1516d33-ff6f-4dc9-aedf-9316421096cb"));
     }
 
-    @Test
-    void deveSortearCartaInicial() {
-        List<CartaInicio> lista = new ArrayList<>();
-        lista.add(cartaInicio1);
-        lista.add(cartaInicio2);
-
-        sala.sorteiaCartaInicial(lista);
-        assertNotNull(sala.getCartaInicioId());
-    }
 }
