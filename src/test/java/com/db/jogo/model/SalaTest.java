@@ -136,10 +136,11 @@ class SalaTest {
     @Test
     @DisplayName("Teste para ver se a Tdh_Inicio está sendo gravada")
     void getDth_inicio() {
-        String data = "2022-11-20 11:21:12";
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
-        assertEquals(new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(sala.getDth_inicio()), new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Timestamp.valueOf(data)));
-        assertNotNull(sala.getDth_inicio());
+        String data = "2022-11-20 11:21:12.0";
+        Timestamp dataAtual = Timestamp.valueOf(data);
+        Timestamp dataInicio = sala.getDth_inicio();
+        assertEquals(dataInicio, dataAtual);
+        assertNotNull(dataInicio);
     }
 
     @Test
