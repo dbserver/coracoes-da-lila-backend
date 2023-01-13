@@ -29,6 +29,7 @@ class SalaTest {
     void init() {
         cartaObjetivo1 = new CartaObjetivo();
         sala = new Sala();
+        sala.setDth_inicio(Timestamp.valueOf("2022-11-20 11:21:12"));
         cartaInicio1 = CartaInicio.builder()
                 .id(UUID.fromString("e4813862-1a8a-4e0d-94e1-59bbe2465ea2"))
                 .nome("nome")
@@ -135,7 +136,9 @@ class SalaTest {
     @Test
     @DisplayName("Teste para ver se a Tdh_Inicio está sendo gravada")
     void getDth_inicio() {
-        assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(sala.getDth_inicio()), new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(Timestamp.from(Instant.now())));
+        String data = "2022-11-20 11:21:12";
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT-3"));
+        assertEquals(new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(sala.getDth_inicio()), new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Timestamp.valueOf(data)));
         assertNotNull(sala.getDth_inicio());
     }
 
