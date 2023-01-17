@@ -1,21 +1,32 @@
 package com.db.jogo.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.model.CartaInicio;
+import com.db.jogo.repository.CartaDoJogoRepository;
+import com.db.jogo.repository.CartaInicioRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -25,6 +36,7 @@ import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.validation.BindingResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,6 +48,14 @@ public class CartaDoJogoControllerTest {
 
 	@MockBean
 	CartaDoJogoServiceImpl cartaDoJogoService;
+	@Mock
+	BindingResult bindingResult;
+	@Mock
+	CartaDoJogoRepository cartaDoJogoRepository;
+	@InjectMocks
+	CartaDoJogoController cartaDoJogoController;
+
+	CartaDoJogo cartaDoJogoVazia = CartaDoJogo.builder().valorCoracaoGrande(null).build();
 
 	String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
 	CartaDoJogo newCartaDoJogo = CartaDoJogo.builder()
@@ -61,6 +81,42 @@ public class CartaDoJogoControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.post("/cartadojogo").content(cartaDoJogoJSON)
 				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isCreated()).andExpect(MockMvcResultMatchers.content().json(cartaDoJogoJSON));
+	}
+	@Test
+	@DisplayName("Teste do POST/Sucesso do Controller Carta do Jogo")
+	public void deveRetornarBadRequest_QuandoCriarCartaDoJogo() throws Exception {
+
+		when(bindingResult.hasErrors()).thenReturn(true);
+
+		ResponseEntity<CartaDoJogo> cartaDoJogoResponseEntity = cartaDoJogoController.salvarCartaDoJogo(cartaDoJogoVazia, bindingResult);
+		assertEquals(HttpStatus.BAD_REQUEST, cartaDoJogoResponseEntity.getStatusCode());
+
+	}
+	@Test
+	void deveListarTodasCartaDoJogo() throws Exception {
+		List<CartaDoJogo> cartaDoJogos = new ArrayList<>();
+		cartaDoJogos.add(newCartaDoJogo);
+		when(cartaDoJogoService.findAll()).thenReturn(cartaDoJogos);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String listaCartaInicioComoJSON = mapper.writeValueAsString(cartaDoJogos);
+
+		mockMvc.perform(get("/cartadojogo").accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(listaCartaInicioComoJSON));
+	}
+	@Test
+	void deveRetornarNotFoundAoProcurarCartaDoJogo() throws Exception {
+		mockMvc.perform(get("/cartadojogo").accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isNotFound());
+	}
+	@Test
+	void deveRetornarNotFoundAoProcurarCartaDoJogoPorId() throws Exception {
+		UUID valor = UUID.fromString("b2615428-9608-11ed-a1eb-0242ac120002");
+		when(cartaDoJogoService.findById(cartaDoJogoVazia.getId())).thenReturn(Optional.empty());
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/cartadojogo/" + valor).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
+
 	}
 
 	@Test
@@ -88,5 +144,4 @@ public class CartaDoJogoControllerTest {
 				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(cartaDoJogoJSON));
 
 	}
-
 }
