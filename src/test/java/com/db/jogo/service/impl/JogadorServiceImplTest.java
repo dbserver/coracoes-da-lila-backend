@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +33,6 @@ class JogadorServiceImplTest {
     private JogadorServiceImpl jogadorServiceImpl;
 
 	private Jogador jogador;
-	private Jogador jogador2;
 	@BeforeEach
 	public void init() {
 		jogador = Jogador.builder()
@@ -81,9 +81,61 @@ class JogadorServiceImplTest {
 				"Impossível fazer atualização do objeto passado! ");
 	}
 	@Test
-	void DeveRetornarOptionalEmpty() {
+	void deveRetornarOptionalEmpty() {
 		when(jogadorRepositoryMock.findById(jogador.getId())).thenReturn(Optional.empty());
 		Optional<Jogador> jogadorOptionalEmpty = jogadorServiceImpl.atualizarJogador(jogador);
 		assertEquals(Optional.empty(), jogadorOptionalEmpty);
 	}
+
+	@Test
+	void deveriaRetornarTotalDeJogadores() {
+		when(jogadorRepositoryMock.findAll()).thenReturn(List.of(jogador, jogador));
+
+		int quantidadeDeJogadoresNaSala = jogadorServiceImpl.totalJogadores();
+
+		assertNotNull(quantidadeDeJogadoresNaSala);
+		assertEquals(2, quantidadeDeJogadoresNaSala);
+	}
+
+	@Test
+	void deveriaRetornarTotalDeJogadoresIgualZero() {
+		when(jogadorRepositoryMock.findAll()).thenReturn(List.of());
+
+		int quantidadeDeJogadoresNaSala = jogadorServiceImpl.totalJogadores();
+
+		assertNotNull(quantidadeDeJogadoresNaSala);
+		assertEquals(0, quantidadeDeJogadoresNaSala);
+	}
+
+    @Test
+    void deveriaEncontrarTodosOsJogadores() {
+		Iterable<Jogador> jogadorServiceIterable = List.of(jogador);
+		when(jogadorRepositoryMock.findAll()).thenReturn(List.of(jogador));
+
+		Iterable<Jogador> encontrarTodosOsJogadores = jogadorServiceImpl.findAll();
+
+		assertNotNull(encontrarTodosOsJogadores);
+		assertEquals(jogadorServiceIterable, encontrarTodosOsJogadores);
+	}
+
+	@Test
+	void deveriaPermitirInicioDaPartida() {
+		when(jogadorRepositoryMock.findAll()).thenReturn(List.of(jogador, jogador));
+
+		Boolean temQuantidadeMinimaDeJogadores = jogadorServiceImpl.podeJogar();
+
+		assertTrue(temQuantidadeMinimaDeJogadores);
+		assertEquals(2,jogadorServiceImpl.totalJogadores());
+	}
+
+	@Test
+	void naoDeveriaPermitirInicioDaPartida() {
+		when(jogadorRepositoryMock.findAll()).thenReturn(List.of(jogador));
+
+		Boolean temQuantidadeMinimaDeJogadores = jogadorServiceImpl.podeJogar();
+
+		assertFalse(temQuantidadeMinimaDeJogadores);
+		assertEquals(1,jogadorServiceImpl.totalJogadores());
+	}
+
 }
