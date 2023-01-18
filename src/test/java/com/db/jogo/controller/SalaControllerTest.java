@@ -195,6 +195,19 @@ class SalaControllerTest {
     }
 
     @Test
+    void deveRetornarTotalDeJogadores() throws Exception{
+
+        when(salaService.totalJogadores(sala.getHash())).thenReturn(1);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String encontrarSalaAsJSON = mapper.writeValueAsString(sala);
+        this.mockMvc.perform(get("/sala/numeroJogadores/" + sala.getHash())
+                        .content(encontrarSalaAsJSON)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andExpect(content().json("1"));
+    }
+    @Test
     @DisplayName("Teste primeiroAJogar do Controller")
     void deveRetornarPrimeiroAJogar() throws Exception{
 

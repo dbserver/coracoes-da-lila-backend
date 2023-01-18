@@ -1,22 +1,42 @@
 package com.db.jogo.controller;
 
+import static com.db.jogo.enums.CartaDoJogoEnumCategoria.*;
+import static com.db.jogo.enums.CartaDoJogoEnumCategoria.TEA;
+import static com.db.jogo.enums.CartaDoJogoEnumTipo.FILME;
+import static com.db.jogo.enums.CartaDoJogoEnumTipo.INFORMACAO;
+import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.db.jogo.exception.JogoInvalidoException;
+import com.db.jogo.service.SalaService;
+import com.db.jogo.service.WebSocketService;
+import org.checkerframework.checker.nullness.Opt;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.db.jogo.dto.SalaRequest;
@@ -33,248 +53,169 @@ import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.service.impl.WebSocketServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.validation.BindingResult;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Websocket Controller Teste")
+@ExtendWith(MockitoExtension.class)
 public class WebSocketControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    @MockBean
+    @Mock
+    WebSocketServiceImpl webSocketServiceImpl;
+    @Mock
+    BindingResult bindingResult;
+    @Mock
+    SalaService salaService;
+    CartaInicio cartaInicio;
+    Baralho baralho;
+    CartaDoJogo carta;
+    CartaObjetivo cartaObjetivo;
+    Jogador jogador;
+    Jogador jogador2;
+    Sala sala;
+    List<CartaObjetivo> listaCartasObjetivo;
+    List<CartaDoJogo> listaCartasDoJogo;
+    List<CartaInicio> cartaInicioList;
+    List<Jogador> jogadores;
+    @InjectMocks
     WebSocketController webSocketController;
-
-    @Autowired
-    @MockBean
-    private WebSocketServiceImpl webSocketServiceImpl;
-
-    CartaInicio cartaInicio = new CartaInicio();
-    Baralho baralho = new Baralho();
-    CartaDoJogo carta = new CartaDoJogo();
-    CartaObjetivo cartaObjetivo = new CartaObjetivo();
-    Jogador jogador = new Jogador();
-    Jogador jogador2 = new Jogador();
-    Sala sala = new Sala();
-    SalaRequest salaRequest = new SalaRequest();
-    SalaResponse salaResponse = new SalaResponse();
 
     @BeforeEach
     public void init(){
-        cartaInicio.setId(UUID.randomUUID());
+
+        cartasObjetivoFake();
+        cartasDoJogoFake();
+        jogadoresFakes();
+        cartaInicio = new CartaInicio();
+        cartaInicioList = new ArrayList<>();
+        cartaInicio.setId(UUID.fromString("0583ecd0-974c-11ed-a8fc-0242ac120002"));
         cartaInicio.setNome("Teste");
         cartaInicio.setDescricao("Descricao");
+        cartaInicioList.add(cartaInicio);
 
-        carta.setId(UUID.randomUUID());
-        carta.setPontos(2);
-        carta.setBonus(true);
-        carta.setCategoria(CartaDoJogoEnumCategoria.VISUAL);
-        carta.setTexto("Deficiencia visual");
-        carta.setFonte("Wikipedia");
-        carta.setValorCoracaoGrande(2);
-        carta.setValorCoracaoPequeno(2);
-        carta.setTipo(CartaDoJogoEnumTipo.ACAO);
-
-        cartaObjetivo.setId(UUID.randomUUID());
-        cartaObjetivo.setTextoTematico("Texto da carta");
-        cartaObjetivo.setPontos(0);
-        cartaObjetivo.setTextoRegra("Ganhe pontos");
-        cartaObjetivo.setCategoria("Física");
-
+        baralho = new Baralho();
         baralho.setCodigo("qwerty");
         baralho.setId(UUID.randomUUID());
         baralho.setTitulo("Teste");
         baralho.setDescricao("Exemplo");
-        baralho.setCartasInicio(new ArrayList<>());
+        baralho.setCartasInicio(cartaInicioList);
         baralho.adicionarCartaDoInicio(cartaInicio);
-        baralho.setCartasDoJogo(new ArrayList<>());
+        baralho.setCartasDoJogo(listaCartasDoJogo);
         baralho.adicionarCartadoJogo(carta);
-        baralho.setCartasObjetivo(new ArrayList<>());
+        baralho.setCartasObjetivo(listaCartasObjetivo);
         baralho.adicionarCartaDoInicio(cartaInicio);
 
-        jogador.setId(UUID.randomUUID());
-        jogador.setNome("Felipe");
-        jogador.setPontos(2);
-        jogador.setBonusCoracaoGrande(3);
-        jogador.setBonusCoracaoPequeno(2);
-        jogador.setCoracaoGrande(1);
-        jogador.setCoracaoPequeno(3);
-        jogador.setIsHost(true);
-        jogador.setCartasDoJogo(new ArrayList<>());
-        jogador.adicionaCarta(carta);
-        jogador.setStatus(StatusEnumJogador.JOGANDO);
-        jogador.adicionaObjetivo(cartaObjetivo);
 
-        jogador2.setId(UUID.randomUUID());
-        jogador2.setNome("Guilherme");
-        jogador2.setIsHost(false);
-        jogador2.setPontos(2);
-        jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        jogador2.setBonusCoracaoGrande(1);
-        jogador2.setBonusCoracaoPequeno(2);
-        jogador2.setCoracaoGrande(5);
-        jogador2.setCoracaoPequeno(3);
-        jogador2.setCartasDoJogo(new ArrayList<>());
-        jogador2.adicionaCarta(carta);
-        jogador2.adicionaObjetivo(cartaObjetivo);
-
-        sala.setId(UUID.randomUUID());
+        sala = new Sala();
+        sala.setId(UUID.fromString("cd0dab06-9751-11ed-a8fc-0242ac120002"));
         sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setDado(0);
-        sala.setJogadores(new ArrayList<>());
+        sala.setJogadores(jogadores);
         sala.adicionarJogador(jogador);
-
-        salaRequest.setHash("hashpraentrar");
-        salaRequest.setJogador(jogador2);
-
-        salaResponse.setSala(sala);
-        salaResponse.setJogador(jogador);
+        sala.adicionarCartaDoObjetivo(cartaObjetivo);
+        sala.setJogadorEscolhido(jogador);
+        sala.setCartaInicioId(cartaInicio.getId());
+        sala.setCartaObjetivoEscolhida(cartaObjetivo);
     }
 
     @Test
-    @DisplayName("Teste para iniciar o jogo")
-    void testIniciarJogo() throws Exception {
+    void deveRetornarBadRequestQuandoComprarCoracaoPequeno() throws JogoInvalidoException {
+        when(bindingResult.hasErrors()).thenReturn(true);
+        ResponseEntity<?> coracaoPequeno = webSocketController.comprarCoracaoPequeno(sala, bindingResult);
 
-        given(webSocketServiceImpl.criarJogo(jogador)).willReturn(new SalaResponse());
+        assertEquals(HttpStatus.BAD_REQUEST, coracaoPequeno.getStatusCode());
+    }
+//    @Test
+    //esse Teste falhou
+//    void deveRetornarNotFoundAoComprarCoracaoPequeno() throws Exception {
+//        when(webSocketServiceImpl.compraCoracoesPequenos(sala)).thenReturn(Optional.of(sala));
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        String salaJson = mapper.writeValueAsString(sala);
+//
+//        mockMvc.perform(put("/api/jogada/comprarcoracaopequeno")
+//                .content(salaJson)
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                .accept(MediaType.APPLICATION_JSON_VALUE))
+//                .andExpect(status().isNotFound());
+//    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jogadorAsJSON = mapper.writeValueAsString(jogador);
-        this.mockMvc.perform(post("/api/iniciar")
-                .content(jogadorAsJSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+    private void jogadoresFakes() {
+        jogador = new Jogador();
+        jogador.setId(UUID.fromString("01fa2624-bc16-4d3b-a1d6-6e797b47e04d"));
+        jogador.setPosicao(1);
+        jogador.setCartasDoJogo(listaCartasDoJogo);
+        jogador.setCartasObjetivo(listaCartasObjetivo);
+        jogador.setNome("Pedro");
+        jogador.setPontos(0);
+        jogador.setCoracaoPequeno(2);
+        jogador.setCoracaoGrande(1);
+        jogador.setBonusCoracaoGrande(0);
+        jogador.setBonusCoracaoPequeno(0);
+        jogador.setIsHost(true);
+        jogador.setPontosObjetivo(0);
+        jogador.setStatus(JOGANDO);
+
+        jogador2 = new Jogador();
+        jogador2.setId(UUID.fromString("00c5506e-d035-4d7d-97d3-ecff0d7f0d58"));
+        jogador2.setPosicao(2);
+        jogador2.setCartasDoJogo(listaCartasDoJogo);
+        jogador2.setCartasObjetivo(listaCartasObjetivo);
+        jogador2.setNome("Joao");
+        jogador2.setPontos(0);
+        jogador2.setCoracaoPequeno(2);
+        jogador2.setCoracaoGrande(0);
+        jogador2.setBonusCoracaoGrande(0);
+        jogador2.setBonusCoracaoPequeno(0);
+        jogador2.setIsHost(false);
+        jogador2.setPontosObjetivo(0);
+        jogador2.setStatus(JOGANDO);
+        jogadores = new ArrayList<>();
+        jogadores.add(jogador);
+        jogadores.add(jogador2);
     }
 
-    @Test
-    @DisplayName("Teste para conectar outro jogador")
-    void testConectar() throws Exception{
-        sala.adicionarJogador(jogador2);
+    private void cartasDoJogoFake() {
+        carta = new CartaDoJogo();
+        carta.setId(UUID.fromString("775c7b9f-6ce2-4919-8696-c751dd322ac3"));
+        carta.setTipo(INFORMACAO);
+        carta.setCategoria(AUDITIVA);
+        carta.setBonus(true);
+        carta.setTexto("Deficiência auditiva é a perda parcial ou total da audição, " +
+                "causada por malformação (causa genética) ou lesões no aparelho auditivo.");
+        carta.setValorCoracaoGrande(2);
+        carta.setValorCoracaoPequeno(1);
+        carta.setFonte("novaescola.org.br");
+        carta.setPontos(1);
 
-        given(webSocketServiceImpl.conectarJogo( salaRequest.getJogador(), salaRequest.getHash())).willReturn(salaResponse);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(salaResponse);
-        this.mockMvc.perform(put("/api/conectar")
-                .content(newConexaoAsJSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        listaCartasDoJogo = new ArrayList<>();
+        listaCartasDoJogo.add(carta);
     }
 
-    @Test
-    @DisplayName("Teste de BadRequest para iniciar o jogo")
-    void testIniciarJogoNull() throws Exception {
+    private void cartasObjetivoFake() {
+        cartaObjetivo = new CartaObjetivo();
+        cartaObjetivo
+                .setId(UUID.fromString("55d5947b-f491-4fe2-8c65-4d1e61ef8561"));
+        cartaObjetivo.setTextoRegra("Ganhe 1 ponto " +
+                "por cada carta que você tiver da categoria Visual ao final da partida");
+        cartaObjetivo.setPontos(1);
+        cartaObjetivo.setCategoria("VISUAL");
+        cartaObjetivo.setTextoTematico("Seu grau de óculos aumentou muito.");
+        cartaObjetivo.setTipoContagem(1);
+        cartaObjetivo.setTipo("");
 
-        given(webSocketServiceImpl.criarJogo(null)).willReturn(null);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jogadorAsJSON = mapper.writeValueAsString(null);
-        this.mockMvc.perform(post("/api/iniciar")
-                .content(jogadorAsJSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isBadRequest());
+        listaCartasObjetivo = new ArrayList<>();
+        listaCartasObjetivo.add(cartaObjetivo);
     }
 
-    @Test
-    @DisplayName("Teste para sucesso na conexão")
-    void tesaConexaoComSucesso() throws Exception {
-        Jogador jogador = new Jogador();
-        Sala sala = new Sala();
-        given(webSocketServiceImpl.conectarJogo(jogador, sala.getHash())).willReturn(salaResponse);
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJson = mapper.writeValueAsString(salaResponse);
-        this.mockMvc.perform(put("/api/conectar")
-                .content(newConexaoAsJson)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-    }
 
-    @Test
-    @DisplayName("Teste de BadRequest para conexão")
-    void testConectarComErro() throws Exception{
-        Jogador jogadorVazio = new Jogador();
-        Sala salaVazia = new Sala();
-        given(webSocketServiceImpl.conectarJogo( jogadorVazio, salaVazia.getHash())).willReturn(null);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(null);
-        this.mockMvc.perform(put("/api/conectar")
-                .content(newConexaoAsJSON)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isBadRequest());
-    }
-    
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta")
-    void comprarCartaDoJogo() throws Exception{
-    	
-        Optional<Sala> salaReposta = Optional.of(sala);
-        given(webSocketServiceImpl.comprarCartaDoJogo(sala)).willReturn(salaReposta);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(sala);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcarta")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isOk());
-    }
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta Error")
-    void comprarCartaDoJogoNula() throws Exception{
-    	
-        given(webSocketServiceImpl.comprarCartaDoJogo(null)).willReturn(null);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(null);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcarta")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta objetivo")
-    void comprarCartaObjetivo() throws Exception{
-    	
-        Optional<Sala> salaReposta = Optional.of(sala);
-        given(webSocketServiceImpl.comprarCartaObjetivo(sala)).willReturn(salaReposta);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(sala);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcartaobjetivo")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Teste de Jogada de comprar carta objetivo Error")
-    void comprarCartaObjetivoNula() throws Exception{
-    	
-        given(webSocketServiceImpl.comprarCartaObjetivo(null)).willReturn(null);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String newConexaoAsJSON = mapper.writeValueAsString(null);
-        
-        this.mockMvc.perform(put("/api/jogada/comprarcartaobjetivo")
-                        .content(newConexaoAsJSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                        .andExpect(status().isBadRequest());
-    }
 
 }

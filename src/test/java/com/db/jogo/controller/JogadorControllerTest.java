@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -178,5 +179,41 @@ class JogadorControllerTest {
 		String valor = "40fc17ae-9681-11ed-a1eb-0242ac120002";
 		mockMvc.perform(get("/jogador/" + valor).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isNotFound());
+	}
+	@Test
+	@DisplayName("Teste do GET do Controller do Jogador")
+	public void deveRetornarTodos_QuandoBuscar() throws Exception {
+		List<Jogador> jogadores = new ArrayList<>();
+		jogadores.add(jogador);
+		when(jogadorService.findAll()).thenReturn(jogadores);
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jogadorComoJSON = mapper.writeValueAsString(jogadores);
+
+		mockMvc.perform(get("/jogador/todos").content(jogadorComoJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+	@Test
+	@DisplayName("Teste do GET do Controller do Jogador")
+	public void deveRetornarTotalJogadores_QuandoBuscar() throws Exception {
+		List<Jogador> jogadores = new ArrayList<>();
+		jogadores.add(jogador);
+		when(jogadorService.totalJogadores()).thenReturn(jogadores.size());
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jogadorComoJSON = mapper.writeValueAsString(jogadores);
+
+		mockMvc.perform(get("/jogador/totaljogadores").content(jogadorComoJSON).accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(content().json("1"));
+	}
+	@Test
+	public void deveRetornarTrueParaPoderJogar() throws Exception {
+
+		when(jogadorService.podeJogar()).thenReturn(true);
+
+		mockMvc.perform(get("/jogador/podeJogar").accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+
+
 	}
 }
