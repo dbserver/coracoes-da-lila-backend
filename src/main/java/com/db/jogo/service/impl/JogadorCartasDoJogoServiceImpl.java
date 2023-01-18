@@ -26,10 +26,6 @@ public class JogadorCartasDoJogoServiceImpl implements JogadorCartasDoJogoServic
         return this.jogadorCartasDoJogoRepository.save(jogadorCartasDoJogo);
     }
 
-    // public JogadorCartasDoJogo findByIdCartasDoJogo(UUID id){
-    //     return this.jogadorCartasDoJogoRepository.findByIdCartaDoJogo(id);
-    // }
-
     public JogadorCartasDoJogo findByJogadorIDAndCartaDoJogoID(UUID jogadorId, UUID cartaId){
         return this.jogadorCartasDoJogoRepository.findByJogadorIDAndCartaDoJogoID(jogadorId, cartaId);
     }

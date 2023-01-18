@@ -17,9 +17,7 @@ public class AdminServiceImpl  implements AdminService {
     private AdminRepository adminRepository;
 
     @Autowired
-    public AdminServiceImpl(
-            AdminRepository adminRepository
-    ){
+    public AdminServiceImpl(AdminRepository adminRepository){
         this.adminRepository = adminRepository;
     }
 
