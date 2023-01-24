@@ -19,9 +19,8 @@ public class CartaInicioServiceImpl implements CartaInicioService {
 
 	@Autowired
 	public CartaInicioServiceImpl(
-			CartaInicioRepository cartaInicioRepository /* , CartaInicioController cartaInicioController */ ) {
+			CartaInicioRepository cartaInicioRepository ) {
 		this.cartaInicioRepository = cartaInicioRepository;
-
 	}
 
 	@Override
@@ -41,7 +40,6 @@ public class CartaInicioServiceImpl implements CartaInicioService {
 
 	@Override
 	public Iterable<CartaInicio> findAll() {
-
 		return cartaInicioRepository.findAll();
 	}
 

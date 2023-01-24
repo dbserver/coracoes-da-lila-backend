@@ -73,10 +73,12 @@ public class Baralho {
 	}
 
 	public void adicionarCartaDoInicio(CartaInicio cartaInicio) {
+
 		this.cartasInicio.add(cartaInicio);
 	}
 
 	public boolean removerCartaDoInicio(CartaInicio cartaInicio) {
+
 		return this.cartasInicio.remove(cartaInicio);
 	}
         
