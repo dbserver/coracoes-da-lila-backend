@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,10 +25,10 @@ import com.db.jogo.repository.CartaInicioRepository;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Carta Inicio Service Teste")
 class CartaInicioServiceTest {
-    @Autowired
-    private CartaInicioServiceImpl cartaInicioService;
     @Mock
-    private CartaInicioRepository cartaInicioRepository;
+    private CartaInicioRepository cartaInicioRepositoryMock;
+    @InjectMocks
+    private CartaInicioServiceImpl cartaInicioService;
     private ArrayList<CartaInicio> cartaInicioArraylist = new ArrayList<>();
     private String id = "d1516d33-ff6f-4dc9-aedf-9316421096cb";
     private CartaInicio cartaInicio;
@@ -36,7 +37,7 @@ class CartaInicioServiceTest {
     void setup() {
 
         MockitoAnnotations.openMocks(this);
-        cartaInicioService = new CartaInicioServiceImpl(cartaInicioRepository);
+        cartaInicioService = new CartaInicioServiceImpl(cartaInicioRepositoryMock);
 
         cartaInicio = CartaInicio.builder()
                 .id(UUID.fromString(id))
