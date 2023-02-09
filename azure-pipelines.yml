@@ -27,5 +27,3 @@ steps:
     checkStyleRunAnalysis: true
     pmdRunAnalysis: true
     findBugsRunAnalysis: true
-    spotBugsRunAnalysis: true
-    spotBugsVersion: '3.8.3'
