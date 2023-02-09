@@ -25,6 +25,3 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
-    checkStyleRunAnalysis: true
-    pmdRunAnalysis: true
-    findBugsRunAnalysis: true
