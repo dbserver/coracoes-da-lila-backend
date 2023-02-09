@@ -24,3 +24,12 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+- task: Docker@2
+  inputs:
+    containerRegistry: 'docker-registry'
+    repository: 'coracoesdalila/backend'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+      latest
