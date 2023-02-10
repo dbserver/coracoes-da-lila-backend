@@ -6,9 +6,11 @@
 trigger:
 - chore/ci
 
+pool:
+  vmImage: ubuntu-latest
+
 jobs:
   - job:
-    pool: ubuntu-latest
     displayName: Build and Push
 
     steps:
