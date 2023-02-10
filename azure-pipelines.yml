@@ -30,6 +30,8 @@ variables:
 
   - name: imagePullSecrets
     value: stt-api-image-pull-secret
+    
+  - group: coracoesdalila-api-envs
 
 pool:
   vmImage: $(vmImage)
