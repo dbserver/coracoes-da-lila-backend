@@ -6,8 +6,33 @@
 trigger:
 - chore/ci
 
+variables:
+  - name: buildId
+    value: $(Build.BuildId)
+    
+  - name: vmImage
+    value: ubuntu-latest
+
+  - name: k8sNamespace
+    value: coracoesdalila
+
+  - name: connectionType
+    value: Kubernetes Service Connection
+
+  - name: acrServiceConnection
+    value: "ACR-DBLAB"
+
+  - name: aksServiceConnection
+    value: "AKS-DB"
+
+  - name: dockerRepository
+    value: "stt-api"
+
+  - name: imagePullSecrets
+    value: stt-api-image-pull-secret
+
 pool:
-  vmImage: ubuntu-latest
+  vmImage: $(vmImage)
 
 jobs:
   - job:
@@ -35,3 +60,20 @@ jobs:
         tags: |
           $(Build.BuildId)
           latest
+  - job:
+    displayName: Deployment
+    steps:
+      - task: Kubernetes@1
+        displayName: Create ConfigMap
+        inputs:
+          connectionType: $(connectionType)
+          kubernetesServiceEndpoint: $(aksServiceConnection)
+          namespace: $(k8sNamespace)
+          containerRegistryType: "Azure Container Registry"
+          configMapName: "stt-api-configmap"
+          forceUpdateConfigMap: true
+          configMapArguments: >
+            --from-literal=AZURE_KEY=$(AZURE_KEY)
+            --from-literal=AZURE_LANGUAGE=$(AZURE_LANGUAGE)
+            --from-literal=AZURE_REGION=$(AZURE_REGION)
+            --from-literal=PORT=$(PORT)
