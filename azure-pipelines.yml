@@ -20,7 +20,7 @@ variables:
     value: Kubernetes Service Connection
 
   - name: acrServiceConnection
-    value: "ACR-DBLAB"
+    value: "docker-registry"
 
   - name: aksServiceConnection
     value: "AKS-DB"
@@ -53,7 +53,7 @@ jobs:
         sonarQubeRunAnalysis: false
     - task: Docker@2
       inputs:
-        containerRegistry: 'docker-registry'
+        containerRegistry: $(acrServiceConnection)
         repository: 'coracoesdalila/backend'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
