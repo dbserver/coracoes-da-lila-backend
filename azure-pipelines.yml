@@ -6,30 +6,30 @@
 trigger:
 - chore/ci
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+  - job:
+    pool: ubuntu-latest
+    displayName: Build and Push
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+    steps:
 
-- task: Maven@4
-  inputs:
-    mavenPomFile: './pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.17'
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
-- task: Docker@2
-  inputs:
-    containerRegistry: 'docker-registry'
-    repository: 'coracoesdalila/backend'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      $(Build.BuildId)
-      latest
+    - task: Maven@4
+      inputs:
+        mavenPomFile: './pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'docker-registry'
+        repository: 'coracoesdalila/backend'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
