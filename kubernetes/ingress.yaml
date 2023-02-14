@@ -1,0 +1,29 @@
+apiVersion: v1
+items:
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: stt-api
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    spec:
+      rules:
+        - host: stt-api.paas.dbserver.com.br
+          http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                  service:
+                    name: stt-api-service
+                    port:
+                      number: 80
+      tls:
+        - hosts:
+            - stt-api.paas.dbserver.com.br
+          secretName: stt-api
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
