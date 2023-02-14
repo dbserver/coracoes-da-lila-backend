@@ -37,7 +37,7 @@ pool:
   vmImage: $(vmImage)
 
 jobs:
-  - job:
+  - job: CI
     displayName: Build and Push
 
     steps:
@@ -63,6 +63,7 @@ jobs:
           $(Build.BuildId)
           latest
   - job:
+    dependsOn: CI
     displayName: Deployment
     steps:
       - task: Kubernetes@1
