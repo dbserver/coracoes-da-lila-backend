@@ -3,26 +3,26 @@ items:
   - apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
-      name: stt-api
+      name: coracoesdalila-api
       annotations:
         kubernetes.io/ingress.class: nginx
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
     spec:
       rules:
-        - host: stt-api.paas.dbserver.com.br
+        - host: coracoesdalila-api.paas.dbserver.com.br
           http:
             paths:
               - pathType: Prefix
                 path: /
                 backend:
                   service:
-                    name: stt-api-service
+                    name: coracoesdalila-api-service
                     port:
                       number: 80
       tls:
         - hosts:
-            - stt-api.paas.dbserver.com.br
-          secretName: stt-api
+            - coracoesdalila-api.paas.dbserver.com.br
+          secretName: coracoesdalila-api
 kind: List
 metadata:
   resourceVersion: ""

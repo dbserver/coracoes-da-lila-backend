@@ -4,7 +4,7 @@ metadata:
   name: coracoesdalila-api
   namespace: coracoesdalila
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: coracoesdalila-api

@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: stt-api-service
-  namespace: dblab-stt
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3030"
-    prometheus.io/path: "/metrics"
+  name: coracoesdalila-api-service
+  namespace: coracoesdalila
+#  annotations:
+#    prometheus.io/scrape: "true"
+#    prometheus.io/port: "3030"
+#    prometheus.io/path: "/metrics"
   labels:
-    app: stt-api
+    app: coracoesdalila-api
 spec:
   type: ClusterIP
   ports:
     - port: 80
-      targetPort: 3030
+      targetPort: 8080
       protocol: TCP
   selector:
-    app: stt-api
+    app: coracoesdalila-api
