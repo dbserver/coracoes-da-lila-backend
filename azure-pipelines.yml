@@ -87,9 +87,19 @@ jobs:
           kubernetesServiceConnection: $(aksServiceConnection)
           manifests: |
             ./kubernetes/deployment.yaml
-            ./kubernetes/ingress.yaml
             ./kubernetes/service.yaml
           # imagePullSecrets: |
           #   $(imagePullSecrets)
           containers: |
-            dbserverregistry.azurecr.io/coracoesdalila/backend:$(buildId)
+            dbserverregistry.azurecr.io/coracoesdalila/backend:$(buildId)      
+      - task: Kubernetes@1
+        displayName: Apply Ingress
+        inputs:
+          connectionType: $(connectionType)
+          kubernetesServiceEndpoint: $(aksServiceConnection)
+          namespace: $(k8sNamespace)
+          command: "apply"
+          useConfigurationFile: true
+          configuration: "./kubernetes/ingress.yaml"
+          outputFormat: none
+            
