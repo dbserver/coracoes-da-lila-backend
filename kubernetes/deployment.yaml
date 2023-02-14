@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coracoesdalila-api
+  namespace: coracoesdalila
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: coracoesdalila-api
+  template:
+    metadata:
+      labels:
+        app: coracoesdalila-api
+    spec:
+      containers:
+        - name: coracoesdalila-api
+          image: "dbserverregistry.azurecr.io/coracoesdalila/backend"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: coracoesdalila-api-configmap
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /health/readiness
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
