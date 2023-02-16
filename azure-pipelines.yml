@@ -72,7 +72,7 @@ jobs:
           containerregistrytype: 'Container Registry'
           dockerRegistryConnection: 'docker-registry'
           action: 'Run a Docker command'
-          customCommand: 'docker pull dbserverregistry.azurecr.io/coracoesdalila/backend:latest'
+          customCommand: 'pull dbserverregistry.azurecr.io/coracoesdalila/backend:latest'
     
       - task: Docker@0
         displayName: 'Retague docker image'
@@ -80,7 +80,7 @@ jobs:
           containerregistrytype: 'Container Registry'
           dockerRegistryConnection: 'docker-registry'
           action: 'Run a Docker command'
-          customCommand: 'docker image tag dbserverregistry.azurecr.io/coracoesdalila/backend:latest dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'  
+          customCommand: 'image tag dbserverregistry.azurecr.io/coracoesdalila/backend:latest dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'  
 
       - task: Docker@0
         displayName: 'Push new image'
@@ -88,7 +88,7 @@ jobs:
           containerregistrytype: 'Container Registry'
           dockerRegistryConnection: 'docker-registry'
           action: 'Run a Docker command'
-          customCommand: 'docker image push dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'
+          customCommand: 'image push dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'
 
       - task: Kubernetes@1
         displayName: Create ConfigMap
