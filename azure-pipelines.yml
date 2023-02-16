@@ -4,12 +4,12 @@
 # https://aka.ms/yaml
 
 trigger:
-- chore/ci
+  - chore/ci
 
 variables:
   - name: buildId
     value: $(Build.BuildId)
-    
+
   - name: vmImage
     value: ubuntu-latest
 
@@ -30,7 +30,16 @@ variables:
 
   - name: imagePullSecrets
     value: stt-api-image-pull-secret
-    
+
+  - name: isTag
+    value: $[startsWith(variables['Build.SourceBranch'],'refs/tags/')]
+
+  - name: branchName
+    value: $(Build.SourceBranchName)
+
+  - name: acrUrl
+    value: "dbserverregistry.azurecr.io/coracoesdalila/backend"
+
   - group: coracoesdalila-api-envs
 
 pool:
@@ -41,55 +50,55 @@ jobs:
     displayName: Build and Push
 
     steps:
+      - task: Maven@4
+        inputs:
+          mavenPomFile: "./pom.xml"
+          publishJUnitResults: true
+          testResultsFiles: "**/surefire-reports/TEST-*.xml"
+          javaHomeOption: "JDKVersion"
+          jdkVersionOption: "1.17"
+          mavenVersionOption: "Default"
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      - task: Docker@2
+        inputs:
+          containerRegistry: $(acrServiceConnection)
+          repository: $(dockerRepository)
+          command: "buildAndPush"
+          Dockerfile: "**/Dockerfile"
+          tags: latest
+  - job: DeployToProduction
+    # condition: eq(variables.isTag, true)
+    steps:
+      - task: Docker@0
+        displayName: "Pull docker image"
+        inputs:
+          containerregistrytype: "Container Registry"
+          dockerRegistryConnection: "docker-registry"
+          action: "Run a Docker command"
+          customCommand: "pull $(acrUrl):latest"
 
-    - task: Maven@4
-      inputs:
-        mavenPomFile: './pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.17'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
-    - task: Docker@2
-      inputs:
-        containerRegistry: $(acrServiceConnection)
-        repository: $(dockerRepository)
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: |
-          $(Build.BuildId)
-          latest
-  - job: CD
+      - task: Docker@0
+        displayName: "Retague docker image"
+        inputs:
+          containerregistrytype: "Container Registry"
+          dockerRegistryConnection: "docker-registry"
+          action: "Run a Docker command"
+          customCommand: "image tag $(acrUrl):latest $(acrUrl):$(branchName)"
+
+      - task: Docker@0
+        displayName: "Push new image"
+        inputs:
+          containerregistrytype: "Container Registry"
+          dockerRegistryConnection: "docker-registry"
+          action: "Run a Docker command"
+          customCommand: "image push $(acrUrl):$(branchName)"
+
+  - job: DevelopToDevelopment
     dependsOn: CI
     displayName: Deployment
     steps:
-      - task: Docker@0
-        displayName: 'Pull docker image'
-        inputs:
-          containerregistrytype: 'Container Registry'
-          dockerRegistryConnection: 'docker-registry'
-          action: 'Run a Docker command'
-          customCommand: 'pull dbserverregistry.azurecr.io/coracoesdalila/backend:latest'
-    
-      - task: Docker@0
-        displayName: 'Retague docker image'
-        inputs:
-          containerregistrytype: 'Container Registry'
-          dockerRegistryConnection: 'docker-registry'
-          action: 'Run a Docker command'
-          customCommand: 'image tag dbserverregistry.azurecr.io/coracoesdalila/backend:latest dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'  
-
-      - task: Docker@0
-        displayName: 'Push new image'
-        inputs:
-          containerregistrytype: 'Container Registry'
-          dockerRegistryConnection: 'docker-registry'
-          action: 'Run a Docker command'
-          customCommand: 'image push dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'
-
       - task: Kubernetes@1
         displayName: Create ConfigMap
         inputs:
@@ -115,7 +124,7 @@ jobs:
           # imagePullSecrets: |
           #   $(imagePullSecrets)
           containers: |
-            dbserverregistry.azurecr.io/coracoesdalila/backend:$(buildId)      
+            $(acrUrl):$(buildId)
       - task: Kubernetes@1
         displayName: Apply Ingress
         inputs:
@@ -126,4 +135,3 @@ jobs:
           useConfigurationFile: true
           configuration: "./kubernetes/ingress.yaml"
           outputFormat: none
-            
