@@ -62,10 +62,34 @@ jobs:
         tags: |
           $(Build.BuildId)
           latest
-  - job:
+  - job: CD
     dependsOn: CI
     displayName: Deployment
     steps:
+      - task: Docker@0
+        displayName: 'Pull docker image'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerRegistryConnection: 'docker-registry'
+          action: 'Run a Docker command'
+          customCommand: 'docker pull dbserverregistry.azurecr.io/coracoesdalila/backend:latest'
+    
+      - task: Docker@0
+        displayName: 'Retague docker image'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerRegistryConnection: 'docker-registry'
+          action: 'Run a Docker command'
+          customCommand: 'docker image tag dbserverregistry.azurecr.io/coracoesdalila/backend:latest dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'  
+
+      - task: Docker@0
+        displayName: 'Push new image'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerRegistryConnection: 'docker-registry'
+          action: 'Run a Docker command'
+          customCommand: 'docker image push dbserverregistry.azurecr.io/coracoesdalila/backend:xpto'
+
       - task: Kubernetes@1
         displayName: Create ConfigMap
         inputs:
