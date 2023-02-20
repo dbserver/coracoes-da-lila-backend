@@ -47,13 +47,13 @@ pool:
 
 jobs:
   - job: CI
+    condition: eq(variables.isTag, false)
     displayName: Build and Push
-
     steps:
       - task: Bash@3
         inputs:
           targetType: "inline"
-          script: echo '$(Build.SourceBranchName) // $(Build.SourceBranch)'
+          script: env
 
       - task: Maven@4
         inputs:
@@ -101,6 +101,7 @@ jobs:
           customCommand: "image push $(acrUrl):$(branchName)"
 
   - job: DevelopToDevelopment
+    condition: eq(variables.isTag, false)
     dependsOn: CI
     displayName: Deployment
     steps:
@@ -126,8 +127,6 @@ jobs:
           manifests: |
             ./kubernetes/deployment.yaml
             ./kubernetes/service.yaml
-          # imagePullSecrets: |
-          #   $(imagePullSecrets)
           containers: |
             $(acrUrl):$(buildId)
       - task: Kubernetes@1
