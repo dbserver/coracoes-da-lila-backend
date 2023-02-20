@@ -4,7 +4,9 @@
 # https://aka.ms/yaml
 
 trigger:
-  - chore/ci
+  tags:
+    include:
+      - "*"
 
 variables:
   - name: buildId
