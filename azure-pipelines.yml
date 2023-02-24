@@ -4,11 +4,11 @@
 # https://aka.ms/yaml
 # testing trigger
 
-trigger:
-  tags:
+pr:
+  branches:
     include:
-      - "*"
-
+      - "main"
+  
 variables:
   - name: buildId
     value: $(Build.BuildId)
@@ -51,8 +51,8 @@ pool:
 stages:
 - stage: CI
   jobs:
-  - job: Build
-    displayName: Run tests and build maven project
+  - job: CI
+    displayName: Run tests, build and push image to ACR
     steps:
       - task: Maven@4
         inputs:
@@ -66,9 +66,6 @@ stages:
           mavenAuthenticateFeed: false
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
-  - job: BuildAndPushImage
-    displayName: Build and Push image to ACR
-    steps:
       - task: Docker@2
         inputs:
           containerRegistry: $(acrServiceConnection)
@@ -78,6 +75,7 @@ stages:
           tags: |
             $(buildId)
             latest
+
         
 -  stage: DeployToDevelopment
    variables:
