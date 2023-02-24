@@ -48,19 +48,16 @@ variables:
 pool:
   vmImage: $(vmImage)
 
-jobs:
-  - job: CI
-    # condition: eq(variables.isTag, false)
-    displayName: Build and Push
+stages:
+- stage: CI
+  jobs:
+  - job: Build
+    displayName: Run tests and build maven project
     steps:
-      - task: Bash@3
-        inputs:
-          targetType: "inline"
-          script: env
-
       - task: Maven@4
         inputs:
           mavenPomFile: "./pom.xml"
+          goals: 'package'
           publishJUnitResults: true
           testResultsFiles: "**/surefire-reports/TEST-*.xml"
           javaHomeOption: "JDKVersion"
@@ -69,45 +66,26 @@ jobs:
           mavenAuthenticateFeed: false
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
+  - job: BuildAndPushImage
+    displayName: Build and Push image to ACR
+    steps:
       - task: Docker@2
         inputs:
           containerRegistry: $(acrServiceConnection)
           repository: $(dockerRepository)
           command: "buildAndPush"
           Dockerfile: "**/Dockerfile"
-          tags: latest
-  - job: DeployToProduction
-    # condition: eq(variables.isTag, true)
-    steps:
-      - task: Docker@0
-        displayName: "Pull docker image"
-        inputs:
-          containerregistrytype: "Container Registry"
-          dockerRegistryConnection: "docker-registry"
-          action: "Run a Docker command"
-          customCommand: "pull $(acrUrl):latest"
-
-      - task: Docker@0
-        displayName: "Retague docker image"
-        inputs:
-          containerregistrytype: "Container Registry"
-          dockerRegistryConnection: "docker-registry"
-          action: "Run a Docker command"
-          customCommand: "image tag $(acrUrl):latest $(acrUrl):$(branchName)"
-
-      - task: Docker@0
-        displayName: "Push new image"
-        inputs:
-          containerregistrytype: "Container Registry"
-          dockerRegistryConnection: "docker-registry"
-          action: "Run a Docker command"
-          customCommand: "image push $(acrUrl):$(branchName)"
-
-  - job: DevelopToDevelopment
-    condition: eq(variables.isTag, false)
-    dependsOn: CI
-    displayName: Deployment
-    steps:
+          tags: |
+            $(buildId)
+            latest
+        
+-  stage: DeployToDevelopment
+   variables:
+      - group: coracoesdalila-api-envs
+   jobs: 
+   - job: ApplyManifests
+     displayName: Applying kubernetes manifests
+     steps:
       - task: Kubernetes@1
         displayName: Create ConfigMap
         inputs:
@@ -131,14 +109,6 @@ jobs:
             ./kubernetes/deployment.yaml
             ./kubernetes/service.yaml
           containers: |
-            $(acrUrl):$(buildId)
-      - task: Kubernetes@1
-        displayName: Apply Ingress
-        inputs:
-          connectionType: $(connectionType)
-          kubernetesServiceEndpoint: $(aksServiceConnection)
-          namespace: $(k8sNamespace)
-          command: "apply"
-          useConfigurationFile: true
-          configuration: "./kubernetes/ingress.yaml"
-          outputFormat: none
+            $(acrUrl):latest
+
+
