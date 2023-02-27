@@ -80,6 +80,10 @@ stages:
       - job: ApplyManifests
         displayName: Applying kubernetes manifests
         steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: env
           - task: ShellScript@2
             displayName: Changing yaml's variables
             inputs:
