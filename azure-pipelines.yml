@@ -1,0 +1,140 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+# testing trigger
+
+pr:
+  branches:
+    include:
+      - "main"
+  
+variables:
+  - name: buildId
+    value: $(Build.BuildId)
+
+  - name: vmImage
+    value: ubuntu-latest
+
+  - name: k8sNamespace
+    value: coracoesdalila
+
+  - name: connectionType
+    value: Kubernetes Service Connection
+
+  - name: acrServiceConnection
+    value: "docker-registry"
+
+  - name: aksServiceConnection
+    value: "AKS-DBSERVER"
+
+  - name: dockerRepository
+    value: "coracoesdalila/backend"
+
+  - name: imagePullSecrets
+    value: stt-api-image-pull-secret
+
+  - name: isTag
+    value: $[startsWith(variables['Build.SourceBranch'],'refs/tags/')]
+
+  - name: branchName
+    value: $(Build.SourceBranchName)
+
+  - name: acrUrl
+    value: "dbserverregistry.azurecr.io/coracoesdalila/backend"
+
+  - group: coracoesdalila-api-envs
+
+pool:
+  vmImage: $(vmImage)
+
+stages:
+- stage: CI
+  jobs:
+  - job: CI
+    displayName: Run tests, build and push image to ACR
+    steps:
+      - task: Maven@4
+        inputs:
+          mavenPomFile: "./pom.xml"
+          goals: 'package'
+          publishJUnitResults: true
+          testResultsFiles: "**/surefire-reports/TEST-*.xml"
+          javaHomeOption: "JDKVersion"
+          jdkVersionOption: "1.17"
+          mavenVersionOption: "Default"
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      - task: Docker@2
+        inputs:
+          containerRegistry: $(acrServiceConnection)
+          repository: $(dockerRepository)
+          command: "buildAndPush"
+          Dockerfile: "**/Dockerfile"
+          tags: |
+            $(buildId)
+            latest
+
+        
+-  stage: DeployToDevelopment
+   variables:
+      - group: coracoesdalila-api-envs
+   jobs: 
+   - job: ApplyManifests
+     displayName: Applying kubernetes manifests
+     steps:
+      - task: Kubernetes@1
+        displayName: Create ConfigMap
+        inputs:
+          connectionType: $(connectionType)
+          kubernetesServiceEndpoint: $(aksServiceConnection)
+          namespace: $(k8sNamespace)
+          containerRegistryType: "Azure Container Registry"
+          configMapName: "coracoesdalila-api-configmap"
+          forceUpdateConfigMap: true
+          configMapArguments: >
+            --from-literal=DATABASE_URL=$(DATABASE_URL)
+            --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
+            --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+      - task: KubernetesManifest@0
+        displayName: Deploy to Kubernetes
+        inputs:
+          action: deploy
+          namespace: $(k8sNamespace)
+          kubernetesServiceConnection: $(aksServiceConnection)
+          manifests: |
+            ./kubernetes/deployment.yaml
+            ./kubernetes/service.yaml
+          containers: |
+            $(acrUrl):latest
+-   stage: DeployToProduction
+    jobs:
+      - job: PrepareDockerImage
+        displayName: Re-tag docker image to production
+        steps:
+          - task: Docker@0
+            displayName: "Pull docker image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "pull $(acrUrl):latest"
+
+          - task: Docker@0
+            displayName: "Retague docker image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "image tag $(acrUrl):latest $(acrUrl):$(branchName)"
+
+          - task: Docker@0
+            displayName: "Push new image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "image push $(acrUrl):$(branchName)"
+
+

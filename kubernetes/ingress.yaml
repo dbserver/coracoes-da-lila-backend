@@ -1,0 +1,29 @@
+apiVersion: v1
+items:
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: coracoesdalila-api
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    spec:
+      rules:
+        - host: coracoesdalila-api.paas.dbserver.com.br
+          http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                  service:
+                    name: coracoesdalila-api-service
+                    port:
+                      number: 80
+      tls:
+        - hosts:
+            - coracoesdalila-api.paas.dbserver.com.br
+          secretName: coracoesdalila-api
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
