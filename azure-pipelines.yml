@@ -44,32 +44,32 @@ pool:
   vmImage: $(vmImage)
 
 stages:
-  # - stage: CI
-  #   jobs:
-  #     - job: CI
-  #       displayName: Run tests, build and push image to ACR
-  #       steps:
-  #         - task: Maven@4
-  #           inputs:
-  #             mavenPomFile: "./pom.xml"
-  #             goals: "package"
-  #             publishJUnitResults: true
-  #             testResultsFiles: "**/surefire-reports/TEST-*.xml"
-  #             javaHomeOption: "JDKVersion"
-  #             jdkVersionOption: "1.17"
-  #             mavenVersionOption: "Default"
-  #             mavenAuthenticateFeed: false
-  #             effectivePomSkip: false
-  #             sonarQubeRunAnalysis: false
-  #         - task: Docker@2
-  #           inputs:
-  #             containerRegistry: $(acrServiceConnection)
-  #             repository: $(dockerRepository)
-  #             command: "buildAndPush"
-  #             Dockerfile: "**/Dockerfile"
-  #             tags: |
-  #               $(buildId)
-  #               latest
+  - stage: CI
+    jobs:
+      - job: CI
+        displayName: Run tests, build and push image to ACR
+        steps:
+          - task: Maven@4
+            inputs:
+              mavenPomFile: "./pom.xml"
+              goals: "package"
+              publishJUnitResults: true
+              testResultsFiles: "**/surefire-reports/TEST-*.xml"
+              javaHomeOption: "JDKVersion"
+              jdkVersionOption: "1.17"
+              mavenVersionOption: "Default"
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              sonarQubeRunAnalysis: false
+          - task: Docker@2
+            inputs:
+              containerRegistry: $(acrServiceConnection)
+              repository: $(dockerRepository)
+              command: "buildAndPush"
+              Dockerfile: "**/Dockerfile"
+              tags: |
+                $(buildId)
+                latest
 
   - stage: DeployToDevelopment
     variables:
