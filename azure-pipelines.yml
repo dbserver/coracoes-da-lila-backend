@@ -74,7 +74,7 @@ stages:
   - stage: DeployToDevelopment
     variables:
       - group: coracoesdalila-api-envs-dev
-      - name: env
+      - name: enviroment
         value: "dev"
     jobs:
       - job: ApplyManifests
@@ -111,7 +111,7 @@ stages:
   - stage: DeployToProduction
     variables:
       - group: coracoesdalila-api-envs-prd
-      - name: env
+      - name: enviroment
         value: "prd"
     jobs:
       - job: PrepareDockerImage

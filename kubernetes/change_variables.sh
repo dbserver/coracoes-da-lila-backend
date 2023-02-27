@@ -1,1 +1,1 @@
-sed -i s#\\\${env}#$env#g ./*.yaml
+sed -i s#\\\${env}#$enviroment#g ./*.yaml
