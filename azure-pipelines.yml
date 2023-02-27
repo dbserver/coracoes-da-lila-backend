@@ -4,10 +4,10 @@
 # https://aka.ms/yaml
 # testing trigger
 
-pr:
-  branches:
-    include:
-      - main
+trigger:
+ branches:
+  include:
+    - main 
 
 
 variables:
