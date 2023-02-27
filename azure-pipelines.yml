@@ -108,5 +108,33 @@ stages:
             ./kubernetes/service.yaml
           containers: |
             $(acrUrl):latest
+-   stage: DeployToProduction
+    jobs:
+      - job: PrepareDockerImage
+        displayName: Re-tag docker image to production
+        steps:
+          - task: Docker@0
+            displayName: "Pull docker image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "pull $(acrUrl):latest"
+
+          - task: Docker@0
+            displayName: "Retague docker image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "image tag $(acrUrl):latest $(acrUrl):$(branchName)"
+
+          - task: Docker@0
+            displayName: "Push new image"
+            inputs:
+              containerregistrytype: "Container Registry"
+              dockerRegistryConnection: "docker-registry"
+              action: "Run a Docker command"
+              customCommand: "image push $(acrUrl):$(branchName)"
 
 
