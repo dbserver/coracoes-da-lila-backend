@@ -117,10 +117,6 @@ stages:
       - job: PrepareDockerImage
         displayName: Re-tag docker image to production
         steps:
-          - task: ShellScript@2
-            displayName: Changing yaml's variables
-            inputs:
-              scriptPath: "./kubernetes/change_variables.sh"
           - task: Docker@0
             displayName: "Pull docker image"
             inputs:
@@ -146,6 +142,10 @@ stages:
       - job: ApplyManifests
         displayName: Applying kubernetes manifests
         steps:
+          - task: ShellScript@2
+            displayName: Changing yaml's variables
+            inputs:
+              scriptPath: "./kubernetes/change_variables.sh"
           - task: Kubernetes@1
             displayName: Create ConfigMap
             inputs:
