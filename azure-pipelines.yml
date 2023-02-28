@@ -11,6 +11,13 @@ trigger:
   tags:
     include:
       - "*"
+  
+pr: 
+  branches:
+    exclude:
+      - "*"
+    include:
+      - main
 
 
 variables:
