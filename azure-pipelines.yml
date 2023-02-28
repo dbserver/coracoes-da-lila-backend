@@ -7,7 +7,7 @@
 trigger:
   branches:
     include:
-      - main 
+      - feat/cd 
   tags:
     include:
       - "*"
