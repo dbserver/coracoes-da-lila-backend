@@ -79,6 +79,7 @@ stages:
                 latest
 
   - stage: DeployToDevelopment
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     variables:
       - group: coracoesdalila-api-envs-dev
       - name: enviroment
