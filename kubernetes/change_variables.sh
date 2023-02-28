@@ -1,1 +1,1 @@
-sed -i s#\\\${buildId}#${buildId}#g ./*.yaml
+sed -i s#\\\${env}#$ENVIROMENT#g ./*.yaml

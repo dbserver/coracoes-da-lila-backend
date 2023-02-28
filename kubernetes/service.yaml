@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: coracoesdalila-api-service
+  name: coracoesdalila-api-service-${env}
   namespace: coracoesdalila
 #  annotations:
 #    prometheus.io/scrape: "true"
 #    prometheus.io/port: "3030"
 #    prometheus.io/path: "/metrics"
   labels:
-    app: coracoesdalila-api
+    app: coracoesdalila-api-${env}
 spec:
   type: ClusterIP
   ports:
@@ -16,4 +16,4 @@ spec:
       targetPort: 8080
       protocol: TCP
   selector:
-    app: coracoesdalila-api
+    app: coracoesdalila-api-${env}

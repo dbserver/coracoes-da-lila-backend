@@ -4,11 +4,15 @@
 # https://aka.ms/yaml
 # testing trigger
 
-pr:
+trigger:
   branches:
     include:
-      - "main"
-  
+      - main 
+  tags:
+    include:
+      - "*"
+
+
 variables:
   - name: buildId
     value: $(Build.BuildId)
@@ -31,9 +35,6 @@ variables:
   - name: dockerRepository
     value: "coracoesdalila/backend"
 
-  - name: imagePullSecrets
-    value: stt-api-image-pull-secret
-
   - name: isTag
     value: $[startsWith(variables['Build.SourceBranch'],'refs/tags/')]
 
@@ -43,72 +44,85 @@ variables:
   - name: acrUrl
     value: "dbserverregistry.azurecr.io/coracoesdalila/backend"
 
-  - group: coracoesdalila-api-envs
-
 pool:
   vmImage: $(vmImage)
 
 stages:
-- stage: CI
-  jobs:
-  - job: CI
-    displayName: Run tests, build and push image to ACR
-    steps:
-      - task: Maven@4
-        inputs:
-          mavenPomFile: "./pom.xml"
-          goals: 'package'
-          publishJUnitResults: true
-          testResultsFiles: "**/surefire-reports/TEST-*.xml"
-          javaHomeOption: "JDKVersion"
-          jdkVersionOption: "1.17"
-          mavenVersionOption: "Default"
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: false
-      - task: Docker@2
-        inputs:
-          containerRegistry: $(acrServiceConnection)
-          repository: $(dockerRepository)
-          command: "buildAndPush"
-          Dockerfile: "**/Dockerfile"
-          tags: |
-            $(buildId)
-            latest
+  - stage: CI
+    condition: eq(variables['isTag'], 'false')
+    jobs:
+      - job: CI
+        displayName: Run tests, build and push image to ACR
+        steps:
+          - task: Maven@4
+            inputs:
+              mavenPomFile: "./pom.xml"
+              goals: "package"
+              publishJUnitResults: true
+              testResultsFiles: "**/surefire-reports/TEST-*.xml"
+              javaHomeOption: "JDKVersion"
+              jdkVersionOption: "1.17"
+              mavenVersionOption: "Default"
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              sonarQubeRunAnalysis: false
+          - task: Docker@2
+            inputs:
+              containerRegistry: $(acrServiceConnection)
+              repository: $(dockerRepository)
+              command: "buildAndPush"
+              Dockerfile: "**/Dockerfile"
+              tags: |
+                $(buildId)
+                latest
 
-        
--  stage: DeployToDevelopment
-   variables:
-      - group: coracoesdalila-api-envs
-   jobs: 
-   - job: ApplyManifests
-     displayName: Applying kubernetes manifests
-     steps:
-      - task: Kubernetes@1
-        displayName: Create ConfigMap
-        inputs:
-          connectionType: $(connectionType)
-          kubernetesServiceEndpoint: $(aksServiceConnection)
-          namespace: $(k8sNamespace)
-          containerRegistryType: "Azure Container Registry"
-          configMapName: "coracoesdalila-api-configmap"
-          forceUpdateConfigMap: true
-          configMapArguments: >
-            --from-literal=DATABASE_URL=$(DATABASE_URL)
-            --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
-            --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
-      - task: KubernetesManifest@0
-        displayName: Deploy to Kubernetes
-        inputs:
-          action: deploy
-          namespace: $(k8sNamespace)
-          kubernetesServiceConnection: $(aksServiceConnection)
-          manifests: |
-            ./kubernetes/deployment.yaml
-            ./kubernetes/service.yaml
-          containers: |
-            $(acrUrl):latest
--   stage: DeployToProduction
+  - stage: DeployToDevelopment
+    variables:
+      - group: coracoesdalila-api-envs-dev
+      - name: enviroment
+        value: "dev"
+    jobs:
+      - job: ApplyManifests
+        displayName: Applying kubernetes manifests
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: env
+          - task: ShellScript@2
+            displayName: Changing yaml's variables
+            inputs:
+              scriptPath: "./kubernetes/change_variables.sh"
+          - task: Kubernetes@1
+            displayName: Create ConfigMap
+            inputs:
+              connectionType: $(connectionType)
+              kubernetesServiceEndpoint: $(aksServiceConnection)
+              namespace: $(k8sNamespace)
+              containerRegistryType: "Azure Container Registry"
+              configMapName: "coracoesdalila-api-configmap-dev"
+              forceUpdateConfigMap: true
+              configMapArguments: >
+                --from-literal=DATABASE_URL=$(DATABASE_URL)
+                --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
+                --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespace)
+              kubernetesServiceConnection: $(aksServiceConnection)
+              manifests: |
+                ./kubernetes/deployment.yaml
+                ./kubernetes/service.yaml
+              containers: |
+                $(acrUrl):latest
+  - stage: DeployToProduction
+    condition: eq(variables['isTag'], 'true')
+    variables:
+      - group: coracoesdalila-api-envs-prd
+      - name: enviroment
+        value: "prd"
     jobs:
       - job: PrepareDockerImage
         displayName: Re-tag docker image to production
@@ -120,7 +134,6 @@ stages:
               dockerRegistryConnection: "docker-registry"
               action: "Run a Docker command"
               customCommand: "pull $(acrUrl):latest"
-
           - task: Docker@0
             displayName: "Retague docker image"
             inputs:
@@ -136,5 +149,34 @@ stages:
               dockerRegistryConnection: "docker-registry"
               action: "Run a Docker command"
               customCommand: "image push $(acrUrl):$(branchName)"
-
-
+      - job: ApplyManifests
+        displayName: Applying kubernetes manifests
+        steps:
+          - task: ShellScript@2
+            displayName: Changing yaml's variables
+            inputs:
+              scriptPath: "./kubernetes/change_variables.sh"
+          - task: Kubernetes@1
+            displayName: Create ConfigMap
+            inputs:
+              connectionType: $(connectionType)
+              kubernetesServiceEndpoint: $(aksServiceConnection)
+              namespace: $(k8sNamespace)
+              containerRegistryType: "Azure Container Registry"
+              configMapName: "coracoesdalila-api-configmap-prd"
+              forceUpdateConfigMap: true
+              configMapArguments: >
+                --from-literal=DATABASE_URL=$(DATABASE_URL)
+                --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
+                --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespace)
+              kubernetesServiceConnection: $(aksServiceConnection)
+              manifests: |
+                ./kubernetes/deployment.yaml
+                ./kubernetes/service.yaml
+              containers: |
+                $(acrUrl):$(branchName)

@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: coracoesdalila-api
+  name: coracoesdalila-api-${env}
   namespace: coracoesdalila
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: coracoesdalila-api
+      app: coracoesdalila-api-${env}
   template:
     metadata:
       labels:
-        app: coracoesdalila-api
+        app: coracoesdalila-api-${env}
     spec:
       containers:
-        - name: coracoesdalila-api
+        - name: coracoesdalila-api-${env}
           image: "dbserverregistry.azurecr.io/coracoesdalila/backend"
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
-                name: coracoesdalila-api-configmap
+                name: coracoesdalila-api-configmap-${env}
           livenessProbe:
             httpGet:
               path: /health/liveness
