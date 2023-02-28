@@ -5,9 +5,12 @@
 # testing trigger
 
 trigger:
- branches:
-  include:
-    - main 
+  branches:
+    include:
+      - main 
+  tags:
+    include:
+      - "*"
 
 
 variables:
@@ -46,6 +49,7 @@ pool:
 
 stages:
   - stage: CI
+    condition: eq(variables['isTag'], 'false')
     jobs:
       - job: CI
         displayName: Run tests, build and push image to ACR
@@ -114,6 +118,7 @@ stages:
               containers: |
                 $(acrUrl):latest
   - stage: DeployToProduction
+    condition: eq(variables['isTag'], 'true')
     variables:
       - group: coracoesdalila-api-envs-prd
       - name: enviroment
