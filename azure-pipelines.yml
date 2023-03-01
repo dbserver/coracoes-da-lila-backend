@@ -54,7 +54,7 @@ stages:
         displayName: Run tests, build and push image to ACR
         steps:
           - task: Maven@4
-            displayName: Running testes and building project
+            displayName: Running tests and building project
             inputs:
               mavenPomFile: "./pom.xml"
               goals: "package"
@@ -67,7 +67,7 @@ stages:
               effectivePomSkip: false
               sonarQubeRunAnalysis: false
           - task: Docker@2
-            displayName: Build docker image and pushing to ACR
+            displayName: Building docker image and pushing to ACR
             condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
             inputs:
               containerRegistry: $(acrServiceConnection)
