@@ -4,6 +4,10 @@
 # https://aka.ms/yaml
 # testing trigger
 
+pr: 
+  branches:
+    include:
+      - feat/cd
 trigger:
   branches:
     include:
