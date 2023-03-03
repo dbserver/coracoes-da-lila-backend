@@ -14,30 +14,27 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.db.jogo.model.CartaInicio;
-import com.db.jogo.repository.CartaInicioRepository;
-import com.db.jogo.repository.JogadorRepository;
 import com.db.jogo.service.CartaInicioService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
 
-@WebAppConfiguration
+@AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @WebMvcTest(CartaInicioController.class)
 @DisplayName("Carta Inicio Controller Teste")
@@ -45,11 +42,8 @@ class CartaInicioControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
 	@MockBean
 	CartaInicioService cartaInicioService;
-	@Mock
-	private CartaInicioRepository cartaInicioRepository;
 	@Mock
 	CartaInicio cartaInicioVazia = CartaInicio.builder()
 			.nome(null)
@@ -70,18 +64,19 @@ class CartaInicioControllerTest {
 	Iterable<CartaInicio> cartaInicioIterable;
 
 	@Test
-	@DisplayName("Teste do POST do Controller da Carta Inicio")
+	@DisplayName("Teste do POST/saveCartaInicio deve retornar codigo 201")
 	public void testCriacaoCartaInicio() throws Exception {
-		
+
 		when(cartaInicioService.saveCartaInicio(any(CartaInicio.class))).thenReturn(newCartaInicio);
 		ObjectMapper mapper = new ObjectMapper();
 
 		String newcartaInicioAsJSON = mapper.writeValueAsString(newCartaInicio);
-		
+
 		this.mockMvc.perform(post("/cartainicio").content(newcartaInicioAsJSON).accept(MediaType.APPLICATION_JSON_VALUE)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isCreated());
 	}
 	@Test
+	@DisplayName("Teste do POST/saveCartaInicio deve retornar codigo 400")
 	void NãoDeveSalvarCarta(){
 		when(bindingResult.hasErrors()).thenReturn(true);
 
@@ -90,7 +85,7 @@ class CartaInicioControllerTest {
 	}
 
 	@Test
-	@DisplayName("Teste do GET do Controller Carta Inicio")
+	@DisplayName("Teste do GET/procuraListaCarta deve retornar codigo 200")
 	public void deveRetornarSucesso_QuandoBuscar() throws Exception {
 
 		ArrayList<CartaInicio> CartaInicio = new ArrayList<>();
@@ -99,7 +94,7 @@ class CartaInicioControllerTest {
 
 		ObjectMapper mapper = new ObjectMapper();
 		String listaCartaInicioComoJSON = mapper.writeValueAsString(CartaInicio);
-	
+
 		mockMvc.perform(get("/cartainicio/listar")
 				.accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(listaCartaInicioComoJSON));
@@ -107,7 +102,7 @@ class CartaInicioControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Teste do GET do Controller Carta Inicio")
+	@DisplayName("Teste do GET/procuraCarta deve retornar codigo 200")
 	public void deveRetornarSucesso_QuandoBuscarLista() throws Exception {
 		given(cartaInicioService.findById(newCartaInicio.getId())).willReturn(Optional.of(newCartaInicio));
 
@@ -119,17 +114,17 @@ class CartaInicioControllerTest {
 				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().json(cartaInicioJSON));
 	}
 	@Test
-	@DisplayName("Teste do GET NotFound do Controller Carta Inicio")
+	@DisplayName("Teste do GET/procuraCarta deve retornar codigo 404")
 	public void deveRetornarNotFound_QuandoBuscarLista() throws Exception {
 		UUID valor = UUID.fromString("b2615428-9608-11ed-a1eb-0242ac120002");
 		when(cartaInicioService.findById(cartaInicioVazia.getId())).thenReturn(Optional.empty());
-		Optional<CartaInicio> byId = cartaInicioRepository.findById(valor);
-		cartaInicioController.procuraCarta(valor);
 
-		assertEquals(Optional.empty(), byId);
+		mockMvc.perform(MockMvcRequestBuilders.get("/cartainicio/" + valor).accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
 	}
 
 	@Test
+	@DisplayName("Teste do GET/findAll deve retornar codigo 200")
 	void findCarta() throws Exception {
 		cartaInicioList = new ArrayList<>();
 		cartaInicioList.add(newCartaInicio);
