@@ -12,17 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.db.jogo.model.CartaInicio;
-import com.db.jogo.repository.CartaDoJogoRepository;
-import com.db.jogo.repository.CartaInicioRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,20 +35,18 @@ import com.db.jogo.service.impl.CartaDoJogoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.validation.BindingResult;
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@WebMvcTest(CartaDoJogoController.class)
 @DisplayName("Carta Do Jogo Controller Teste")
 public class CartaDoJogoControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
 	@MockBean
 	CartaDoJogoServiceImpl cartaDoJogoService;
 	@Mock
 	BindingResult bindingResult;
-	@Mock
-	CartaDoJogoRepository cartaDoJogoRepository;
 	@InjectMocks
 	CartaDoJogoController cartaDoJogoController;
 
