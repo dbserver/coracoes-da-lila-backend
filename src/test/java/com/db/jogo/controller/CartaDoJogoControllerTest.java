@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.db.jogo.repository.CartaDoJogoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -48,8 +47,6 @@ public class CartaDoJogoControllerTest {
 	CartaDoJogoServiceImpl cartaDoJogoService;
 	@Mock
 	BindingResult bindingResult;
-	@Mock
-	CartaDoJogoRepository cartaDoJogoRepository;
 	@InjectMocks
 	CartaDoJogoController cartaDoJogoController;
 

@@ -1,16 +1,11 @@
 package com.db.jogo.controller;
 
 import static com.db.jogo.enums.CartaDoJogoEnumCategoria.*;
-import static com.db.jogo.enums.CartaDoJogoEnumCategoria.TEA;
-import static com.db.jogo.enums.CartaDoJogoEnumTipo.FILME;
 import static com.db.jogo.enums.CartaDoJogoEnumTipo.INFORMACAO;
 import static com.db.jogo.enums.StatusEnumJogador.JOGANDO;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -19,32 +14,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.db.jogo.exception.JogoInvalidoException;
-import com.db.jogo.service.SalaService;
-import com.db.jogo.service.WebSocketService;
-import org.checkerframework.checker.nullness.Opt;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.db.jogo.dto.SalaRequest;
-import com.db.jogo.dto.SalaResponse;
-import com.db.jogo.enums.CartaDoJogoEnumCategoria;
-import com.db.jogo.enums.CartaDoJogoEnumTipo;
 import com.db.jogo.enums.StatusEnum;
-import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.CartaDoJogo;
 import com.db.jogo.model.CartaInicio;
@@ -55,22 +37,21 @@ import com.db.jogo.service.impl.WebSocketServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.validation.BindingResult;
 
-
-@SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@WebMvcTest(WebSocketController.class)
 @DisplayName("Websocket Controller Teste")
-@ExtendWith(MockitoExtension.class)
 public class WebSocketControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
-    @Mock
+    @MockBean
     WebSocketServiceImpl webSocketServiceImpl;
     @Mock
     BindingResult bindingResult;
-    @Mock
-    SalaService salaService;
+    @InjectMocks
+    WebSocketController webSocketController;
+
     CartaInicio cartaInicio;
     Baralho baralho;
     CartaDoJogo carta;
@@ -82,8 +63,6 @@ public class WebSocketControllerTest {
     List<CartaDoJogo> listaCartasDoJogo;
     List<CartaInicio> cartaInicioList;
     List<Jogador> jogadores;
-    @InjectMocks
-    WebSocketController webSocketController;
 
     @BeforeEach
     public void init(){
@@ -126,26 +105,27 @@ public class WebSocketControllerTest {
     }
 
     @Test
+    @DisplayName("Teste do PUT/comprarCoracaoPequeno deve retornar codigo 400")
     void deveRetornarBadRequestQuandoComprarCoracaoPequeno() throws JogoInvalidoException {
         when(bindingResult.hasErrors()).thenReturn(true);
         ResponseEntity<?> coracaoPequeno = webSocketController.comprarCoracaoPequeno(sala, bindingResult);
 
         assertEquals(HttpStatus.BAD_REQUEST, coracaoPequeno.getStatusCode());
     }
-//    @Test
-    //esse Teste falhou
-//    void deveRetornarNotFoundAoComprarCoracaoPequeno() throws Exception {
-//        when(webSocketServiceImpl.compraCoracoesPequenos(sala)).thenReturn(Optional.of(sala));
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        String salaJson = mapper.writeValueAsString(sala);
-//
-//        mockMvc.perform(put("/api/jogada/comprarcoracaopequeno")
-//                .content(salaJson)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .accept(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    @DisplayName("Teste do PUT/comprarCoracaoPequeno deve retornar codigo 404")
+    void deveRetornarNotFoundAoComprarCoracaoPequeno() throws Exception {
+        when(webSocketServiceImpl.compraCoracoesPequenos(sala)).thenReturn(Optional.of(sala));
+
+        ObjectMapper mapper = new ObjectMapper();
+        String salaJson = mapper.writeValueAsString(sala);
+
+        mockMvc.perform(put("/api/jogada/comprarcoracaopequeno")
+                        .content(salaJson)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound());
+    }
 
     private void jogadoresFakes() {
         jogador = new Jogador();
@@ -214,8 +194,4 @@ public class WebSocketControllerTest {
         listaCartasObjetivo = new ArrayList<>();
         listaCartasObjetivo.add(cartaObjetivo);
     }
-
-
-
-
 }
