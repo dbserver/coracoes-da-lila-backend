@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.db.jogo.model.Baralho;
 import com.db.jogo.service.impl.BaralhoServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,20 +15,19 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.UUID;
 
-@WebAppConfiguration
+@AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @WebMvcTest(BaralhoController.class)
 @DisplayName("Baralho Controller Teste")
@@ -37,7 +35,6 @@ class BaralhoControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
 	@MockBean
 	BaralhoServiceImpl baralhoService;
 	@Mock
