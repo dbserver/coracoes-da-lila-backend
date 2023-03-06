@@ -113,6 +113,7 @@ stages:
                 --from-literal=DATABASE_URL=$(DATABASE_URL)
                 --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
                 --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+                --from-literal=FRONTEND_SERVER=$(FRONTEND_SERVER)
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes
             inputs:
@@ -184,6 +185,7 @@ stages:
                 --from-literal=DATABASE_URL=$(DATABASE_URL)
                 --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
                 --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+                --from-literal=FRONTEND_SERVER=$(FRONTEND_SERVER)
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes
             inputs:
