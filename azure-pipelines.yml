@@ -80,7 +80,7 @@ stages:
                 latest
 
   - stage: DeployToDevelopment
-    condition: and(succeeded(), eq(variables['isMergePR'], 'true'))
+    condition: and(succeeded(), eq(variables['isMergePR'], 'true'), ne(variables['isTag'], 'true'))
     variables:
       - group: coracoesdalila-api-envs-dev
       - name: enviroment
