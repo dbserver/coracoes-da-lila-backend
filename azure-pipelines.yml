@@ -1,9 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-# testing trigger
-
 pr: 
   branches:
     include:
@@ -39,7 +33,10 @@ variables:
     value: "coracoesdalila/backend"
 
   - name: isTag
-    value: $[startsWith(variables['Build.SourceBranch'],'refs/tags/')]
+    value: ${{startsWith(variables['Build.SourceBranch'],'refs/tags/')}}
+
+  - name: isMergePR
+    value: ${{ne(variables['Build.Reason'], 'PullRequest')}}
 
   - name: branchName
     value: $(Build.SourceBranchName)
@@ -83,7 +80,7 @@ stages:
                 latest
 
   - stage: DeployToDevelopment
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    condition: and(succeeded(), eq(variables['isMergePR'], 'true'))
     variables:
       - group: coracoesdalila-api-envs-dev
       - name: enviroment
