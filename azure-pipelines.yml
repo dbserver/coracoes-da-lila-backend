@@ -1,3 +1,4 @@
+##teste
 pr: 
   branches:
     include:
@@ -107,10 +108,10 @@ stages:
               configMapName: "coracoesdalila-api-configmap-dev"
               forceUpdateConfigMap: true
               configMapArguments: >
-                --from-literal=DATABASE_URL=$(DATABASE_URL)
-                --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
-                --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
-                --from-literal=FRONTEND_SERVER=$(FRONTEND_SERVER)
+                --from-literal=DATABASE_URL=$(database-url)
+                --from-literal=DATABASE_USERNAME=$(database-username)
+                --from-literal=DATABASE_PASSWORD=$(database-password)
+                --from-literal=FRONTEND_SERVER=$(frontend-server)
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes
             inputs:
