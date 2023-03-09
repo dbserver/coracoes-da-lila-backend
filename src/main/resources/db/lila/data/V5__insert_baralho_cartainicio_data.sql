@@ -1,0 +1,9 @@
+INSERT INTO baralho_cartainicio(baralho_id, cartainicio_id)
+VALUES('a28ebdb0-d3bc-4220-9814-9a743a4d829e','5c425302-96e8-4c79-b576-8641aed0196e'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','09eb905b-2be5-4bfd-95b6-3ea1f3c4e356'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','b354be94-dc3a-445b-a981-b09bb3cef252'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','5c541ba0-25eb-4225-ab5b-e93fcf50c503'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','c769913a-1c98-4a9b-92f4-2f7dfcbf98ba'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','583429a1-f727-481f-8bb0-8fd6365180b7'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','26b36506-6351-48f8-b2e3-bbb729f1e790'),
+('a28ebdb0-d3bc-4220-9814-9a743a4d829e','03b52ad9-474a-4499-bd8e-6a9cb9581a43');
