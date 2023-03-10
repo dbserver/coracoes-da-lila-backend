@@ -1,11 +1,11 @@
 pr: 
   branches:
     include:
-      - feat/cd
+      - main
 trigger:
   branches:
     include:
-      - feat/cd 
+      - main 
   tags:
     include:
       - "*"
@@ -80,6 +80,7 @@ stages:
                 latest
 
   - stage: DeployToDevelopment
+    dependsOn: CI
     condition: and(succeeded(), eq(variables['isMergePR'], 'true'), ne(variables['isTag'], 'true'))
     variables:
       - group: coracoesdalila-api-envs-dev
@@ -163,6 +164,7 @@ stages:
               action: "Run a Docker command"
               customCommand: "image push $(acrUrl):$(branchName)"
       - job: ApplyManifests
+        dependsOn: PrepareDockerImage
         displayName: Applying kubernetes manifests
         steps:
           - task: ShellScript@2
