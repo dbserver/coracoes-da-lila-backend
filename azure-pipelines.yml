@@ -1,17 +1,11 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-# testing trigger
-
 pr: 
   branches:
     include:
-      - feat/cd
+      - main
 trigger:
   branches:
     include:
-      - feat/cd 
+      - main 
   tags:
     include:
       - "*"
@@ -39,7 +33,10 @@ variables:
     value: "coracoesdalila/backend"
 
   - name: isTag
-    value: $[startsWith(variables['Build.SourceBranch'],'refs/tags/')]
+    value: ${{startsWith(variables['Build.SourceBranch'],'refs/tags/')}}
+
+  - name: isMergePR
+    value: ${{ne(variables['Build.Reason'], 'PullRequest')}}
 
   - name: branchName
     value: $(Build.SourceBranchName)
@@ -83,7 +80,8 @@ stages:
                 latest
 
   - stage: DeployToDevelopment
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    dependsOn: CI
+    condition: and(succeeded(), eq(variables['isMergePR'], 'true'), ne(variables['isTag'], 'true'))
     variables:
       - group: coracoesdalila-api-envs-dev
       - name: enviroment
@@ -110,9 +108,10 @@ stages:
               configMapName: "coracoesdalila-api-configmap-dev"
               forceUpdateConfigMap: true
               configMapArguments: >
-                --from-literal=DATABASE_URL=$(DATABASE_URL)
-                --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
-                --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+                --from-literal=DATABASE_URL=$(database-url)
+                --from-literal=DATABASE_USERNAME=$(database-username)
+                --from-literal=DATABASE_PASSWORD=$(database-password)
+                --from-literal=FRONTEND_SERVER=$(frontend-server)
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes
             inputs:
@@ -124,6 +123,14 @@ stages:
                 ./kubernetes/service.yaml
               containers: |
                 $(acrUrl):latest
+          - task: Kubernetes@1
+            displayName: Restart service
+            inputs:
+              connectionType: $(connectionType)
+              kubernetesServiceEndpoint: $(aksServiceConnection)
+              namespace: $(k8sNamespace)
+              command: "rollout"
+              arguments: "restart deploy coracoesdalila-api-dev"
   - stage: DeployToProduction
     condition: eq(variables['isTag'], 'true')
     variables:
@@ -157,6 +164,7 @@ stages:
               action: "Run a Docker command"
               customCommand: "image push $(acrUrl):$(branchName)"
       - job: ApplyManifests
+        dependsOn: PrepareDockerImage
         displayName: Applying kubernetes manifests
         steps:
           - task: ShellScript@2
@@ -173,9 +181,10 @@ stages:
               configMapName: "coracoesdalila-api-configmap-prd"
               forceUpdateConfigMap: true
               configMapArguments: >
-                --from-literal=DATABASE_URL=$(DATABASE_URL)
-                --from-literal=DATABASE_USERNAME=$(DATABASE_USERNAME)
-                --from-literal=DATABASE_PASSWORD=$(DATABASE_PASSWORD)
+                --from-literal=DATABASE_URL=$(database-url)
+                --from-literal=DATABASE_USERNAME=$(database-username)
+                --from-literal=DATABASE_PASSWORD=$(database-password)
+                --from-literal=FRONTEND_SERVER=$(frontend-server)
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes
             inputs:
@@ -187,3 +196,11 @@ stages:
                 ./kubernetes/service.yaml
               containers: |
                 $(acrUrl):$(branchName)
+          - task: Kubernetes@1
+            displayName: Restart service
+            inputs:
+              connectionType: $(connectionType)
+              kubernetesServiceEndpoint: $(aksServiceConnection)
+              namespace: $(k8sNamespace)
+              command: "rollout"
+              arguments: "restart deploy coracoesdalila-api-prd"
