@@ -103,7 +103,6 @@ public class WebSocketServiceTest {
 
         sala.setId(UUID.randomUUID());
         sala.setCartasObjetivo(new ArrayList<>());
-        sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
 

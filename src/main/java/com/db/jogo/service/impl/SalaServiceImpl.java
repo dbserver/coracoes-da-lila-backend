@@ -1,13 +1,21 @@
 package com.db.jogo.service.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
+
+import java.util.UUID;
 
 import com.db.jogo.service.SalaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.db.jogo.enums.StatusEnum;
+import com.db.jogo.exception.JogoInvalidoException;
+import com.db.jogo.model.Baralho;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.repository.SalaRepository;
@@ -67,15 +75,28 @@ public class SalaServiceImpl implements SalaService {
 	}
 
 	@Override
-	public Optional<Sala> updateSala(Sala sala) {
-		Optional<Sala> salaToUpdate = salaRepository.findSalaByHash(sala.getHash());
-
-		if (salaToUpdate.isPresent()) {
-			salaToUpdate.get().setBaralho(sala.getBaralho());
-			salaToUpdate.get().setDado(sala.getDado());
-			salaToUpdate.get().setJogadores(sala.getJogadores());
-			salaToUpdate.get().setStatus(sala.getStatus());
+	public Sala criaSala(Jogador jogador, Baralho baralho) throws JogoInvalidoException {		
+		if (jogador == null || jogador.getNome().isEmpty()) {
+            throw new JogoInvalidoException("Nome do jogador deve ser informado");
+        }
+		if (baralho == null) {
+			throw new JogoInvalidoException("Baralho deve ser informado");
 		}
-		return salaToUpdate;
+
+		Sala sala = new Sala();
+        sala.setId(UUID.randomUUID());
+        sala.setHash(sala.generateHash());
+        sala.setJogadores(Arrays.asList(jogador));
+        sala.setJogadorEscolhido(jogador); // TODO verificar pq eh inicializadp        
+        sala.setDado(0);
+        sala.setStatus(StatusEnum.AGUARDANDO);
+
+		sala.sorteiaCartaInicial(baralho.getCartasInicio()); // TODO remover logica da entidade
+		sala.setCartasDoJogo(baralho.getCartasDoJogo());		
+		sala.setCartasObjetivo(baralho.getCartasObjetivo());
+		
+		Collections.shuffle(sala.getCartasObjetivo());
+        Collections.shuffle(sala.getCartasDoJogo());  // TODO tratar na compra de cartas	
+		return saveSala(sala);
 	}
 }

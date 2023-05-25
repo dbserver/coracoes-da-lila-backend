@@ -33,6 +33,13 @@ public class Sala {
     private Jogador jogadorEscolhido;
 
 	@OneToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "sala_cartadojogo", joinColumns = {
+			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
+					@JoinColumn(name = "cartadojogo_id", referencedColumnName = "id") })
+	@Builder.Default
+	public List<CartaDoJogo> cartasDoJogo = new ArrayList<>();
+
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
 			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "cartaobjetivo_id", referencedColumnName = "id") })
@@ -46,9 +53,6 @@ public class Sala {
 	@Transient
 	@Builder.Default
 	public CartaObjetivo cartaObjetivoEscolhida = new CartaObjetivo();
-
-	@OneToOne
-	private Baralho baralho;
 
 	@Column(name = "carta_inicio_id", nullable =false)
 	private UUID cartaInicioId;

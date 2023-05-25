@@ -65,7 +65,6 @@ class RegrasDoJogoTest {
         baralho.adicionarCartaDoInicio(cartaInicio);
 
         sala.setId(UUID.randomUUID());
-        sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());

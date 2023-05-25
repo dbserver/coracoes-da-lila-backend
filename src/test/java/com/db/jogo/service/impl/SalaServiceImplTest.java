@@ -118,16 +118,4 @@ class SalaServiceImplTest {
         assertNull(primeiroJogador);
     }
 
-    @Test
-    void deveriaRetornarSalaParaSerAtualizada() {
-        sala.setStatus(StatusEnum.JOGANDO);
-        sala.setJogadores(List.of(jogador));
-        sala.setBaralho(new Baralho());
-        when(salaRepositoryMock.findSalaByHash(sala.getHash())).thenReturn(Optional.of(sala));
-
-        Optional<Sala> salaRetornadaParaSerAtualizada = salaServiceImpl.updateSala(sala);
-
-        assertNotNull(salaRetornadaParaSerAtualizada);
-        assertEquals(Optional.of(sala), salaRetornadaParaSerAtualizada);
-    }
 }

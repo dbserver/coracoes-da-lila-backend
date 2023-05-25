@@ -92,7 +92,6 @@ public class WebSocketControllerTest {
 
         sala = new Sala();
         sala.setId(UUID.fromString("cd0dab06-9751-11ed-a8fc-0242ac120002"));
-        sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setDado(0);

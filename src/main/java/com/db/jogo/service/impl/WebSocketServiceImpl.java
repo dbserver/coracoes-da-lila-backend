@@ -142,7 +142,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                             definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
 
-                            salaParaAtualizar.get().getBaralho().getCartasDoJogo()
+                            salaParaAtualizar.get().getCartasDoJogo()
                                     .remove(cartaParaAtualizarNoJogador.get());
 
                             iniciaRodadaDefinicao(salaParaAtualizar.get());
@@ -184,29 +184,19 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
 
+        // TODO retornar apenas o necessario
         if (jogador.getNome().isEmpty()) {
             throw new JogoInvalidoException("dados incorretos");
         }
 
-        Sala sala = new Sala();
         SalaResponse salaResp = new SalaResponse();
 
+        // TODO passar para criacao sala
         Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
-        Baralho baralho = criarBaralho();
-        sala.sorteiaCartaInicial(baralho.getCartasInicio());
+        Baralho baralho = baralhoService.findByCodigo("Clila").get();
 
-        Collections.shuffle(baralho.getCartasDoJogo());
-        sala.cartasObjetivo = criarCartasObjetivo();
-        sala.setId(UUID.randomUUID());
-        sala.setJogadores(new ArrayList<>());
-        sala.adicionarJogador(savedJogador);
-        sala.setHash(sala.generateHash());
-        baralho.setCodigo(sala.getHash());
-        sala.setBaralho(baralho);
-        sala.setDado(0);
-        sala.setJogadorEscolhido(jogador);
-        salaResp.setJogador(savedJogador);
-        sala.setStatus(StatusEnum.AGUARDANDO);
+        Sala sala = salaService.criaSala(savedJogador, baralho);
+        salaResp.setJogador(sala.getJogadores().get(0));
         salaResp.setSala(salaService.saveSala(sala));
 
         return salaResp;
@@ -484,27 +474,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         return carta;
     }
 
-    public List<CartaObjetivo> criarCartasObjetivo() {
-        Baralho baralho = baralhoService.findByCodigo("Clila").get();
-        List<CartaObjetivo> cartasObjetivo = baralho.getCartasObjetivo();
-        System.out.println(cartasObjetivo);
-        return cartasObjetivo;
-    }
-
-    private Baralho criarBaralho() {
-        Baralho baralho = baralhoService.findByCodigo("Clila").get();
-        Baralho baralhoCopy = new Baralho();
-        baralhoCopy.setCartasDoJogo(baralho.getCartasDoJogo());
-        baralhoCopy.setCartasInicio(baralho.getCartasInicio());
-        baralhoCopy.setCodigo("Copy");
-        baralhoCopy.setDescricao(baralho.getDescricao());
-        baralhoCopy.setTitulo(baralho.getTitulo());
-        baralhoCopy.setId(UUID.randomUUID());
-        System.out.println(baralhoCopy);
-        System.out.println(baralhoCopy.getCartasDoJogo().get(0).getTipo().toString());
-        return baralhoService.saveBaralho(baralhoCopy);
-    }
-
     public Jogador criarPrimeiroJogador(Jogador jogador) {
         jogador.setBonusCoracaoPequeno(0);
         jogador.setBonusCoracaoGrande(0);
@@ -725,6 +694,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 return salaParaAtualizar;
             }
         } catch (Exception e) {
+            // TODO colocar no else do isPresent
             throw new JogoInvalidoException("Sala não encontrada");
         }
         return salaParaAtualizar;

@@ -105,7 +105,6 @@ public class SalaServiceTest {
 
 
         sala.setId(UUID.randomUUID());
-        sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
 
         sala.setStatus(StatusEnum.NOVO);

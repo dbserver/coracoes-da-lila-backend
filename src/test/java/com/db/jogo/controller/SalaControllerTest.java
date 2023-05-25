@@ -118,7 +118,6 @@ class SalaControllerTest {
 
         sala = new Sala();
         sala.setId(UUID.fromString(uuid));
-        sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
@@ -172,7 +171,7 @@ class SalaControllerTest {
     void encontrarSalaPorHashComErro() throws Exception{
         Sala sala = new Sala();
         sala.setId(UUID.randomUUID());
-        sala.setBaralho(baralho);
+        // sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
@@ -210,7 +209,7 @@ class SalaControllerTest {
 
         Sala sala = new Sala();
         sala.setId(UUID.randomUUID());
-        sala.setBaralho(baralho);
+        // sala.setBaralho(baralho);
         sala.setHash("hashpraentrar");
         sala.setStatus(StatusEnum.NOVO);
         sala.setJogadores(new ArrayList<>());
