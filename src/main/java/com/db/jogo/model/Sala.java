@@ -32,12 +32,10 @@ public class Sala {
 	@JoinColumn(name = "jogador_escolhido")
     private Jogador jogadorEscolhido;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "sala_cartadojogo", joinColumns = {
-			@JoinColumn(name = "sala_id", referencedColumnName = "id") }, inverseJoinColumns = {
-					@JoinColumn(name = "cartadojogo_id", referencedColumnName = "id") })
+	@OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
-	public List<CartaDoJogo> cartasDoJogo = new ArrayList<>();
+	@JsonIgnore
+	public List<SalaCartaDoJogo> cartasDoJogo = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "sala_cartaobjetivo", joinColumns = {
@@ -70,16 +68,19 @@ public class Sala {
 	@NonNull
 	@Column(name="dado" , length =1 , nullable = false)
 	private Integer dado;
-	
-	
+		
 	@Column(name="dth_fim")
-        @JsonIgnore
+    @JsonIgnore
 	private Timestamp dataHoraFimDoJogo;
 	
 	@NotNull
 	@Column(name="status")
 	@Builder.Default
 	private StatusEnum status = StatusEnum.NOVO;
+
+	@Transient
+	@Builder.Default
+	public List<CartaDoJogo> cartasDisponiveis = new ArrayList<>();
 
 	public String generateHash() {
 		SecureRandom random = new SecureRandom();

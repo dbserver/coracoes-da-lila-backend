@@ -7,17 +7,20 @@ import java.util.List;
 import java.util.Optional;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.db.jogo.service.SalaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.db.jogo.enums.StatusCartaDoJogoEnum;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
+import com.db.jogo.model.SalaCartaDoJogo;
 import com.db.jogo.repository.SalaRepository;
 
 @Service
@@ -91,12 +94,18 @@ public class SalaServiceImpl implements SalaService {
         sala.setDado(0);
         sala.setStatus(StatusEnum.AGUARDANDO);
 
-		sala.sorteiaCartaInicial(baralho.getCartasInicio()); // TODO remover logica da entidade
-		sala.setCartasDoJogo(baralho.getCartasDoJogo());		
+		sala.sorteiaCartaInicial(baralho.getCartasInicio());	
+
+		List<SalaCartaDoJogo> cartasDoJogo = baralho.getCartasDoJogo().stream().map(carta ->  
+			new SalaCartaDoJogo(UUID.randomUUID(), carta, sala, StatusCartaDoJogoEnum.PILHA))
+				.collect(Collectors.toList());
+		Collections.shuffle(cartasDoJogo); 
+		sala.setCartasDoJogo(cartasDoJogo);		
+
+		Collections.shuffle(baralho.getCartasObjetivo()); 
 		sala.setCartasObjetivo(baralho.getCartasObjetivo());
-		
-		Collections.shuffle(sala.getCartasObjetivo());
-        Collections.shuffle(sala.getCartasDoJogo());  // TODO tratar na compra de cartas	
+
 		return saveSala(sala);
 	}
+	
 }

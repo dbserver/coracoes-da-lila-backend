@@ -4,6 +4,7 @@ import com.db.jogo.dto.NovaCategoriaCartasDoJogoDTO;
 import com.db.jogo.dto.NovaCategoriaDTO;
 import com.db.jogo.dto.SalaResponse;
 import com.db.jogo.enums.CartaDoJogoEnumCategoria;
+import com.db.jogo.enums.StatusCartaDoJogoEnum;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
@@ -141,16 +142,27 @@ public class WebSocketServiceImpl implements WebSocketService {
                             this.jogadorService.saveJogador(jogadorParaAtualizar.get());
 
                             definePosicaoDoProximoJogador(salaParaAtualizar.get(), jogadorParaAtualizar.get());
-
-                            salaParaAtualizar.get().getCartasDoJogo()
-                                    .remove(cartaParaAtualizarNoJogador.get());
+                            
+                            UUID idCartaComprada = cartaParaAtualizarNoJogador.get().getId();
+                            List<SalaCartaDoJogo> cartasDoJogo = salaParaAtualizar.get().getCartasDoJogo();
+                            SalaCartaDoJogo cartaComprada = cartasDoJogo.stream()
+                            .filter(carta -> carta.getCartaDoJogo().getId().equals(idCartaComprada))
+                            .findFirst()
+                            .get();
+                            cartaComprada.setStatus(StatusCartaDoJogoEnum.COMPRADA);
+                            
+                            Collections.shuffle(cartasDoJogo);
+                            SalaCartaDoJogo novaCarta = cartasDoJogo.stream()
+                                .filter(carta -> StatusCartaDoJogoEnum.PILHA.equals(carta.getStatus()))
+                                .findFirst().get();
+                            novaCarta.setStatus(StatusCartaDoJogoEnum.EXIBIDA);
 
                             iniciaRodadaDefinicao(salaParaAtualizar.get());
                         }
                     }
                 }
 
-
+                populaCartasDisponiveis(salaParaAtualizar);
                 passaAVezDoJogador(salaParaAtualizar.get());
 
                 // TODO: Colocar método para destruir as cartas restantes do jogo
@@ -171,6 +183,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
 
         return salaParaAtualizar;
+    }
+
+    private void populaCartasDisponiveis(Optional<Sala> salaParaAtualizar) {
+        List<CartaDoJogo> cartasDisponiveis = salaParaAtualizar.get().cartasDoJogo.stream()
+            .filter(carta -> StatusCartaDoJogoEnum.EXIBIDA.equals(carta.getStatus()))
+            .map(carta -> carta.getCartaDoJogo())
+            .toList();
+        salaParaAtualizar.get().setCartasDisponiveis(cartasDisponiveis);
     }
 
     public Jogador procuraJogadorJogandoNoFront(Sala sala) {
@@ -316,6 +336,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     this.salaService.saveSala(salaParaAtualizar.get());
                     iniciaRodadaDefinicao(salaParaAtualizar.get());
 
+                    populaCartasDisponiveis(salaParaAtualizar);
                     passaAVezDoJogador(salaParaAtualizar.get());
                 }
 
@@ -430,6 +451,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                 iniciaRodadaDefinicao(salaParaAtualizar.get());
 
+                populaCartasDisponiveis(salaParaAtualizar);
                 passaAVezDoJogador(salaParaAtualizar.get());
 
                 // Salva o resultado da compra no banco
@@ -553,7 +575,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     iniciaRodadaDefinicao(salaParaAtualizar.get());
                 }
             }
-
+            populaCartasDisponiveis(salaParaAtualizar);
             passaAVezDoJogador(salaParaAtualizar.get());
 
             salaParaAtualizar.get().setDado(0);
@@ -617,7 +639,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                 }
             }
-
+            populaCartasDisponiveis(salaParaAtualizar);
             passaAVezDoJogador(salaParaAtualizar.get());
 
             salaParaAtualizar.get().setDado(0);
@@ -683,20 +705,24 @@ public class WebSocketServiceImpl implements WebSocketService {
         template.convertAndSend(url, salaAsJSON);
     }
 
-    public Optional<Sala> iniciarPartida(Sala sala) throws JogoInvalidoException {
-        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash());
-        try {
-            if (salaParaAtualizar.isPresent()) {
-                salaParaAtualizar.get().setStatus(StatusEnum.JOGANDO);
-                salaParaAtualizar.get().setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
-                this.salaService.saveSala(salaParaAtualizar.get());
-
-                return salaParaAtualizar;
-            }
-        } catch (Exception e) {
-            // TODO colocar no else do isPresent
-            throw new JogoInvalidoException("Sala não encontrada");
+    // TODO servico
+    public Sala iniciarPartida(Sala sala) throws JogoInvalidoException {
+        Sala salaParaAtualizar = this.salaService.findSalaByHash(sala.getHash())
+            .orElseThrow(() -> new JogoInvalidoException("Sala não encontrada"));
+                
+        final int qtdCartasDisponiveis = 6;
+        List<CartaDoJogo> cartasDisponiveis = new ArrayList<>();
+        Collections.shuffle(salaParaAtualizar.cartasDoJogo);
+        for(int i = 0; i<qtdCartasDisponiveis; i++) {
+            SalaCartaDoJogo salaCartaDoJogo = salaParaAtualizar.cartasDoJogo.get(i);
+            salaCartaDoJogo.setStatus(StatusCartaDoJogoEnum.EXIBIDA);
+            cartasDisponiveis.add(salaParaAtualizar.cartasDoJogo.get(i).getCartaDoJogo());
         }
+        salaParaAtualizar.setCartasDisponiveis(cartasDisponiveis);
+        salaParaAtualizar.setStatus(StatusEnum.JOGANDO);
+        salaParaAtualizar.setJogadorEscolhido(pegaJogadorEscolhido(sala.getJogadorEscolhido()).get());
+        
+        this.salaService.saveSala(salaParaAtualizar);
         return salaParaAtualizar;
     }
 
