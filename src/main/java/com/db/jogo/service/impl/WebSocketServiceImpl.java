@@ -10,6 +10,7 @@ import com.db.jogo.enums.StatusEnumJogador;
 import com.db.jogo.exception.CartaCompradaInvalidaException;
 import com.db.jogo.exception.JogoInvalidoException;
 import com.db.jogo.exception.JsonInvalidoException;
+import com.db.jogo.factory.JogadorFactory;
 import com.db.jogo.helper.Dado;
 import com.db.jogo.model.*;
 import com.db.jogo.service.*;
@@ -27,8 +28,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private SimpMessagingTemplate template;
-    private SalaService salaService;
-    private BaralhoService baralhoService;
+    private SalaService salaService;    
     private JogadorService jogadorService;
     private CartaDoJogoService cartaService;
     private Integer indexDoProximoJogador;
@@ -37,12 +37,11 @@ public class WebSocketServiceImpl implements WebSocketService {
     private CartaDoJogo cartaComprada;
     private CartaObjetivo cartaCompradaObjetivo;
 
-    protected WebSocketServiceImpl(SalaService salaService, BaralhoService baralhoService,
+    protected WebSocketServiceImpl(SalaService salaService,
                                    JogadorService jogadorService,
                                    SimpMessagingTemplate template, CartaDoJogoService cartaService,
                                    JogadorCartasDoJogoService jogadorCartasDoJogoService) {
         this.salaService = salaService;
-        this.baralhoService = baralhoService;
         this.jogadorService = jogadorService;
         this.template = template;
         this.cartaService = cartaService;
@@ -202,22 +201,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         return null;
     }
 
-    public SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException {
-
-        // TODO retornar apenas o necessario
-        if (jogador.getNome().isEmpty()) {
-            throw new JogoInvalidoException("dados incorretos");
-        }
+    public SalaResponse criarSala(Jogador jogador) throws JogoInvalidoException {
 
         SalaResponse salaResp = new SalaResponse();
-
-        // TODO passar para criacao sala
-        Jogador savedJogador = jogadorService.saveJogador(criarPrimeiroJogador(jogador));
-        Baralho baralho = baralhoService.findByCodigo("Clila").get();
-
-        Sala sala = salaService.criaSala(savedJogador, baralho);
+        Sala sala = salaService.criaSala(jogador, "Clila");
         salaResp.setJogador(sala.getJogadores().get(0));
-        salaResp.setSala(salaService.saveSala(sala));
+        salaResp.setSala(sala);
 
         return salaResp;
     }
@@ -496,34 +485,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         return carta;
     }
 
-    public Jogador criarPrimeiroJogador(Jogador jogador) {
-        jogador.setBonusCoracaoPequeno(0);
-        jogador.setBonusCoracaoGrande(0);
-        jogador.setCoracaoPequeno(2);
-        jogador.setCoracaoGrande(0);
-        jogador.setPontos(0);
-        jogador.setPosicao(1);
-        jogador.setIsHost(true);
-        jogador.setNome(jogador.getNome());
-        jogador.setPontosObjetivo(0);
-        jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        return jogador;
-    }
-
-    public Jogador criarJogador(Jogador jogador, Integer num) {
-        jogador.setBonusCoracaoPequeno(0);
-        jogador.setBonusCoracaoGrande(0);
-        jogador.setCoracaoPequeno(2);
-        jogador.setCoracaoGrande(0);
-        jogador.setPontos(0);
-        jogador.setPosicao(num);
-        jogador.setIsHost(false);
-        jogador.setNome(jogador.getNome());
-        jogador.setPontosObjetivo(0);
-        jogador.setStatus(StatusEnumJogador.ESPERANDO);
-        return jogador;
-    }
-
     public CartaDoJogo criarCartaDoJogo() {
         CartaDoJogo carta = CartaDoJogo.builder().bonus(false).categoria(null).fonte("").pontos(0).valorCoracaoGrande(0)
                 .valorCoracaoPequeno(0).tipo(null).build();
@@ -665,20 +626,21 @@ public class WebSocketServiceImpl implements WebSocketService {
         if (jogador == null || hash == null) {
             throw new JogoInvalidoException("Parametros nulos");
         }
-        Optional<Sala> sala = salaService.findSalaByHash(hash);
+        Optional<Sala> sala = salaService.findSalaByHash(hash); //TODO validar existente
         SalaResponse salaResp = new SalaResponse();
 
         if (sala.isPresent()) {
             if (sala.get().getStatus() == StatusEnum.FINALIZADO) {
                 throw new JogoInvalidoException("Jogo ja foi finalizado");
             }
-            Jogador savedJogador = jogadorService
-                    .saveJogador(criarJogador(jogador, sala.get().getJogadores().size() + 1));
+            Jogador savedJogador = JogadorFactory.criarJogador(jogador, sala.get().getJogadores().size() + 1);
+            savedJogador.setSala(sala.get());
+            jogadorService.saveJogador(savedJogador);
+
             sala.get().adicionarJogador(savedJogador);
 
             salaResp.setJogador(savedJogador);
-            salaResp.setSala(this.salaService.saveSala(sala.get()));
-            salaService.saveSala(sala.get());
+            salaResp.setSala(this.salaService.saveSala(sala.get()));            
         }
         return salaResp;
     }
@@ -813,40 +775,30 @@ public class WebSocketServiceImpl implements WebSocketService {
     public Sala finalizaStatusJogador(NovaCategoriaCartasDoJogoDTO novaCategoriaCartasDoJogoDTO)
             throws JogoInvalidoException {
 
-        Optional<Jogador> jogadorParaAtualizar = this.jogadorService
-                .findById(novaCategoriaCartasDoJogoDTO.getJogadorID());
-        Optional<Sala> salaParaAtualizar = this.salaService.findSalaByHash(novaCategoriaCartasDoJogoDTO.getSalaHash());
+        Jogador jogadorParaAtualizar = this.jogadorService
+                .findById(novaCategoriaCartasDoJogoDTO.getJogadorID())
+                .orElseThrow(() -> new JogoInvalidoException("Jogador não encontrado"));
+        Sala salaParaAtualizar = this.salaService.findSalaByHash(novaCategoriaCartasDoJogoDTO.getSalaHash())
+                    .orElseThrow(() -> new JogoInvalidoException("Sala não encontrada"));
 
         for (NovaCategoriaDTO novaCategoriaDTO : novaCategoriaCartasDoJogoDTO.getListaDeCartas()) {
             JogadorCartasDoJogo jogadorCartasDoJogo = this.jogadorCartasDoJogoService.findByJogadorIDAndCartaDoJogoID(
-                    jogadorParaAtualizar.get().getId(), novaCategoriaDTO.getCartaID());
+                    jogadorParaAtualizar.getId(), novaCategoriaDTO.getCartaID());
 
             jogadorCartasDoJogo.setNovaCategoria(novaCategoriaDTO.getNovaCategoria());
             this.jogadorCartasDoJogoService.saveJogadorCartasDoJogo(jogadorCartasDoJogo);
         }
 
-        try {
-            if (salaParaAtualizar.isPresent()) {
-                if (jogadorParaAtualizar.isPresent()) {
-                    jogadorParaAtualizar.get().setStatus(StatusEnumJogador.FINALIZADO);
-                    jogadorService.saveJogador(jogadorParaAtualizar.get());
-                }
-            }
-            modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar.get());
+        jogadorParaAtualizar.setStatus(StatusEnumJogador.FINALIZADO);
+        jogadorService.saveJogador(jogadorParaAtualizar);
 
-            if (salaParaAtualizar.isPresent()) {
-                this.template.convertAndSend(
-                        "/gameplay/game-update/" + salaParaAtualizar.get().getHash(),
-                        salaParaAtualizar);
+        modificaStatusSalaDefinindoOuFinalizado(salaParaAtualizar);
+        salaService.saveSala(salaParaAtualizar);
 
-                return salaParaAtualizar.get();
-            }
-
-            return salaParaAtualizar.get();
-
-        } catch (Exception e) {
-            throw new JogoInvalidoException("Sala não encontrada");
-        }
+        this.template.convertAndSend(
+                    "/gameplay/game-update/" + salaParaAtualizar.getHash(),
+                    salaParaAtualizar);
+        return salaParaAtualizar;
     }
 
     public void contagemPontosObjetivo(Sala sala) {

@@ -10,11 +10,9 @@ import com.db.jogo.model.Sala;
 
 
 public interface WebSocketService {
-     SalaResponse criarJogo(Jogador jogador) throws JogoInvalidoException;
+     SalaResponse criarSala(Jogador jogador) throws JogoInvalidoException;
 
      SalaResponse conectarJogo(Jogador jogador, String hash) throws JogoInvalidoException;
-
-     Jogador criarJogador(Jogador jogador, Integer num);
      
      CartaDoJogo criarCartaDoJogo();
      

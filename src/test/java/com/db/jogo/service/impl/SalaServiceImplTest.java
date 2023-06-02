@@ -1,7 +1,5 @@
 package com.db.jogo.service.impl;
 
-import com.db.jogo.enums.StatusEnum;
-import com.db.jogo.model.Baralho;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.repository.SalaRepository;
@@ -10,10 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.text.html.Option;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -65,13 +61,6 @@ class SalaServiceImplTest {
         assertNotNull(salaSalva);
         assertEquals(sala, salaSalva);
         assertEquals(sala.getHash(), salaSalva.getHash());
-    }
-
-    @Test
-    void deveriaFazerAPrimeiraJogada() {
-        Sala salaNaPrimeiraJogada = salaServiceImpl.jogada(sala);
-        assertNotNull(salaNaPrimeiraJogada);
-        assertEquals(sala, salaNaPrimeiraJogada);
     }
 
     @Test

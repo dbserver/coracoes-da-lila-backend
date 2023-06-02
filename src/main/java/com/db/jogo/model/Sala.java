@@ -2,6 +2,8 @@ package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,14 +21,16 @@ import java.util.Base64.Encoder;
 @Data
 @Entity
 @Table(name = "sala")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Sala {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Jogador> jogadores;
+	@OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Jogador> jogadores = new ArrayList<>();;
 
 	@OneToOne
 	@JoinColumn(name = "jogador_escolhido")

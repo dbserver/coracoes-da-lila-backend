@@ -37,8 +37,7 @@ class WebSocketServiceImplTest {
 
     @Mock
     private SalaService salaServiceMock;
-    @Mock
-    private BaralhoService baralhoServiceMock;
+    
     @Mock
     private JogadorService jogadorServiceMock;
     @Mock
@@ -49,7 +48,11 @@ class WebSocketServiceImplTest {
     private JogadorCartasDoJogoService jogadorCartasDoJogoServiceMock;
 
     @InjectMocks
-    private WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaServiceMock, baralhoServiceMock, jogadorServiceMock, simpMessagingTemplateMock, cartaDoJogoServiceMock, jogadorCartasDoJogoServiceMock);
+    private WebSocketServiceImpl webSocketServiceImpl = new WebSocketServiceImpl(salaServiceMock, 
+        jogadorServiceMock, 
+        simpMessagingTemplateMock, 
+        cartaDoJogoServiceMock, 
+        jogadorCartasDoJogoServiceMock);
     
     Sala sala = new Sala();
     Jogador primeiroJogador;
@@ -334,10 +337,7 @@ class WebSocketServiceImplTest {
 
         String hash = "qrGd7sOA";
         when(jogadorServiceMock.findById(primeiroJogador.getId())).thenReturn(Optional.of(primeiroJogador));
-        when(salaServiceMock.findSalaByHash(hash)).thenReturn(null);
-        when(jogadorCartasDoJogoServiceMock
-                .findByJogadorIDAndCartaDoJogoID(primeiroJogador.getId(), novaCategoriaDTO.getCartaID()))
-                .thenReturn(jogadorCartasDoJogo);
+        when(salaServiceMock.findSalaByHash(hash)).thenReturn(Optional.empty());  
 
         assertThrows(JogoInvalidoException.class,
                 () -> webSocketServiceImpl.finalizaStatusJogador(novaCategoriaCartasDoJogoDTO), "Sala não encontrada");

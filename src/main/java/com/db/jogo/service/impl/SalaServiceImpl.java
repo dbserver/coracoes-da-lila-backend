@@ -17,14 +17,19 @@ import org.springframework.stereotype.Service;
 import com.db.jogo.enums.StatusCartaDoJogoEnum;
 import com.db.jogo.enums.StatusEnum;
 import com.db.jogo.exception.JogoInvalidoException;
+import com.db.jogo.factory.JogadorFactory;
 import com.db.jogo.model.Baralho;
 import com.db.jogo.model.Jogador;
 import com.db.jogo.model.Sala;
 import com.db.jogo.model.SalaCartaDoJogo;
+import com.db.jogo.repository.BaralhoRepository;
 import com.db.jogo.repository.SalaRepository;
 
 @Service
 public class SalaServiceImpl implements SalaService {
+
+	@Autowired
+	private BaralhoRepository baralhoRepository;
 
 	private final SalaRepository salaRepository;
 
@@ -41,19 +46,6 @@ public class SalaServiceImpl implements SalaService {
 	@Override
 	public Sala saveSala(Sala sala) throws DataAccessException {
 		return salaRepository.save(sala);
-	}
-
-	/**
-	 * Este método executa a jogada
-	 * 
-	 * @param sala - essa sala é o estado inicial do jogo
-	 * @return retorna um novo estado do jogo após a jogada computada
-	 * @throws DataAccessException
-	 */
-	@Override
-	public Sala jogada(Sala sala) throws DataAccessException {
-
-		return sala;
 	}
 
 	@Override
@@ -78,19 +70,22 @@ public class SalaServiceImpl implements SalaService {
 	}
 
 	@Override
-	public Sala criaSala(Jogador jogador, Baralho baralho) throws JogoInvalidoException {		
+	public Sala criaSala(Jogador jogador, String codigoBaralho) throws JogoInvalidoException {		
 		if (jogador == null || jogador.getNome().isEmpty()) {
             throw new JogoInvalidoException("Nome do jogador deve ser informado");
         }
-		if (baralho == null) {
+		if (codigoBaralho == null) {
 			throw new JogoInvalidoException("Baralho deve ser informado");
 		}
+
+        Baralho baralho = baralhoRepository.findByCodigo("Clila").get();
+		Jogador jogadorHost = JogadorFactory.criarPrimeiroJogador(jogador);
 
 		Sala sala = new Sala();
         sala.setId(UUID.randomUUID());
         sala.setHash(sala.generateHash());
-        sala.setJogadores(Arrays.asList(jogador));
-        sala.setJogadorEscolhido(jogador); // TODO verificar pq eh inicializadp        
+        sala.setJogadores(Arrays.asList(jogadorHost));
+        sala.setJogadorEscolhido(jogadorHost);      
         sala.setDado(0);
         sala.setStatus(StatusEnum.AGUARDANDO);
 
@@ -105,6 +100,7 @@ public class SalaServiceImpl implements SalaService {
 		Collections.shuffle(baralho.getCartasObjetivo()); 
 		sala.setCartasObjetivo(baralho.getCartasObjetivo());
 
+		jogadorHost.setSala(sala);
 		return saveSala(sala);
 	}
 	

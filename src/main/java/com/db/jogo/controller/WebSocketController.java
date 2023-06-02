@@ -81,9 +81,9 @@ public class WebSocketController {
     }
 
     @PostMapping("/iniciar")
-    public ResponseEntity<SalaResponse> iniciarJogo(@RequestBody @Valid Jogador jogador) throws JogoInvalidoException {
-        log.info("Requisição para iniciar jogo {}", jogador);
-        SalaResponse sala = this.webSocketServiceImpl.criarJogo(jogador);
+    public ResponseEntity<SalaResponse> criarSala(@RequestBody @Valid Jogador jogador) throws JogoInvalidoException {
+        log.info("Requisição para criar sala {}", jogador);
+        SalaResponse sala = this.webSocketServiceImpl.criarSala(jogador);
         return new ResponseEntity<>(sala, HttpStatus.OK);
     }
 

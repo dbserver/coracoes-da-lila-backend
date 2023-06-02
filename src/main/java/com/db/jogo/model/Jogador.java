@@ -1,6 +1,7 @@
 package com.db.jogo.model;
 
 import com.db.jogo.enums.StatusEnumJogador;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +10,13 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,6 +37,11 @@ public class Jogador {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sala_id", updatable = false)
+    @JsonIgnore
+    private Sala sala;
 	
 	@Column(name = "posicao", length = 10, nullable = false)
 	private Integer posicao;
